@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { roboto } from "./ui/fonts";
+import Menu from "./components/Menu";
+import { Box } from "@mui/material";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,9 +28,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased ${roboto.className} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased ${roboto.className} `}
       >
-        {children}
+        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+          <Menu />
+          <div className="bg-gray-100 w-full p-5">
+            {children}
+          </div>
+
+        </Box>
       </body>
     </html>
   );
