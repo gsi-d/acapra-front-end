@@ -28,6 +28,7 @@ export default function CustomTextField({
       sx={{
         width: '100%',
         '& .MuiOutlinedInput-root': {
+          backgroundColor: 'white',
           '&.Mui-focused fieldset': {
             borderColor: '#7C3AED',
             boxShadow: '0 0 0 2px rgba(124, 58, 237, 0.2)',
