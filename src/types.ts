@@ -23,8 +23,17 @@ export interface Pet{
     id: number;
     Nome: string;
     Especie: string;
+    Raca: string;
     Genero: string;
     Status: string;
-    Vacinado: boolean;
     DataNascimento: string;
+    Peso: number;
+    Adotado: boolean;
+    DataAdocao?: string;
+    Vacinado: boolean;
+    DataUltimaVacina?: string;
+    TutorResponsavel: string;
+    Resgatado: boolean;
+    DataResgate?: string;
+    LocalResgate: string;
 }
