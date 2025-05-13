@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import PowerIcon from '@mui/icons-material/Power';
 import NavLinks from './NavLink';
 import PetsIcon from '@mui/icons-material/Pets';
 import { Box, Typography } from '@mui/material';
@@ -14,8 +13,12 @@ export default function Menu() {
         ml: 2,
         py: 2,
         pr: 2,
-        width: '30vh',
-        boxShadow: '20px 0px 10px rgba(0, 0, 0, 2)',
+        width: '28.5vh',
+        zIndex: 999,
+        boxShadow: '3px 0px 8px rgba(0, 0, 0, 0.1)',
+        position: 'fixed',
+        top: 0,
+        left: 0,
       }}
     >
       <Link
