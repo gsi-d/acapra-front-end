@@ -24,7 +24,7 @@ export default function FormCadastroBase(props: FormDialogProps) {
   };
 
   return (
-    <React.Fragment>
+    <React.Fragment >
       <Dialog
         open={open}
         onClose={handleClose}
@@ -35,10 +35,10 @@ export default function FormCadastroBase(props: FormDialogProps) {
           },
         }}
       >
-        <DialogTitle variant="h5" color='secondary'>{titulo}</DialogTitle>
+        <DialogTitle sx={{top: 0, left: 0, position: 'sticky', zIndex: 10, backgroundColor: 'white', padding: '16px'}} variant="h5" color='secondary'>{titulo}</DialogTitle>
         <Divider/>
           {children}
-        <DialogActions>
+        <DialogActions sx={{bottom: 0, right: 0, position: 'sticky', zIndex: 10, backgroundColor: 'white',}}>
           <Button variant='outlined' color="secondary" onClick={handleClose}>Cancelar</Button>
           <Button variant='contained' color='secondary' onClick={onSubmit}>Salvar</Button>
         </DialogActions>
