@@ -1,32 +1,34 @@
 'use client';
 import * as React from 'react';
 import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
+import Autocomplete, { AutocompleteProps } from '@mui/material/Autocomplete';
 
-interface AnimalOptionType {
+export interface OptionType {
+  id: string;
   title: string;
 }
 
-const animalOptions: AnimalOptionType[] = [
-  { title: 'Gato' },
-  { title: 'Cachorro' },
-  { title: 'Rato' },
-  { title: 'Pássaro' },
-];
+interface ComboBoxProps{
+  options: OptionType[]
+  value?: any
+  label?: string;
+  setValue?: (params: any) => any;
+}
 
-export default function ComboBox() {
-  const [value, setValue] = React.useState<AnimalOptionType | null>(null);
+export default function ComboBox(props: ComboBoxProps) {
+  const {options, value, label, setValue} = props;
 
   return (
     <div className="flex justify-center items-center mt-4">
       <Autocomplete
         disablePortal
-        sx={{ width: 300 }}
+        sx={{ width: '100%' }}
         id="animal-combo-box"
-        options={animalOptions}
+        {...props}
+        options={options}
         value={value}
         onChange={(event, newValue) => {
-          setValue(newValue);
+          setValue && setValue(newValue);
         }}
         getOptionLabel={(option) => option.title}
         renderOption={(props, option) => {
@@ -41,7 +43,7 @@ export default function ComboBox() {
             </li>
           );
         }}
-        renderInput={(params) => <TextField {...params} label="Raça" />}
+        renderInput={(params: any) => <TextField {...params} label={label} />}
       />
     </div>
   );

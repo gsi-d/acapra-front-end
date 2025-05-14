@@ -2,7 +2,7 @@
 import CheckBox from "@/app/components/CheckBox";
 import ChipTexto from "@/app/components/Chip";
 import GridDados from "@/app/components/DataGrid";
-import { enumEspecie, enumGenero, enumStatus, Pet } from "@/types";
+import { enumEspecie, enumGenero, enumStatus, especiesArray, Pet } from "@/types";
 import { Box, Chip, FormControl, FormHelperText, IconButton, TextField } from "@mui/material";
 import { GridColDef, GridRenderCellParams, GridRowId, GridRowProps, GridValueGetter } from "@mui/x-data-grid";
 import EditIcon from '@mui/icons-material/Edit';
@@ -12,6 +12,7 @@ import FormCadastroBase from "@/app/components/FormCadastroBase";
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, Controller } from 'react-hook-form';
+import ComboBox from "@/app/components/ComboBox";
 
 export default function AtualizarInfos() {
     const [toggleFormPets, setToggleFormPets] = useState<boolean>(false);
@@ -321,9 +322,6 @@ export default function AtualizarInfos() {
     }
 ]);
 
-
-
-    
     const columns: GridColDef<(typeof rows)[number]>[] = [
     {
         width: 100,
@@ -509,12 +507,12 @@ export default function AtualizarInfos() {
                     control={control}
                     rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
-                        <TextField
-                          disabled={false}
+                        <ComboBox
                           label={'Especie'}
                           value={value}
-                          onChange={onChange}
-                          error={Boolean(errors.Especie)}
+                          setValue={onChange}
+                          options={especiesArray}
+                        //   error={Boolean(errors.Especie)}
                         />
                       )}
                      />
