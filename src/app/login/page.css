@@ -1,38 +1,39 @@
+
 .informacao {
   display: flex;
   height: 100vh;
   font-family: sans-serif;
-  font-weight: bold;
-  font-size: 20px;
 }
 
-/* Lado esquerdo com fundo roxo */
+
 .mensagem {
-  background-color: #a189fa;
   flex: 1;
+  background-color: #a189fa;
   color: white;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-image: url('/src/app/login/Images/patas.png'); 
+  background-image: url('/src/app/login/Images/patas.png');
   background-size: contain;
   background-repeat: repeat;
   text-align: center;
 }
 
-.mensagem {
+.mensagem h2 {
   font-size: 2rem;
   margin-bottom: 0.5rem;
 }
 
 .mensagem p {
   font-size: 1.1rem;
+  font-weight: bold;
 }
 
+
 .login-direito {
-  background-color: #fff;
   flex: 1;
+  background-color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -45,43 +46,44 @@
 
 .login-conteudo h1 {
   font-weight: bold;
-  color: rgb(0, 0, 0);
+  color: #000;
   font-size: 2rem;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
 }
 
 .login-conteudo p {
   color: #6B6B6B;
   font-size: 0.9rem;
-  margin-top: -0;
+  margin: 0 0 1rem 0;
 }
 
 .login-conteudo a {
   margin-left: 5px;
   color: #563EFF;
   font-size: 0.9rem;
-  margin-top: 0;
+  text-decoration: none;
 }
 
 #login-email {
-  margin-top: 1rem;
   display: flex;
   flex-direction: column;
 }
 
+#login-email label {
+  color: #000;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
 #login-email input[type="email"],
 #login-email input[type="password"] {
-  background-color: white;
-  color: #000000;
   padding: 10px;
   margin-bottom: 20px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  display: flex;
-}
-
-#login-email label{
-  color: #000000;
+  font-size: 1rem;
+  color: #000;
+  background-color: white;
 }
 
 .opcoes {
@@ -89,18 +91,16 @@
   justify-content: space-between;
   align-items: center;
   font-size: 0.85rem;
-  
-}
-.opcoes:checked{
-  background-color: blue;
-  width: 25px;
-  height: 25px;
-
+  margin-bottom: 1rem;
 }
 
-.forgot {
-  color: red;
-  font-size: 0.85rem;
+.opcoes input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+.esqueceu {
+  color: #563EFF;
+  text-decoration: none;
 }
 
 button[type="submit"] {
@@ -111,5 +111,10 @@ button[type="submit"] {
   border-radius: 5px;
   font-weight: bold;
   cursor: pointer;
-  margin-bottom: 1rem;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #5e45d4;
 }
