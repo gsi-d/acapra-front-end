@@ -5,6 +5,7 @@ import { roboto } from "./ui/fonts";
 import Menu from "./components/Menu";
 import { Box } from "@mui/material";
 import Footer from "./components/Footer";
+import LayoutWrapper from "./LayoutWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,16 +32,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased ${roboto.className}`}
       >
-        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-          <Menu />
-          <div className="bg-gray-100 w-full ml-[30vh]">
-            <div className="bg-gray-100 w-full p-5 " style={{ minHeight: '80vh' }}>
-              {children}
-            </div>
-            <Footer/>
-          </div>
-
-        </Box>
+        <LayoutWrapper>{children}</LayoutWrapper>
       </body>
     </html>
   );

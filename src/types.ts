@@ -1,3 +1,5 @@
+import { OptionType } from "./app/components/ComboBox";
+
 export enum ERole {
     ADMIN = 'ADMIN',
     USER = 'USER',
@@ -19,12 +21,38 @@ export enum enumStatus{
     ADOTADO = 'Adotado',
 }
 
+export const especiesArray: OptionType[] = [
+  { id: enumEspecie.CACHORRO, title: 'Cachorro' },
+  { id: enumEspecie.GATO, title: 'Gato' },
+];
+
+export const generosArray: OptionType[] = [
+  { id: enumGenero.MASCULINO, title: 'Macho' },
+  { id: enumGenero.FEMININO, title: 'Fêmea' },
+];
+
+export const statusArray: OptionType[] = [
+  { id: enumStatus.DSIPONIVEL, title: 'Disponível' },
+  { id: enumStatus.ADOTADO, title: 'Adotado' },
+];
+
+
 export interface Pet{
     id: number;
     Nome: string;
     Especie: string;
+    Raca: string;
     Genero: string;
     Status: string;
-    Vacinado: boolean;
     DataNascimento: string;
+    Peso: number;
+    Adotado: boolean;
+    DataAdocao?: string;
+    Vacinado: boolean;
+    DataUltimaVacina?: string;
+    TutorResponsavel: string;
+    Resgatado: boolean;
+    DataResgate?: string;
+    LocalResgate: string;
 }
+
