@@ -10,7 +10,7 @@ export default function AdotanteForm() {
         backgroundColor: '#E5E5E5',
         padding: 3,
         borderRadius: 2,
-        maxWidth: 500,
+        maxWidth: 900,
         margin: '0 auto',
         display: 'flex',
         flexDirection: 'column',
