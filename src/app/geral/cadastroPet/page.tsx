@@ -232,7 +232,7 @@ export default function CadastroPet() {
                       render={({ field: { value, onChange } }) => (
                         <TextField
                           disabled={false}
-                          label={'DataAdocao'}
+                          label={'Data de Adoção'}
                           onChange={onChange}
                           sx={{ backgroundColor: 'white'}}
                           error={Boolean(errors.DataAdocao)}
@@ -252,7 +252,7 @@ export default function CadastroPet() {
                       render={({ field: { value, onChange } }) => (
                         <TextField
                           disabled={false}
-                          label={'TutorResponsavel'}
+                          label={'Tutor Responsável'}
                           onChange={onChange}
                           sx={{ backgroundColor: 'white'}}
                           error={Boolean(errors.TutorResponsavel)}
@@ -265,7 +265,7 @@ export default function CadastroPet() {
                 </FormControl>
 
                     </Box>
-<Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
 
                 <FormControl fullWidth sx={{ mb: 6, width: '24%' }}>
                     <Controller
@@ -288,7 +288,7 @@ export default function CadastroPet() {
                       render={({ field: { value, onChange } }) => (
                         <TextField
                           disabled={false}
-                          label={'DataUltimaVacina'}
+                          label={'Data da última vacina'}
                           onChange={onChange}
                           sx={{ backgroundColor: 'white'}}
                           error={Boolean(errors.DataUltimaVacina)}
@@ -323,7 +323,7 @@ export default function CadastroPet() {
                       render={({ field: { value, onChange } }) => (
                         <TextField
                           disabled={false}
-                          label={'DataResgate'}
+                          label={'Data do Resgate'}
                           onChange={onChange}
                           sx={{ backgroundColor: 'white'}}
                           error={Boolean(errors.DataResgate)}
@@ -343,7 +343,7 @@ export default function CadastroPet() {
                       render={({ field: { value, onChange } }) => (
                         <TextField
                           disabled={false}
-                          label={'LocalResgate'}
+                          label={'Local do Resgate'}
                           onChange={onChange}
                           sx={{ backgroundColor: 'white'}}
                           error={Boolean(errors.LocalResgate)}

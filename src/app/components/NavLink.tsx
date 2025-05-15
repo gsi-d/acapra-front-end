@@ -14,6 +14,10 @@ import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+interface NavLinksProps {
+  minimized?: boolean;
+}
+
 // Map of links to display in the side navigation.
 const links = [
   { name: "Home", href: "/home", icon: HomeIcon },
@@ -31,7 +35,7 @@ const links = [
   { name: "Adoção", href: "/geral/adocao", icon: PetsIcon },
 ];
 
-export default function NavLinks() {
+export default function NavLinks({ minimized = false }: NavLinksProps) {
   const pathname = usePathname();
   return (
     <>
@@ -49,11 +53,17 @@ export default function NavLinks() {
             )}
           >
             <LinkIcon className="w-6" />
-            <p className="hidden md:block">{link.name}</p>
+            {!minimized && (
+          <p className="hidden md:block">
+            {link.name}
+          </p>
+        )}
           </Link>
         );
       })}
+      {!minimized && (
       <h3 className="px-3 py-2 text-gray-400">ADMINISTRAÇÃO</h3>
+      )}
       {links.slice(1, 5).map((link) => {
         const LinkIcon = link.icon;
         return (
@@ -68,12 +78,17 @@ export default function NavLinks() {
             )}
           >
             <LinkIcon className="w-6" />
-            <p className="hidden md:block">{link.name}</p>
+            {!minimized && (
+          <p className="hidden md:block">
+            {link.name}
+          </p>
+        )}
           </Link>
         );
       })}
-
+      {!minimized && (
       <h3 className="px-3 py-2 text-gray-400">GERAL</h3>
+      )}
       {links.slice(5).map((link) => {
         const LinkIcon = link.icon;
         return (
@@ -88,7 +103,11 @@ export default function NavLinks() {
             )}
           >
             <LinkIcon className="w-6" />
-            <p className="hidden md:block">{link.name}</p>
+            {!minimized && (
+          <p className="hidden md:block">
+            {link.name}
+          </p>
+        )}
           </Link>
         );
       })}
