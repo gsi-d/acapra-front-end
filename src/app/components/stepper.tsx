@@ -52,7 +52,7 @@ export default function HorizontalLinearAlternativeLabelStepper() {
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '100%',marginTop:'16px' }}>
       <Stepper
         activeStep={activeStep}
         alternativeLabel
@@ -77,7 +77,7 @@ export default function HorizontalLinearAlternativeLabelStepper() {
       </Box>
 
       {/* Botões de navegação */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, marginBottom:'16px',}}>
         <Button
           variant="outlined"
           onClick={handleBack}

@@ -1,7 +1,9 @@
+import Stepper from '@/app/components/stepper'
+
 export default function Adocao() {
     return (
         <>
-            <h1>Adocao</h1>
+           <Stepper/>
         </>
     );
 }
