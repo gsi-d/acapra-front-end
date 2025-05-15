@@ -43,7 +43,7 @@ export default function ComboBox(props: ComboBoxProps) {
             </li>
           );
         }}
-        renderInput={(params: any) => <TextField {...params} label={label} />}
+        renderInput={(params: any) => <TextField sx={{ backgroundColor: 'white'}} {...params} label={label} />}
       />
     </div>
   );
