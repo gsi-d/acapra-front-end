@@ -8,7 +8,7 @@ import { useState } from "react";
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isLogin = pathname === "/login";
+  const isLogin = pathname === "/";
 
   const [menuOpen, setMenuOpen] = useState(true);
 
@@ -23,7 +23,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
       <Box
         className="bg-gray-100 w-full"
         sx={{
-          ml: menuOpen ? "28.5vh" : "60px",
+          ml: menuOpen ? "28.5vh" : "70px",
           transition: "margin-left 0.3s",
           width: "100%",
           minHeight: "80vh",
