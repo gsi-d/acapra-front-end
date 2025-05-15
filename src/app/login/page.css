@@ -10,16 +10,16 @@
   color: white;
   display: flex;
   flex-direction: column;
-  justify-content: center;       /* centraliza verticalmente */
-  align-items: center;           /* centraliza horizontalmente */
+  justify-content: center;
+  align-items: center;
   background-image: url('/src/app/login/Images/patas.png');
-  background-repeat: repeat;     /* repete as patas */
-  background-position: left center; /* posição mais à esquerda e centralizada vertical */
-  background-size: 100px 100px; /* tamanho das patas */
+  background-repeat: repeat;  
+  background-position: left center;
+  background-size: 100px 100px;
   text-align: center;
-  padding: 20px 40px;            /* espaço confortável nas laterais */
+  padding: 20px 40px;
   box-sizing: border-box;
-  min-width: 320px;              /* evita ficar muito pequeno em telas pequenas */
+  min-width: 320px;             
 }
 
 .mensagem h2 {
