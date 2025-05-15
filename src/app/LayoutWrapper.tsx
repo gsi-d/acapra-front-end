@@ -4,27 +4,35 @@ import { usePathname } from "next/navigation";
 import Menu from "./components/Menu";
 import Footer from "./components/Footer";
 import { Box } from "@mui/material";
+import { useState } from "react";
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const isLogin = pathname === "/login";
 
-  const isLogin = pathname === "/login"; // ou outra rota que quiser ignorar menu/footer
+  const [menuOpen, setMenuOpen] = useState(true);
 
   if (isLogin) {
-    // Tela login: só renderiza o conteúdo, sem menu e footer
     return <>{children}</>;
   }
 
-  // Demais páginas com menu e footer
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-      <Menu />
-      <div className="bg-gray-100 w-full ml-[30vh]">
-        <div className="bg-gray-100 w-full p-5 " style={{ minHeight: '80vh' }}>
-          {children}
-        </div>
+    <Box sx={{ display: "flex", flexDirection: "row" }}>
+      <Menu open={menuOpen} toggleOpen={() => setMenuOpen((v) => !v)} />
+      
+      <Box
+        className="bg-gray-100 w-full"
+        sx={{
+          ml: menuOpen ? "28.5vh" : "60px",
+          transition: "margin-left 0.3s",
+          width: "100%",
+          minHeight: "80vh",
+
+        }}
+      >
+        {children}
         <Footer />
-      </div>
+      </Box>
     </Box>
   );
 }
