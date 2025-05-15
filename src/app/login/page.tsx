@@ -1,7 +1,5 @@
-import ComboBox from "../components/ComboBox";
-
 export default function Page() {
   return (
-        <ComboBox/>
+        <h1>Login</h1>
   );
 }
