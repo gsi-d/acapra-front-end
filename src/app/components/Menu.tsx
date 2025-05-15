@@ -17,8 +17,8 @@ export default function Menu({ open, toggleOpen }: MenuProps) {
         flexDirection: "column",
         height: "100vh",
         py: 1,
-        pr: 2,
-        width: open ? "28.5vh" : "60px", // largura mínima para mostrar o ícone
+        pr: open ? 2 : 0,
+        width: open ? "28.5vh" : "70px", // largura mínima para mostrar o ícone
         zIndex: 999,
         boxShadow: "3px 0px 8px rgba(0, 0, 0, 0.1)",
         position: "fixed",
@@ -46,7 +46,7 @@ export default function Menu({ open, toggleOpen }: MenuProps) {
         </Tooltip>
         </Box>
       ) : (<Tooltip title={open ? "Fechar menu" : "Abrir menu"}>
-          <IconButton sx={{ mb: 1 }} onClick={toggleOpen} size="large" aria-label="Toggle menu">
+          <IconButton sx={{ mb: 1, height: '5vh', width: '5vh', left: 10 }} onClick={toggleOpen} size="large" aria-label="Toggle menu">
             <MenuIcon />
           </IconButton>
         </Tooltip>)}
