@@ -1,30 +1,54 @@
-'use client';
-import * as React from 'react';
-import TextField from '@mui/material/TextField';
-import Autocomplete, { AutocompleteProps } from '@mui/material/Autocomplete';
+"use client";
+import * as React from "react";
+import TextField from "@mui/material/TextField";
+import Autocomplete, { AutocompleteProps } from "@mui/material/Autocomplete";
 
 export interface OptionType {
   id: string;
   title: string;
 }
 
-interface ComboBoxProps{
-  options: OptionType[]
-  value?: any
+interface ComboBoxProps {
+  options: OptionType[];
+  value?: any;
   label?: string;
+  error?: boolean;
   setValue?: (params: any) => any;
 }
 
 export default function ComboBox(props: ComboBoxProps) {
-  const {options, value, label, setValue} = props;
+  const { options, value, label, error, setValue } = props;
 
   return (
-    <div className="flex justify-center items-center mt-4">
+    <div className="flex justify-center items-center ">
       <Autocomplete
         disablePortal
-        sx={{ width: '100%' }}
+        sx={{
+          width: "100%",
+          "& .MuiOutlinedInput-root": {
+            backgroundColor: "white",
+            "&.Mui-focused fieldset": {
+              borderColor: "#7C3AED",
+              boxShadow: "0 0 0 2px rgba(124, 58, 237, 0.2)",
+            },
+          },
+          "& label.Mui-focused": {
+            color: "#7C3AED",
+          },
+          "& input::placeholder": {
+            opacity: 1,
+            color: "#4E4958",
+            fontFamily: "Roboto",
+          },
+          "& input": {
+            fontFamily: "Roboto",
+            fontSize: "14px",
+          },
+          "& label": {
+            fontFamily: "Roboto",
+          },
+        }}
         id="animal-combo-box"
-        {...props}
         options={options}
         value={value}
         onChange={(event, newValue) => {
@@ -43,8 +67,16 @@ export default function ComboBox(props: ComboBoxProps) {
             </li>
           );
         }}
-        renderInput={(params: any) => <TextField sx={{ backgroundColor: 'white'}} {...params} label={label} />}
+        renderInput={(params: any) => (
+          <TextField
+            sx={{ backgroundColor: "white" }}
+            {...params}
+            label={label}
+            error={error}
+          />
+        )}
       />
     </div>
   );
 }
+

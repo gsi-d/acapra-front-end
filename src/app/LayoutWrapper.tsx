@@ -5,6 +5,7 @@ import Menu from "./components/Menu";
 import Footer from "./components/Footer";
 import { Box } from "@mui/material";
 import { useState } from "react";
+import MenuSuperior from "./components/MenuSuperior";
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -26,11 +27,13 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
           ml: menuOpen ? "28.5vh" : "70px",
           transition: "margin-left 0.3s",
           width: "100%",
-          minHeight: "80vh",
 
         }}
       >
-        {children}
+        <Box sx={{minHeight: '80vh'}}>
+          <MenuSuperior />
+          {children}
+        </Box>
         <Footer />
       </Box>
     </Box>

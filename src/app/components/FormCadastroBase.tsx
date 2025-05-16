@@ -40,7 +40,7 @@ export default function FormCadastroBase(props: FormDialogProps) {
           {children}
         <DialogActions sx={{bottom: 0, right: 0, position: 'sticky', zIndex: 10, backgroundColor: 'white',}}>
           <Button variant='outlined' color="secondary" onClick={handleClose}>Cancelar</Button>
-          <Button variant='contained' color='secondary' onClick={onSubmit}>Salvar</Button>
+          <Button type="submit" variant='contained' color='secondary' >Salvar</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
