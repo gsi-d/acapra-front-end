@@ -49,7 +49,6 @@ export default function ComboBox(props: ComboBoxProps) {
           },
         }}
         id="animal-combo-box"
-        {...props}
         options={options}
         value={value}
         onChange={(event, newValue) => {
@@ -80,3 +79,4 @@ export default function ComboBox(props: ComboBoxProps) {
     </div>
   );
 }
+

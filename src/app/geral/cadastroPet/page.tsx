@@ -24,18 +24,25 @@ import ComboBox from "@/app/components/ComboBox";
 import CheckBox from "@/app/components/CheckBox";
 import Alerta, { AlertaParams } from "@/app/components/Alerta";
 import { useRouter, useSearchParams } from "next/navigation";
+import PopUpRegistrarVacinacao from "./PopUpRegistrarVacinacao";
+import PopUpRegistrarDoenca from "./PopUpRegistrarDoenca";
 
 export default function CadastroPet() {
   const searchParams = useSearchParams();
-  const id = searchParams.get('id'); 
-  console.log('id',id);
-  const [petEdicao, setPetEdicao] = useState<Pet | undefined>(id !== null ? rowsPet.filter((pet) => pet.id === Number(id))[0] : undefined);
+  const id = searchParams.get("id");
+  const router = useRouter();
+
+  const [petEdicao, setPetEdicao] = useState<Pet | undefined>(
+    id !== null ? rowsPet.filter((pet) => pet.id === Number(id))[0] : undefined
+  );
   const [alertaProps, setAlertaProps] = useState<AlertaParams>({
     mensagem: "",
     severity: "info",
   });
   const [alertaOpen, setAlertaOpen] = useState<boolean>(false);
-  const router = useRouter();
+  const [togglePopupVacinacao, setTogglePopupVacinacao] =
+    useState<boolean>(false);
+  const [togglePopupDoenca, setTogglePopupDoenca] = useState<boolean>(false);
 
   const schema = yup.object().shape({
     id: yup.number(),
@@ -79,6 +86,7 @@ export default function CadastroPet() {
     reset,
     control,
     trigger,
+    watch,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm({
@@ -110,16 +118,16 @@ export default function CadastroPet() {
 
   function handleClose() {}
 
-  function handleRegistrarDoencaClick(){
-
+  function handleRegistrarDoencaClick() {
+    setTogglePopupDoenca(true);
   }
 
-  function handleRegistrarVacinaClick(){
-    
+  function handleRegistrarVacinaClick() {
+    setTogglePopupVacinacao(true);
   }
 
-  function handleAgendarVisitaClick(){
-    router.push("/geral/agendarVisita");
+  function handleAgendarVisitaClick() {
+    router.push("/administracao/agendarVisita");
   }
 
   useEffect(() => {
@@ -148,394 +156,417 @@ export default function CadastroPet() {
   }
 
   return (
-    <form onSubmit={handleSubmit((data) => onSubmit(data))}>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          py: 5,
-        }}
-      >
+    <>
+      <form onSubmit={handleSubmit((data) => onSubmit(data))}>
         <Box
-          className="bg-black/10"
           sx={{
-            p: 5,
             display: "flex",
             flexDirection: "column",
-            gap: 0,
-            width: "50%",
-            borderRadius: "0.5rem",
+            alignItems: "center",
+            justifyContent: "center",
+            py: 5,
           }}
         >
-          <Typography
-            sx={{ color: " #7C3AED" }}
-            variant="h6"
-            color="secondary"
-            fontWeight={600}
-            fontSize={30}
-            component="div"
-          >
-            Cadastro de Pets
-          </Typography>
-          <Divider sx={{ my: 2, backgroundColor: "white", height: "2px" }} />
-          <FormControl fullWidth sx={{ mb: 3 }}>
-            <Controller
-              name="Nome"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange } }) => (
-                <TextField
-                  disabled={false}
-                  label={"Nome"}
-                  value={value}
-                  onChange={onChange}
-                  sx={{ backgroundColor: "white" }}
-                  error={Boolean(errors.Nome)}
-                />
-              )}
-            />
-            {errors.Nome && (
-              <FormHelperText sx={{ color: "red" }}>
-                {errors.Nome.message}
-              </FormHelperText>
-            )}
-          </FormControl>
-          <FormControl fullWidth sx={{ mb: 3 }}>
-            <Controller
-              name="Especie"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange } }) => (
-                <ComboBox
-                  label={"Especie"}
-                  value={especiesArray.find((e) => e.id === value) || null}
-                  setValue={(option) => onChange(option?.id || "")}
-                  options={especiesArray}
-                  error={Boolean(errors.Especie)}
-                />
-              )}
-            />
-            {errors.Especie && (
-              <FormHelperText sx={{ color: "red" }}>
-                {errors.Especie.message}
-              </FormHelperText>
-            )}
-          </FormControl>
-          <FormControl fullWidth sx={{ mb: 3 }}>
-            <Controller
-              name="Raca"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange } }) => (
-                <TextField
-                  disabled={false}
-                  label={"Raça"}
-                  value={value}
-                  onChange={onChange}
-                  sx={{ backgroundColor: "white" }}
-                  error={Boolean(errors.Raca)}
-                />
-              )}
-            />
-            {errors.Raca && (
-              <FormHelperText sx={{ color: "red" }}>
-                {errors.Raca.message}
-              </FormHelperText>
-            )}
-          </FormControl>
-          <FormControl fullWidth sx={{ mb: 3 }}>
-            <Controller
-              name="Genero"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange } }) => (
-                <ComboBox
-                  label={"Genero"}
-                  value={generosArray.find((e) => e.id === value) || null}
-                  setValue={(option) => onChange(option?.id || "")}
-                  options={generosArray}
-                  error={Boolean(errors.Especie)}
-                />
-              )}
-            />
-            {errors.Genero && (
-              <FormHelperText sx={{ color: "red" }}>
-                {errors.Genero.message}
-              </FormHelperText>
-            )}
-          </FormControl>
-          <FormControl fullWidth sx={{ mb: 3 }}>
-            <Controller
-              name="Status"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange } }) => (
-                <ComboBox
-                  label={"Status"}
-                  value={statusArray.find((e) => e.id === value) || null}
-                  setValue={(option) => onChange(option?.id || "")}
-                  options={statusArray}
-                  error={Boolean(errors.Especie)}
-                />
-              )}
-            />
-            {errors.Status && (
-              <FormHelperText sx={{ color: "red" }}>
-                {errors.Status.message}
-              </FormHelperText>
-            )}
-          </FormControl>
-          <FormControl fullWidth sx={{ mb: 3 }}>
-            <Controller
-              name="Peso"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange } }) => (
-                <TextField
-                  disabled={false}
-                  label={"Peso"}
-                  value={value}
-                  onChange={onChange}
-                  sx={{ backgroundColor: "white" }}
-                  error={Boolean(errors.Peso)}
-                />
-              )}
-            />
-            {errors.Peso && (
-              <FormHelperText sx={{ color: "red" }}>
-                {errors.Peso.message}
-              </FormHelperText>
-            )}
-          </FormControl>
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <FormControl fullWidth sx={{ mb: 6, width: "50%" }}>
-              <Controller
-                name="Adotado"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { value, onChange } }) => (
-                  <FormControlLabel
-                    control={<CheckBox value={value} onChange={onChange} />}
-                    sx={{ color: "black" }}
-                    label="Adotado"
-                  />
-                )}
-              />
-              {errors.DataAdocao && (
-                <FormHelperText sx={{ color: "red" }}>
-                  {errors.DataAdocao.message}
-                </FormHelperText>
-              )}
-            </FormControl>
-            <FormControl fullWidth sx={{ mb: 3 }}>
-              <Controller
-                name="DataAdocao"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { value, onChange } }) => (
-                  <TextField
-                    disabled={false}
-                    label={"Data de Adoção"}
-                    onChange={onChange}
-                    sx={{ backgroundColor: "white" }}
-                    error={Boolean(errors.DataAdocao)}
-                  />
-                )}
-              />
-              {errors.DataAdocao && (
-                <FormHelperText sx={{ color: "red" }}>
-                  {errors.DataAdocao.message}
-                </FormHelperText>
-              )}
-            </FormControl>
-
-            <FormControl fullWidth sx={{ mb: 3 }}>
-              <Controller
-                name="TutorResponsavel"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { value, onChange } }) => (
-                  <TextField
-                    disabled={false}
-                    label={"Tutor Responsável"}
-                    onChange={onChange}
-                    sx={{ backgroundColor: "white" }}
-                    error={Boolean(errors.TutorResponsavel)}
-                  />
-                )}
-              />
-              {errors.TutorResponsavel && (
-                <FormHelperText sx={{ color: "red" }}>
-                  {errors.TutorResponsavel.message}
-                </FormHelperText>
-              )}
-            </FormControl>
-          </Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <FormControl fullWidth sx={{ mb: 6, width: "24%" }}>
-              <Controller
-                name="Vacinado"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { value, onChange } }) => (
-                  <FormControlLabel
-                    control={<CheckBox value={value} onChange={onChange} />}
-                    sx={{ color: "black" }}
-                    label="Vacinado"
-                  />
-                )}
-              />
-              {errors.DataAdocao && (
-                <FormHelperText sx={{ color: "red" }}>
-                  {errors.DataAdocao.message}
-                </FormHelperText>
-              )}
-            </FormControl>
-            <FormControl fullWidth sx={{ mb: 3 }}>
-              <Controller
-                name="DataUltimaVacina"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { value, onChange } }) => (
-                  <TextField
-                    disabled={false}
-                    label={"Data da última vacina"}
-                    onChange={onChange}
-                    sx={{ backgroundColor: "white" }}
-                    error={Boolean(errors.DataUltimaVacina)}
-                  />
-                )}
-              />
-              {errors.DataUltimaVacina && (
-                <FormHelperText sx={{ color: "red" }}>
-                  {errors.DataUltimaVacina.message}
-                </FormHelperText>
-              )}
-            </FormControl>
-          </Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <FormControl fullWidth sx={{ mb: 6, width: "50%" }}>
-              <Controller
-                name="Resgatado"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { value, onChange } }) => (
-                  <FormControlLabel
-                    control={<CheckBox value={value} onChange={onChange} />}
-                    sx={{ color: "black" }}
-                    label="Resgatado"
-                  />
-                )}
-              />
-              {errors.DataAdocao && (
-                <FormHelperText sx={{ color: "red" }}>
-                  {errors.DataAdocao.message}
-                </FormHelperText>
-              )}
-            </FormControl>
-            <FormControl fullWidth sx={{ mb: 3 }}>
-              <Controller
-                name="DataResgate"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { value, onChange } }) => (
-                  <TextField
-                    disabled={false}
-                    label={"Data do Resgate"}
-                    onChange={onChange}
-                    sx={{ backgroundColor: "white" }}
-                    error={Boolean(errors.DataResgate)}
-                  />
-                )}
-              />
-              {errors.DataResgate && (
-                <FormHelperText sx={{ color: "red" }}>
-                  {errors.DataResgate.message}
-                </FormHelperText>
-              )}
-            </FormControl>
-
-            <FormControl fullWidth sx={{ mb: 3 }}>
-              <Controller
-                name="LocalResgate"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { value, onChange } }) => (
-                  <TextField
-                    disabled={false}
-                    label={"Local do Resgate"}
-                    onChange={onChange}
-                    sx={{ backgroundColor: "white" }}
-                    error={Boolean(errors.LocalResgate)}
-                  />
-                )}
-              />
-              {errors.LocalResgate && (
-                <FormHelperText sx={{ color: "red" }}>
-                  {errors.LocalResgate.message}
-                </FormHelperText>
-              )}
-            </FormControl>
-          </Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Button
-              sx={{ background: "#7C3AED" }}
-              variant="contained"
-              color="secondary"
-              onClick={handleRegistrarVacinaClick}
-            >
-              Registrar Vacinação
-            </Button>
-            <Button
-              sx={{ background: "#7C3AED" }}
-              variant="contained"
-              color="secondary"
-              onClick={handleRegistrarDoencaClick}
-            >
-              Registrar Doença
-            </Button>
-            <Button
-              sx={{ background: "#7C3AED" }}
-              variant="contained"
-              color="secondary"
-              onClick={handleAgendarVisitaClick}
-            >
-              Agendar Visita
-            </Button>
-          </Box>
-
           <Box
-            sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 5 }}
+            className="bg-black/10"
+            sx={{
+              p: 5,
+              display: "flex",
+              flexDirection: "column",
+              gap: 0,
+              width: "50%",
+              borderRadius: "0.5rem",
+            }}
           >
-            <Button
-              sx={{ border: "1px solid #7C3AED", color: "#7C3AED" }}
-              variant="outlined"
+            <Typography
+              sx={{ color: " #7C3AED" }}
+              variant="h6"
               color="secondary"
-              type="button"
-              onClick={handleClose}
+              fontWeight={600}
+              fontSize={30}
+              component="div"
             >
-              Cancelar
-            </Button>
-            <Button
-              disabled={!isValid}
-              sx={{ background: "#7C3AED" }}
-              variant="contained"
-              color="secondary"
-              type="submit"
+              Cadastro de Pets
+            </Typography>
+            <Divider sx={{ my: 2, backgroundColor: "white", height: "2px" }} />
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <Controller
+                name="Nome"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { value, onChange } }) => (
+                  <TextField
+                    disabled={false}
+                    label={"Nome"}
+                    value={value}
+                    onChange={onChange}
+                    sx={{ backgroundColor: "white" }}
+                    error={Boolean(errors.Nome)}
+                  />
+                )}
+              />
+              {errors.Nome && (
+                <FormHelperText sx={{ color: "red" }}>
+                  {errors.Nome.message}
+                </FormHelperText>
+              )}
+            </FormControl>
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <Controller
+                name="Especie"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { value, onChange } }) => (
+                  <ComboBox
+                    label={"Especie"}
+                    value={especiesArray.find((e) => e.id === value) || null}
+                    setValue={(option) => onChange(option?.id || "")}
+                    options={especiesArray}
+                    error={Boolean(errors.Especie)}
+                  />
+                )}
+              />
+              {errors.Especie && (
+                <FormHelperText sx={{ color: "red" }}>
+                  {errors.Especie.message}
+                </FormHelperText>
+              )}
+            </FormControl>
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <Controller
+                name="Raca"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { value, onChange } }) => (
+                  <TextField
+                    disabled={false}
+                    label={"Raça"}
+                    value={value}
+                    onChange={onChange}
+                    sx={{ backgroundColor: "white" }}
+                    error={Boolean(errors.Raca)}
+                  />
+                )}
+              />
+              {errors.Raca && (
+                <FormHelperText sx={{ color: "red" }}>
+                  {errors.Raca.message}
+                </FormHelperText>
+              )}
+            </FormControl>
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <Controller
+                name="Genero"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { value, onChange } }) => (
+                  <ComboBox
+                    label={"Genero"}
+                    value={generosArray.find((e) => e.id === value) || null}
+                    setValue={(option) => onChange(option?.id || "")}
+                    options={generosArray}
+                    error={Boolean(errors.Especie)}
+                  />
+                )}
+              />
+              {errors.Genero && (
+                <FormHelperText sx={{ color: "red" }}>
+                  {errors.Genero.message}
+                </FormHelperText>
+              )}
+            </FormControl>
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <Controller
+                name="Status"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { value, onChange } }) => (
+                  <ComboBox
+                    label={"Status"}
+                    value={statusArray.find((e) => e.id === value) || null}
+                    setValue={(option) => onChange(option?.id || "")}
+                    options={statusArray}
+                    error={Boolean(errors.Especie)}
+                  />
+                )}
+              />
+              {errors.Status && (
+                <FormHelperText sx={{ color: "red" }}>
+                  {errors.Status.message}
+                </FormHelperText>
+              )}
+            </FormControl>
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <Controller
+                name="Peso"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { value, onChange } }) => (
+                  <TextField
+                    disabled={false}
+                    label={"Peso"}
+                    value={value}
+                    onChange={onChange}
+                    sx={{ backgroundColor: "white" }}
+                    error={Boolean(errors.Peso)}
+                  />
+                )}
+              />
+              {errors.Peso && (
+                <FormHelperText sx={{ color: "red" }}>
+                  {errors.Peso.message}
+                </FormHelperText>
+              )}
+            </FormControl>
+
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <FormControl fullWidth sx={{ mb: 6, width: "50%" }}>
+                <Controller
+                  name="Adotado"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange } }) => (
+                    <FormControlLabel
+                      control={<CheckBox value={value} onChange={onChange} />}
+                      sx={{ color: "black" }}
+                      label="Adotado"
+                    />
+                  )}
+                />
+                {errors.DataAdocao && (
+                  <FormHelperText sx={{ color: "red" }}>
+                    {errors.DataAdocao.message}
+                  </FormHelperText>
+                )}
+              </FormControl>
+              <FormControl fullWidth sx={{ mb: 3 }}>
+                <Controller
+                  name="DataAdocao"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange } }) => (
+                    <TextField
+                      disabled={false}
+                      label={"Data de Adoção"}
+                      onChange={onChange}
+                      sx={{ backgroundColor: "white" }}
+                      error={Boolean(errors.DataAdocao)}
+                    />
+                  )}
+                />
+                {errors.DataAdocao && (
+                  <FormHelperText sx={{ color: "red" }}>
+                    {errors.DataAdocao.message}
+                  </FormHelperText>
+                )}
+              </FormControl>
+
+              <FormControl fullWidth sx={{ mb: 3 }}>
+                <Controller
+                  name="TutorResponsavel"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange } }) => (
+                    <TextField
+                      disabled={false}
+                      label={"Tutor Responsável"}
+                      onChange={onChange}
+                      sx={{ backgroundColor: "white" }}
+                      error={Boolean(errors.TutorResponsavel)}
+                    />
+                  )}
+                />
+                {errors.TutorResponsavel && (
+                  <FormHelperText sx={{ color: "red" }}>
+                    {errors.TutorResponsavel.message}
+                  </FormHelperText>
+                )}
+              </FormControl>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <FormControl fullWidth sx={{ mb: 6, width: "24%" }}>
+                <Controller
+                  name="Vacinado"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange } }) => (
+                    <FormControlLabel
+                      control={<CheckBox value={value} onChange={onChange} />}
+                      sx={{ color: "black" }}
+                      label="Vacinado"
+                    />
+                  )}
+                />
+                {errors.DataAdocao && (
+                  <FormHelperText sx={{ color: "red" }}>
+                    {errors.DataAdocao.message}
+                  </FormHelperText>
+                )}
+              </FormControl>
+              <FormControl fullWidth sx={{ mb: 3 }}>
+                <Controller
+                  name="DataUltimaVacina"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange } }) => (
+                    <TextField
+                      disabled={false}
+                      label={"Data da última vacina"}
+                      onChange={onChange}
+                      sx={{ backgroundColor: "white" }}
+                      error={Boolean(errors.DataUltimaVacina)}
+                    />
+                  )}
+                />
+                {errors.DataUltimaVacina && (
+                  <FormHelperText sx={{ color: "red" }}>
+                    {errors.DataUltimaVacina.message}
+                  </FormHelperText>
+                )}
+              </FormControl>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <FormControl fullWidth sx={{ mb: 6, width: "50%" }}>
+                <Controller
+                  name="Resgatado"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange } }) => (
+                    <FormControlLabel
+                      control={<CheckBox value={value} onChange={onChange} />}
+                      sx={{ color: "black" }}
+                      label="Resgatado"
+                    />
+                  )}
+                />
+                {errors.DataAdocao && (
+                  <FormHelperText sx={{ color: "red" }}>
+                    {errors.DataAdocao.message}
+                  </FormHelperText>
+                )}
+              </FormControl>
+              <FormControl fullWidth sx={{ mb: 3 }}>
+                <Controller
+                  name="DataResgate"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange } }) => (
+                    <TextField
+                      disabled={false}
+                      label={"Data do Resgate"}
+                      onChange={onChange}
+                      sx={{ backgroundColor: "white" }}
+                      error={Boolean(errors.DataResgate)}
+                    />
+                  )}
+                />
+                {errors.DataResgate && (
+                  <FormHelperText sx={{ color: "red" }}>
+                    {errors.DataResgate.message}
+                  </FormHelperText>
+                )}
+              </FormControl>
+
+              <FormControl fullWidth sx={{ mb: 3 }}>
+                <Controller
+                  name="LocalResgate"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange } }) => (
+                    <TextField
+                      disabled={false}
+                      label={"Local do Resgate"}
+                      onChange={onChange}
+                      sx={{ backgroundColor: "white" }}
+                      error={Boolean(errors.LocalResgate)}
+                    />
+                  )}
+                />
+                {errors.LocalResgate && (
+                  <FormHelperText sx={{ color: "red" }}>
+                    {errors.LocalResgate.message}
+                  </FormHelperText>
+                )}
+              </FormControl>
+            </Box>
+            {petEdicao !== undefined && (
+               <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Button
+                sx={{ background: "#7C3AED" }}
+                variant="contained"
+                color="secondary"
+                onClick={handleRegistrarVacinaClick}
+              >
+                Registrar Vacinação
+              </Button>
+              <Button
+                sx={{ background: "#7C3AED" }}
+                variant="contained"
+                color="secondary"
+                onClick={handleRegistrarDoencaClick}
+              >
+                Registrar Doença
+              </Button>
+              <Button
+                sx={{ background: "#7C3AED" }}
+                variant="contained"
+                color="secondary"
+                onClick={handleAgendarVisitaClick}
+              >
+                Agendar Visita
+              </Button>
+            </Box>
+            )}
+           
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 2,
+                mt: 5,
+              }}
             >
-              Salvar
-            </Button>
+              <Button
+                sx={{ border: "1px solid #7C3AED", color: "#7C3AED" }}
+                variant="outlined"
+                color="secondary"
+                type="button"
+                onClick={handleClose}
+              >
+                Cancelar
+              </Button>
+              <Button
+                disabled={!isValid}
+                sx={{ background: "#7C3AED" }}
+                variant="contained"
+                color="secondary"
+                type="submit"
+              >
+                Salvar
+              </Button>
+            </Box>
           </Box>
+          <Alerta
+            open={alertaOpen}
+            params={alertaProps}
+            setAlertaOpen={setAlertaOpen}
+          />
         </Box>
-        <Alerta
-          open={alertaOpen}
-          params={alertaProps}
-          setAlertaOpen={setAlertaOpen}
-        />
-      </Box>
-    </form>
+      </form>
+      <PopUpRegistrarVacinacao
+        setTogglePopup={setTogglePopupVacinacao}
+        togglePopup={togglePopupVacinacao}
+        idPet={petEdicao && petEdicao.id ? petEdicao.id : 0}
+        openAlerta={openAlerta}
+      />
+
+      <PopUpRegistrarDoenca
+        setTogglePopup={setTogglePopupDoenca}
+        togglePopup={togglePopupDoenca}
+        idPet={petEdicao && petEdicao.id ? petEdicao.id : 0}
+        openAlerta={openAlerta}
+      />
+    </>
   );
 }

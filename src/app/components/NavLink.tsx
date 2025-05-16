@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import BookmarkAddIcon from "@mui/icons-material/BookmarkAdd";
 import VaccinesIcon from "@mui/icons-material/Vaccines";
@@ -43,7 +43,7 @@ const links = [
     href: "/administracao/atualizarInfos",
     icon: ManageHistoryIcon,
   },
-  { name: "Cadastrar pet", href: "/geral/cadastroPet", icon: PlaylistAddIcon },
+  { name: "Cadastrar pet", href: "/geral/cadastroPet?id=0", icon: PlaylistAddIcon },
   { name: "Catálogo", href: "/geral/catalogo", icon: FormatListBulletedIcon },
   { name: "Adoção", href: "/geral/adocao", icon: PetsIcon },
 ];
