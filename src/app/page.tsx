@@ -1,15 +1,18 @@
 'use client';
 import './page.css';
-import { IconButton } from '@mui/material';
+import { IconButton, OutlinedInput, InputAdornment, InputLabel, FormControl } from '@mui/material';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import GoogleIcon from '@mui/icons-material/Google';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function Page() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [mostrarSenha, setMostrarSenha] = useState(false);
   const router = useRouter();
 
   function handleLogin(event: React.FormEvent) {
@@ -18,7 +21,7 @@ export default function Page() {
     if (email === 'admin@admin.com' && senha === '123456789') {
       router.push('/geral/catalogo');
     } else {
-      router.push('/buscaAnimal');
+      router.push('/geral/catalogo');
     }
   }
 
@@ -46,14 +49,27 @@ export default function Page() {
             />
 
             <label htmlFor="senha">Digite sua senha</label>
-            <input
-              type="password"
-              id="senha"
-              required
-              placeholder="••••••••"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-            />
+            <FormControl variant="outlined" fullWidth>
+              <InputLabel htmlFor="senha">Senha</InputLabel>
+              <OutlinedInput
+                id="senha"
+                type={mostrarSenha ? 'text' : 'password'}
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setMostrarSenha(!mostrarSenha)}
+                      edge="end"
+                      aria-label="Mostrar/ocultar senha"
+                    >
+                      {mostrarSenha ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label="Senha"
+              />
+            </FormControl>
 
             <div className="opcoes">
               <label>
