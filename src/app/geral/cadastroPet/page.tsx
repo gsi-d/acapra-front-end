@@ -1,5 +1,5 @@
 'use client'
-import { especiesArray, Pet } from "@/types";
+import { especiesArray, generosArray, Pet, rowsPet, statusArray } from "@/types";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from 'yup';
@@ -7,10 +7,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Button, Chip, Divider, FormControl, FormControlLabel, FormHelperText, IconButton, TextField, Typography } from "@mui/material";
 import ComboBox from "@/app/components/ComboBox";
 import CheckBox from "@/app/components/CheckBox";
+import Alerta, { AlertaProps } from "@/app/components/Alerta";
+import { useRouter } from "next/navigation";
 
 export default function CadastroPet() {
-    const [idEdit, setIdEdit] = useState<number>(0);
         const [petEdicao, setPetEdicao] = useState<Pet | undefined>(undefined);
+        const [alertaOptions, setAlertaOptions] = useState<AlertaProps>({mensagem: '', open: false, severity: 'info'});
+        const router = useRouter();
     const schema = yup.object().shape({
             id: yup.number(),
             Nome: yup.string().required("Nome é obrigatório"),
@@ -81,11 +84,17 @@ export default function CadastroPet() {
         });
 
         function handleClose(){
-
+          
         }
 
         function onSubmit() {
-
+          if(petEdicao){
+            rowsPet.push(petEdicao);
+            reset();
+            setAlertaOptions({mensagem: 'Pet gravado com sucesso', open: true, severity: 'success'});
+          }else{
+            setAlertaOptions({mensagem: 'Erro ao gravar pet', open: true, severity: 'error'});
+          }
         }
 
     return (
@@ -115,14 +124,13 @@ export default function CadastroPet() {
                 <FormControl fullWidth sx={{ mb: 6 }}>
                     <Controller
                     name='Especie'
-                    
                     control={control}
                     rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
                         <ComboBox
                           label={'Especie'}
-                          value={value}
-                          setValue={onChange}
+                          value={especiesArray.find(e => e.id === value) || null}
+                          setValue={(option) => onChange(option?.id || '')}
                           options={especiesArray}
                         //   error={Boolean(errors.Especie)}
                         />
@@ -140,7 +148,7 @@ export default function CadastroPet() {
                       render={({ field: { value, onChange } }) => (
                         <TextField
                           disabled={false}
-                          label={'Raca'}
+                          label={'Raça'}
                           onChange={onChange}
                           sx={{ backgroundColor: 'white'}}
                           error={Boolean(errors.Raca)}
@@ -157,12 +165,12 @@ export default function CadastroPet() {
                     control={control}
                     rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
-                        <TextField
-                          disabled={false}
+                        <ComboBox
                           label={'Genero'}
-                          onChange={onChange}
-                          sx={{ backgroundColor: 'white'}}
-                          error={Boolean(errors.Genero)}
+                          value={generosArray.find(e => e.id === value) || null}
+                          setValue={(option) => onChange(option?.id || '')}
+                          options={generosArray}
+                        //   error={Boolean(errors.Especie)}
                         />
                       )}
                      />
@@ -176,12 +184,12 @@ export default function CadastroPet() {
                     control={control}
                     rules={{ required: true }}
                       render={({ field: { value, onChange } }) => (
-                        <TextField
-                          disabled={false}
+                        <ComboBox
                           label={'Status'}
-                          onChange={onChange}
-                          sx={{ backgroundColor: 'white'}}
-                          error={Boolean(errors.Status)}
+                          value={statusArray.find(e => e.id === value) || null}
+                          setValue={(option) => onChange(option?.id || '')}
+                          options={statusArray}
+                        //   error={Boolean(errors.Especie)}
                         />
                       )}
                      />
@@ -300,8 +308,7 @@ export default function CadastroPet() {
                     )}
                 </FormControl>
                     </Box>
-<Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <FormControl fullWidth sx={{ mb: 6, width: '50%' }}>
                     <Controller
                     name='Resgatado'
@@ -366,6 +373,7 @@ export default function CadastroPet() {
                   <Button sx={{background:'#7C3AED'}} variant='contained' color='secondary' onClick={onSubmit}>Salvar</Button>
                 </Box>
                 </Box>
+                <Alerta severity={alertaOptions.severity} open={alertaOptions.open} mensagem={alertaOptions.mensagem}/>
         </Box>
     );
 }
