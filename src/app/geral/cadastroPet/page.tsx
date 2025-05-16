@@ -91,7 +91,7 @@ export default function CadastroPet() {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 5 }}>
                 <Box className="bg-black/10" sx={{ p: 5, display: 'flex', flexDirection: 'column', gap: 0, width: '50%', borderRadius: '0.5rem'}} >
-                  <Typography variant="h6" color="secondary" fontWeight={600} fontSize={30} component="div" >Cadastro de Pets</Typography>
+                  <Typography sx={{color:' #7C3AED'}}variant="h6" color="secondary" fontWeight={600} fontSize={30} component="div" >Cadastro de Pets</Typography>
                   <Divider sx={{ my: 2, backgroundColor: 'white', height: '2px'}}/>
                     <FormControl fullWidth sx={{ mb: 6 }}>
                     <Controller
@@ -356,14 +356,14 @@ export default function CadastroPet() {
                 </FormControl>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <Button variant='contained' color='secondary' onClick={onSubmit}>Registrar Vacinação</Button>
-                      <Button variant='contained' color='secondary' onClick={onSubmit}>Registrar Doença</Button>
-                      <Button variant='contained' color='secondary' onClick={onSubmit}>Agendar Visita</Button>
+                      <Button sx={{background:'#7C3AED'}}variant='contained' color='secondary' onClick={onSubmit}>Registrar Vacinação</Button>
+                      <Button sx={{background:'#7C3AED'}}variant='contained' color='secondary' onClick={onSubmit}>Registrar Doença</Button>
+                      <Button sx={{background:'#7C3AED'}}variant='contained' color='secondary' onClick={onSubmit}>Agendar Visita</Button>
                     </Box>
 
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 5 }}>
-                  <Button variant='outlined' color="secondary" onClick={handleClose}>Cancelar</Button>
-                  <Button variant='contained' color='secondary' onClick={onSubmit}>Salvar</Button>
+                  <Button sx={{border:'1px solid #7C3AED',color:' #7C3AED'}}variant='outlined' color="secondary" onClick={handleClose}>Cancelar</Button>
+                  <Button sx={{background:'#7C3AED'}} variant='contained' color='secondary' onClick={onSubmit}>Salvar</Button>
                 </Box>
                 </Box>
         </Box>
