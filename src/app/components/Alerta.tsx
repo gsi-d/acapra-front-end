@@ -1,22 +1,33 @@
-import { Alert, Snackbar } from "@mui/material";
+import { Alert, Box, IconButton, Snackbar } from "@mui/material";
 import { useEffect, useState } from "react";
+import CloseIcon from "@mui/icons-material/Close";
 
-export interface AlertaProps{
-    mensagem: string;
-    severity: 'error' | 'info' | 'success' | 'warning';
-    open: boolean;
+export interface AlertaParams {
+  mensagem: string;
+  severity: "error" | "info" | "success" | "warning";
 }
 
-export default function Alerta(props : AlertaProps) {
-    const {mensagem, severity, open} = props;
-    const [internoOpen, setInternoOpen] = useState<boolean>(open);
+export interface AlertaProps {
+  open: boolean;
+  setAlertaOpen: (param: boolean) => void;
+  params: AlertaParams;
+}
 
-  // Controla visibilidade local com timeout de 5s
+export default function Alerta(props: AlertaProps) {
+  const {
+    params: { mensagem, severity },
+    open,
+    setAlertaOpen,
+  } = props;
+
   useEffect(() => {
-    setInternoOpen(open);
+    console.log(open);
+  }, [open]);
+
+  useEffect(() => {
     if (open) {
       const timer = setTimeout(() => {
-        setInternoOpen(false);
+        setAlertaOpen(false);
       }, 5000);
 
       return () => clearTimeout(timer);
@@ -25,15 +36,33 @@ export default function Alerta(props : AlertaProps) {
 
   return (
     <Snackbar
-      open={internoOpen}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      open={open}
+      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       onClose={() => {
-        setInternoOpen(false);
+        setAlertaOpen(false);
       }}
     >
-      <Alert severity={severity} variant="filled" sx={{ width: '100%' }}>
-        {mensagem}
-      </Alert>
+      <Box>
+        <Alert
+          severity={severity}
+          variant="filled"
+          sx={{ width: "100%" }}
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setAlertaOpen(false);
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          {mensagem}
+        </Alert>
+      </Box>
     </Snackbar>
   );
 }

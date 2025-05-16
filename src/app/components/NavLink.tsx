@@ -1,15 +1,13 @@
-'use client';
+"use client";
 
-import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
-import HomeIcon from '@mui/icons-material/Home';
-import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
-import VaccinesIcon from '@mui/icons-material/Vaccines';
-import CoronavirusIcon from '@mui/icons-material/Coronavirus';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import ManageHistoryIcon from '@mui/icons-material/ManageHistory';
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
-import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import PetsIcon from '@mui/icons-material/Pets';
+import BookmarkAddIcon from "@mui/icons-material/BookmarkAdd";
+import VaccinesIcon from "@mui/icons-material/Vaccines";
+import CoronavirusIcon from "@mui/icons-material/Coronavirus";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import ManageHistoryIcon from "@mui/icons-material/ManageHistory";
+import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import PetsIcon from "@mui/icons-material/Pets";
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -25,10 +23,26 @@ const links = [
     href: "/administracao/cadastroRaca",
     icon: BookmarkAddIcon,
   },
-  { name: "Cadastrar vacina", href: "/administracao/cadastroVacina", icon: VaccinesIcon },
-  { name: "Cadastrar doença", href: "/administracao/cadastroDoenca", icon: CoronavirusIcon },
-  { name: "Agenda visita", href: "/administracao/agendarVisita", icon: CalendarMonthIcon },
-  { name: "Atualizar informações", href: "/administracao/atualizarInfos", icon: ManageHistoryIcon },
+  {
+    name: "Cadastrar vacina",
+    href: "/administracao/cadastroVacina",
+    icon: VaccinesIcon,
+  },
+  {
+    name: "Cadastrar doença",
+    href: "/administracao/cadastroDoenca",
+    icon: CoronavirusIcon,
+  },
+  {
+    name: "Agenda visita",
+    href: "/administracao/agendarVisita",
+    icon: CalendarMonthIcon,
+  },
+  {
+    name: "Atualizar informações",
+    href: "/administracao/atualizarInfos",
+    icon: ManageHistoryIcon,
+  },
   { name: "Cadastrar pet", href: "/geral/cadastroPet", icon: PlaylistAddIcon },
   { name: "Catálogo", href: "/geral/catalogo", icon: FormatListBulletedIcon },
   { name: "Adoção", href: "/geral/adocao", icon: PetsIcon },
@@ -36,14 +50,14 @@ const links = [
 
 export default function NavLinks({ minimized = false }: NavLinksProps) {
   const pathname = usePathname();
-  const isAdm = localStorage.getItem('isAdm') == 'true'; 
-  
+  const isAdm = localStorage.getItem("isAdm") == "true";
+
   return (
     <>
       {isAdm ? (
         <>
-            {!minimized && (
-          <h3 className="px-3 py-2 text-gray-400">ADMINISTRAÇÃO</h3>
+          {!minimized && (
+            <h3 className="px-3 py-2 text-gray-400">ADMINISTRAÇÃO</h3>
           )}
           {links.slice(0, 5).map((link) => {
             const LinkIcon = link.icon;
@@ -59,11 +73,7 @@ export default function NavLinks({ minimized = false }: NavLinksProps) {
                 )}
               >
                 <LinkIcon className="w-6" />
-                {!minimized && (
-              <p className="hidden md:block">
-                {link.name}
-              </p>
-            )}
+                {!minimized && <p className="hidden md:block">{link.name}</p>}
               </Link>
             );
           })}
@@ -71,11 +81,8 @@ export default function NavLinks({ minimized = false }: NavLinksProps) {
       ) : (
         <></>
       )}
-      
 
-      {!minimized && (
-      <h3 className="px-3 py-2 text-gray-400">GERAL</h3>
-      )}
+      {!minimized && <h3 className="px-3 py-2 text-gray-400">GERAL</h3>}
       {links.slice(5).map((link) => {
         const LinkIcon = link.icon;
         return (
@@ -90,11 +97,7 @@ export default function NavLinks({ minimized = false }: NavLinksProps) {
             )}
           >
             <LinkIcon className="w-6" />
-            {!minimized && (
-          <p className="hidden md:block">
-            {link.name}
-          </p>
-        )}
+            {!minimized && <p className="hidden md:block">{link.name}</p>}
           </Link>
         );
       })}
