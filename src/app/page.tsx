@@ -50,7 +50,6 @@ export default function Page() {
 
             <label htmlFor="senha">Digite sua senha</label>
             <FormControl variant="outlined" fullWidth>
-              <InputLabel htmlFor="senha">Senha</InputLabel>
               <OutlinedInput
                 id="senha"
                 type={mostrarSenha ? 'text' : 'password'}
@@ -67,7 +66,6 @@ export default function Page() {
                     </IconButton>
                   </InputAdornment>
                 }
-                label="Senha"
               />
             </FormControl>
 
