@@ -2,7 +2,7 @@
 import CheckBox from "@/app/components/CheckBox";
 import ChipTexto from "@/app/components/Chip";
 import GridDados from "@/app/components/DataGrid";
-import { enumEspecie, enumGenero, enumStatus, especiesArray, Pet } from "@/types";
+import { enumEspecie, enumGenero, enumStatus, especiesArray, Pet, rowsPet } from "@/types";
 import { Box, Chip, FormControl, FormHelperText, IconButton, TextField } from "@mui/material";
 import { GridColDef, GridRenderCellParams, GridRowId, GridRowProps, GridValueGetter } from "@mui/x-data-grid";
 import EditIcon from '@mui/icons-material/Edit';
@@ -19,310 +19,8 @@ export default function AtualizarInfos() {
     const [idEdit, setIdEdit] = useState<number>(0);
     const [petEdicao, setPetEdicao] = useState<Pet | undefined>(undefined);
 
-    const [rows, setRows] = useState<Pet[]>([
-    { 
-        id: 1, 
-        Nome: 'Bela', 
-        Especie: 'Gato', 
-        Raca: 'Persa', 
-        Genero: 'Fêmea', 
-        Status: 'Disponível', 
-        Peso: 3.5, 
-        Adotado: false, 
-        Vacinado: false, 
-        TutorResponsavel: 'Ana', 
-        Resgatado: false, 
-        LocalResgate: 'N/A', 
-        DataNascimento: '05/02/2018' 
-    },
-    { 
-        id: 2, 
-        Nome: 'Rufus', 
-        Especie: 'Cachorro', 
-        Raca: 'Labrador', 
-        Genero: 'Macho', 
-        Status: 'Adotado', 
-        Peso: 25, 
-        Adotado: true, 
-        Vacinado: true, 
-        TutorResponsavel: 'Carlos', 
-        Resgatado: true, 
-        LocalResgate: 'Rua', 
-        DataNascimento: '22/09/2015' 
-    },
-    { 
-        id: 3, 
-        Nome: 'Sansão', 
-        Especie: 'Cachorro', 
-        Raca: 'Pitbull', 
-        Genero: 'Macho', 
-        Status: 'Disponível', 
-        Peso: 15, 
-        Adotado: false, 
-        Vacinado: false, 
-        TutorResponsavel: 'João', 
-        Resgatado: false, 
-        LocalResgate: 'N/A', 
-        DataNascimento: '13/11/2021' 
-    },
-    { 
-        id: 4, 
-        Nome: 'Lua', 
-        Especie: 'Gato', 
-        Raca: 'Siamês', 
-        Genero: 'Fêmea', 
-        Status: 'Disponível', 
-        Peso: 3, 
-        Adotado: false, 
-        Vacinado: false, 
-        TutorResponsavel: 'Mariana', 
-        Resgatado: false, 
-        LocalResgate: 'N/A', 
-        DataNascimento: '14/05/2020' 
-    },
-    { 
-        id: 5, 
-        Nome: 'Branca', 
-        Especie: 'Cachorro', 
-        Raca: 'Poodle', 
-        Genero: 'Fêmea', 
-        Status: 'Disponível', 
-        Peso: 5, 
-        Adotado: false, 
-        Vacinado: false, 
-        TutorResponsavel: 'Fernanda', 
-        Resgatado: true, 
-        LocalResgate: 'Avenida', 
-        DataNascimento: '05/02/2018' 
-    },
-    { 
-        id: 6, 
-        Nome: 'Max', 
-        Especie: 'Cachorro', 
-        Raca: 'Golden Retriever', 
-        Genero: 'Macho', 
-        Status: 'Disponível', 
-        Peso: 30, 
-        Adotado: false, 
-        Vacinado: true, 
-        TutorResponsavel: 'Lucas', 
-        Resgatado: false, 
-        LocalResgate: 'N/A', 
-        DataNascimento: '08/06/2020' 
-    },
-    { 
-        id: 7, 
-        Nome: 'Mia', 
-        Especie: 'Gato', 
-        Raca: 'Maine Coon', 
-        Genero: 'Fêmea', 
-        Status: 'Disponível', 
-        Peso: 4, 
-        Adotado: false, 
-        Vacinado: false, 
-        TutorResponsavel: 'Roberta', 
-        Resgatado: false, 
-        LocalResgate: 'N/A', 
-        DataNascimento: '11/01/2019' 
-    },
-    { 
-        id: 8, 
-        Nome: 'Rex', 
-        Especie: 'Cachorro', 
-        Raca: 'Dobermann', 
-        Genero: 'Macho', 
-        Status: 'Adotado', 
-        Peso: 40, 
-        Adotado: true, 
-        Vacinado: true, 
-        TutorResponsavel: 'Carlos', 
-        Resgatado: true, 
-        LocalResgate: 'Praça', 
-        DataNascimento: '07/12/2017' 
-    },
-    { 
-        id: 9, 
-        Nome: 'Nina', 
-        Especie: 'Gato', 
-        Raca: 'Bengal', 
-        Genero: 'Fêmea', 
-        Status: 'Disponível', 
-        Peso: 3, 
-        Adotado: false, 
-        Vacinado: false, 
-        TutorResponsavel: 'Julia', 
-        Resgatado: false, 
-        LocalResgate: 'N/A', 
-        DataNascimento: '23/04/2021' 
-    },
-    { 
-        id: 10, 
-        Nome: 'Charlie', 
-        Especie: 'Cachorro', 
-        Raca: 'Bulldog', 
-        Genero: 'Macho', 
-        Status: 'Disponível', 
-        Peso: 20, 
-        Adotado: false, 
-        Vacinado: true, 
-        TutorResponsavel: 'Roberto', 
-        Resgatado: false, 
-        LocalResgate: 'N/A', 
-        DataNascimento: '01/09/2018' 
-    },
-    { 
-        id: 11, 
-        Nome: 'Luna', 
-        Especie: 'Gato', 
-        Raca: 'Persa', 
-        Genero: 'Fêmea', 
-        Status: 'Adotado', 
-        Peso: 3.2, 
-        Adotado: true, 
-        Vacinado: true, 
-        TutorResponsavel: 'Monique', 
-        Resgatado: true, 
-        LocalResgate: 'Lagoa', 
-        DataNascimento: '15/07/2020' 
-    },
-    { 
-        id: 12, 
-        Nome: 'Thor', 
-        Especie: 'Cachorro', 
-        Raca: 'Husky', 
-        Genero: 'Macho', 
-        Status: 'Disponível', 
-        Peso: 25, 
-        Adotado: false, 
-        Vacinado: false, 
-        TutorResponsavel: 'Eduardo', 
-        Resgatado: false, 
-        LocalResgate: 'N/A', 
-        DataNascimento: '25/03/2019' 
-    },
-    { 
-        id: 13, 
-        Nome: 'Bella', 
-        Especie: 'Gato', 
-        Raca: 'Siamês', 
-        Genero: 'Fêmea', 
-        Status: 'Disponível', 
-        Peso: 3.8, 
-        Adotado: false, 
-        Vacinado: true, 
-        TutorResponsavel: 'Carmen', 
-        Resgatado: false, 
-        LocalResgate: 'N/A', 
-        DataNascimento: '10/08/2017' 
-    },
-    { 
-        id: 14, 
-        Nome: 'Simba', 
-        Especie: 'Cachorro', 
-        Raca: 'Pastor Alemão', 
-        Genero: 'Macho', 
-        Status: 'Adotado', 
-        Peso: 35, 
-        Adotado: true, 
-        Vacinado: true, 
-        TutorResponsavel: 'Beatriz', 
-        Resgatado: true, 
-        LocalResgate: 'Rua', 
-        DataNascimento: '14/02/2016' 
-    },
-    { 
-        id: 15, 
-        Nome: 'Zara', 
-        Especie: 'Gato', 
-        Raca: 'Bengal', 
-        Genero: 'Fêmea', 
-        Status: 'Disponível', 
-        Peso: 4, 
-        Adotado: false, 
-        Vacinado: false, 
-        TutorResponsavel: 'Flávia', 
-        Resgatado: false, 
-        LocalResgate: 'N/A', 
-        DataNascimento: '18/05/2021' 
-    },
-    { 
-        id: 16, 
-        Nome: 'Oscar', 
-        Especie: 'Cachorro', 
-        Raca: 'Bulldog', 
-        Genero: 'Macho', 
-        Status: 'Adotado', 
-        Peso: 22, 
-        Adotado: true, 
-        Vacinado: true, 
-        TutorResponsavel: 'Felipe', 
-        Resgatado: false, 
-        LocalResgate: 'N/A', 
-        DataNascimento: '12/11/2018' 
-    },
-    { 
-        id: 17, 
-        Nome: 'Cleo', 
-        Especie: 'Gato', 
-        Raca: 'Angorá', 
-        Genero: 'Fêmea', 
-        Status: 'Disponível', 
-        Peso: 2.5, 
-        Adotado: false, 
-        Vacinado: false, 
-        TutorResponsavel: 'Beatriz', 
-        Resgatado: false, 
-        LocalResgate: 'N/A', 
-        DataNascimento: '20/06/2020' 
-    },
-    { 
-        id: 18, 
-        Nome: 'Toby', 
-        Especie: 'Cachorro', 
-        Raca: 'Shih Tzu', 
-        Genero: 'Macho', 
-        Status: 'Disponível', 
-        Peso: 6, 
-        Adotado: false, 
-        Vacinado: true, 
-        TutorResponsavel: 'Juliana', 
-        Resgatado: false, 
-        LocalResgate: 'N/A', 
-        DataNascimento: '04/10/2021' 
-    },
-    { 
-        id: 19, 
-        Nome: 'Pepper', 
-        Especie: 'Gato', 
-        Raca: 'Siamês', 
-        Genero: 'Fêmea', 
-        Status: 'Adotado', 
-        Peso: 3, 
-        Adotado: true, 
-        Vacinado: true, 
-        TutorResponsavel: 'Renata', 
-        Resgatado: true, 
-        LocalResgate: 'Praça', 
-        DataNascimento: '02/02/2019' 
-    },
-    { 
-        id: 20, 
-        Nome: 'Buddy', 
-        Especie: 'Cachorro', 
-        Raca: 'Beagle', 
-        Genero: 'Macho', 
-        Status: 'Disponível', 
-        Peso: 10, 
-        Adotado: false, 
-        Vacinado: true, 
-        TutorResponsavel: 'Fernanda', 
-        Resgatado: false, 
-        LocalResgate: 'N/A', 
-        DataNascimento: '29/08/2020' 
-    }
-]);
 
-    const columns: GridColDef<(typeof rows)[number]>[] = [
+    const columns: GridColDef<(typeof rowsPet)[number]>[] = [
     {
         width: 100,
         display: 'flex',
@@ -392,7 +90,7 @@ export default function AtualizarInfos() {
       const schema = yup.object().shape({
         id: yup.number(),
         Nome: yup.string().required("Nome é obrigatório"),
-        Especie: yup.string().required("Espécie é obrigatória"),
+        Especie: yup.string(),
         Raca: yup.string().required("Raça é obrigatória"),
         Genero: yup.string().required("Gênero é obrigatório"),
         Status: yup.string().required("Status é obrigatório"),
@@ -468,6 +166,7 @@ export default function AtualizarInfos() {
     }
 
     function handleClickSalvar(){
+        
     }
 
     function handleClickExcluir(){
@@ -476,7 +175,7 @@ export default function AtualizarInfos() {
 
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', height: '85vh', justifyContent: 'center'}}>
-            <GridDados handleClickNovo={handleClickNovo} handleClickExcluir={handleClickExcluir} rows={rows} columns={columns}/>
+            <GridDados handleClickNovo={handleClickNovo} handleClickExcluir={handleClickExcluir} rows={rowsPet} columns={columns}/>
             <FormCadastroBase 
                 titulo="Cadastro de Pets" 
                 open={toggleFormPets} 
@@ -509,8 +208,8 @@ export default function AtualizarInfos() {
                       render={({ field: { value, onChange } }) => (
                         <ComboBox
                           label={'Especie'}
-                          value={value}
-                          setValue={onChange}
+                          value={especiesArray.find(e => e.id === value) || null}
+                          setValue={(option) => onChange(option?.id || '')}
                           options={especiesArray}
                         //   error={Boolean(errors.Especie)}
                         />
