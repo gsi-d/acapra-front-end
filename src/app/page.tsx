@@ -6,7 +6,7 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import GoogleIcon from '@mui/icons-material/Google';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function Page() {
@@ -14,11 +14,13 @@ export default function Page() {
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const router = useRouter();
-
-  const isLogado : boolean = Boolean(localStorage.getItem('logado')); 
-  if(isLogado){
-    router.push('/geral/catalogo');
-  }
+  
+  useEffect(() => {
+    const isLogado = Boolean(localStorage.getItem('logado'));
+    if (isLogado) {
+      router.push('/geral/catalogo');
+    }
+  }, [router]);
 
   function handleLogin(event: React.FormEvent) {
     event.preventDefault();
@@ -32,6 +34,7 @@ export default function Page() {
     }
     localStorage.setItem('logado', 'true');
   }
+
 
   return (
     <div className="informacao">

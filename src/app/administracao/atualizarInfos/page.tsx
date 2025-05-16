@@ -22,6 +22,7 @@ import {
   GridColDef,
   GridRenderCellParams,
   GridRowId,
+  GridRowSelectionModel,
 } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import { useState } from "react";
@@ -35,7 +36,6 @@ import { useRouter } from "next/navigation";
 
 export default function AtualizarInfos() {
   const [toggleFormPets, setToggleFormPets] = useState<boolean>(false);
-  const [idEdit, setIdEdit] = useState<number>(0);
   const [petEdicao, setPetEdicao] = useState<Pet | undefined>(undefined);
   const router = useRouter();
 
@@ -189,8 +189,6 @@ export default function AtualizarInfos() {
 
   function handleClickEditar(id: GridRowId) {
     router.push('/geral/cadastroPet?id=' + id);
-    // setToggleFormPets(true);
-    // setIdEdit(id as number);
   }
 
   function handleClickNovo() {
@@ -199,9 +197,7 @@ export default function AtualizarInfos() {
 
   function handleClickSalvar() {}
 
-  function handleClickExcluir() {
-    console.log("Excluir");
-  }
+  function handleClickExcluir() {}
 
   return (
     <Box
