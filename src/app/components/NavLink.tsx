@@ -36,33 +36,43 @@ const links = [
 
 export default function NavLinks({ minimized = false }: NavLinksProps) {
   const pathname = usePathname();
+  const isAdm = localStorage.getItem('isAdm') == 'true'; 
+  
   return (
     <>
-      {!minimized && (
-      <h3 className="px-3 py-2 text-gray-400">ADMINISTRAÇÃO</h3>
-      )}
-      {links.slice(0, 5).map((link) => {
-        const LinkIcon = link.icon;
-        return (
-          <Link
-            key={link.name}
-            href={link.href}
-            className={clsx(
-              "flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-purple-0 p-3 text-sm font-medium text-gray-400 hover:bg-purple-100 hover:text-purple-800 md:flex-none md:justify-start md:p-2 md:px-3",
-              {
-                "bg-purple-200 text-purple-800": pathname === link.href,
-              }
-            )}
-          >
-            <LinkIcon className="w-6" />
+      {isAdm ? (
+        <>
             {!minimized && (
-          <p className="hidden md:block">
-            {link.name}
-          </p>
-        )}
-          </Link>
-        );
-      })}
+          <h3 className="px-3 py-2 text-gray-400">ADMINISTRAÇÃO</h3>
+          )}
+          {links.slice(0, 5).map((link) => {
+            const LinkIcon = link.icon;
+            return (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={clsx(
+                  "flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-purple-0 p-3 text-sm font-medium text-gray-400 hover:bg-purple-100 hover:text-purple-800 md:flex-none md:justify-start md:p-2 md:px-3",
+                  {
+                    "bg-purple-200 text-purple-800": pathname === link.href,
+                  }
+                )}
+              >
+                <LinkIcon className="w-6" />
+                {!minimized && (
+              <p className="hidden md:block">
+                {link.name}
+              </p>
+            )}
+              </Link>
+            );
+          })}
+        </>
+      ) : (
+        <></>
+      )}
+      
+
       {!minimized && (
       <h3 className="px-3 py-2 text-gray-400">GERAL</h3>
       )}

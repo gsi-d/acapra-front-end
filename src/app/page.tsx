@@ -15,14 +15,22 @@ export default function Page() {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const router = useRouter();
 
+  const isLogado : boolean = Boolean(localStorage.getItem('logado')); 
+  if(isLogado){
+    router.push('/geral/catalogo');
+  }
+
   function handleLogin(event: React.FormEvent) {
     event.preventDefault();
 
     if (email === 'admin@admin.com' && senha === '123456789') {
+      localStorage.setItem('isAdm', 'true');
       router.push('/geral/catalogo');
     } else {
+      localStorage.setItem('isAdm', 'false');
       router.push('/geral/catalogo');
     }
+    localStorage.setItem('logado', 'true');
   }
 
   return (
