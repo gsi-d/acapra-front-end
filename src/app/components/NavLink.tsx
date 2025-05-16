@@ -28,7 +28,7 @@ const links = [
   { name: "Cadastrar vacina", href: "/administracao/cadastroVacina", icon: VaccinesIcon },
   { name: "Cadastrar doença", href: "/administracao/cadastroDoenca", icon: CoronavirusIcon },
   { name: "Agenda visita", href: "/administracao/agendarVisita", icon: CalendarMonthIcon },
-  { name: "Atualizar informações", href: "/geral/atualizarInfos", icon: ManageHistoryIcon },
+  { name: "Atualizar informações", href: "/administracao/atualizarInfos", icon: ManageHistoryIcon },
   { name: "Cadastrar pet", href: "/geral/cadastroPet", icon: PlaylistAddIcon },
   { name: "Catálogo", href: "/geral/catalogo", icon: FormatListBulletedIcon },
   { name: "Adoção", href: "/geral/adocao", icon: PetsIcon },
