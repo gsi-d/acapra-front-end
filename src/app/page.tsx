@@ -1,103 +1,110 @@
-import Image from "next/image";
+'use client';
+import './page.css';
+import { IconButton, OutlinedInput, InputAdornment, InputLabel, FormControl } from '@mui/material';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import GoogleIcon from '@mui/icons-material/Google';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-export default function Home() {
+export default function Page() {
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [mostrarSenha, setMostrarSenha] = useState(false);
+  const router = useRouter();
+  
+  useEffect(() => {
+    const isLogado = Boolean(localStorage.getItem('logado'));
+    if (isLogado) {
+      router.push('/geral/catalogo');
+    }
+  }, [router]);
+
+  function handleLogin(event: React.FormEvent) {
+    event.preventDefault();
+
+    if (email === 'admin@admin.com' && senha === '123456789') {
+      localStorage.setItem('isAdm', 'true');
+      router.push('/geral/catalogo');
+    } else {
+      localStorage.setItem('isAdm', 'false');
+      router.push('/geral/catalogo');
+    }
+    localStorage.setItem('logado', 'true');
+  }
+
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="informacao">
+      <div className="mensagem">
+        <h2>Oi, Bem-vindo de volta!</h2>
+        <p>Você está em uma boa companhia</p>
+      </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+      <div className="login-direito">
+        <div className="login-conteudo">
+          <h1>Entrar</h1>
+          <p>Novo usuário? <a href="#">Crie uma conta</a></p>
+
+          <form id="login-email" onSubmit={handleLogin}>
+            <label htmlFor="email">Entre com seu e-mail</label>
+            <input
+              type="email"
+              id="email"
+              required
+              placeholder="exemplo@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+
+            <label htmlFor="senha">Digite sua senha</label>
+            <FormControl variant="outlined" fullWidth>
+              <InputLabel htmlFor="senha">Senha</InputLabel>
+              <OutlinedInput
+                id="senha"
+                type={mostrarSenha ? 'text' : 'password'}
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setMostrarSenha(!mostrarSenha)}
+                      edge="end"
+                      aria-label="Mostrar/ocultar senha"
+                    >
+                      {mostrarSenha ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label="Senha"
+              />
+            </FormControl>
+
+            <div className="opcoes">
+              <label>
+                <input type="checkbox" id="lembreDeMim" /> Lembre de mim
+              </label>
+              <a href="#" className="esqueceu">Esqueceu a senha?</a>
+            </div>
+
+            <button type="submit">Entrar</button>
+          </form>
+
+          <div className="linha-ou">
+            <span className="linha"></span>
+            <span className="ou">OU</span>
+            <span className="linha"></span>
+          </div>
+
+          <div className="icones-sociais">
+            <IconButton><GoogleIcon className="social-icon google" /></IconButton>
+            <IconButton><FacebookIcon className="social-icon facebook" /></IconButton>
+            <IconButton><InstagramIcon className="social-icon instagram" /></IconButton>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
   );
 }
