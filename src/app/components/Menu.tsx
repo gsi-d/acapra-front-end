@@ -29,37 +29,58 @@ export default function Menu({ open, toggleOpen }: MenuProps) {
       }}
     >
       {open ? (
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: open ? "flex-end" : "center", gap: 2 }}>
-        <Link
-          className=" flex h-20 items-end justify-start rounded-md p-2 md:h-15"
-          href="/"
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: open ? "flex-end" : "center",
+            gap: 2,
+          }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }} className="w-32 text-purple-800 md:w-40">
-            <PetsIcon fontSize="large" />
-            <Typography fontSize={30}>Acapra</Typography>
-          </Box>
-        </Link>
+          <Link
+            className=" flex h-20 items-end justify-start rounded-md p-2 md:h-15"
+            href="/"
+          >
+            <Box
+              sx={{ display: "flex", alignItems: "center", gap: 2 }}
+              className="w-32 text-purple-800 md:w-40"
+            >
+              <PetsIcon fontSize="large" />
+              <Typography fontSize={30}>Acapra</Typography>
+            </Box>
+          </Link>
+          <Tooltip title={open ? "Fechar menu" : "Abrir menu"}>
+            <IconButton
+              onClick={toggleOpen}
+              size="large"
+              aria-label="Toggle menu"
+            >
+              <MenuIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ) : (
         <Tooltip title={open ? "Fechar menu" : "Abrir menu"}>
-          <IconButton  onClick={toggleOpen} size="large" aria-label="Toggle menu">
+          <IconButton
+            sx={{ mb: 1, height: "5vh", width: "5vh", left: 10 }}
+            onClick={toggleOpen}
+            size="large"
+            aria-label="Toggle menu"
+          >
             <MenuIcon />
           </IconButton>
         </Tooltip>
-        </Box>
-      ) : (<Tooltip title={open ? "Fechar menu" : "Abrir menu"}>
-          <IconButton sx={{ mb: 1, height: '5vh', width: '5vh', left: 10 }} onClick={toggleOpen} size="large" aria-label="Toggle menu">
-            <MenuIcon />
-          </IconButton>
-        </Tooltip>)}
+      )}
 
       {open ? (
-          <div className="flex grow p-3 flex-row space-x-2 md:flex-col md:space-x-0 md:space-y-2">
-            <NavLinks minimized={false} />
-          </div>
-        ) : (
-          <div className="flex grow px-5 flex-col space-y-2 items-center">
-            <NavLinks minimized={true} />
-          </div>
-        )}
+        <div className="flex grow p-3 flex-row space-x-2 md:flex-col md:space-x-0 md:space-y-2">
+          <NavLinks minimized={false} />
+        </div>
+      ) : (
+        <div className="flex grow px-5 flex-col space-y-2 items-center">
+          <NavLinks minimized={true} />
+        </div>
+      )}
     </Box>
   );
 }
