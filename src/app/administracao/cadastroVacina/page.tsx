@@ -7,7 +7,7 @@ export default function CadastroRaca() {
     const [selectedOption, setSelectedOption] = useState<OptionType | null>(null);
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="flex items-center justify-center bg-gray-100" style={{ height: '80vh' }}>
             <div className="bg-gray-200 p-8 rounded-lg w-full max-w-md">
                 <h1 className="text-2xl font-semibold text-purple-600 mb-6 border-b border-gray-300 pb-2">
                     Cadastrar Vacina
