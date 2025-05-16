@@ -13,10 +13,16 @@ export default function Page() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [lembreDeMim, setLembreDeMim] = useState(false);
   const router = useRouter();
-  
+
   useEffect(() => {
     const isLogado = Boolean(localStorage.getItem('logado'));
+    const emailSalvo = localStorage.getItem('emailSalvo');
+    if (emailSalvo) {
+      setEmail(emailSalvo);
+      setLembreDeMim(true);
+    }
     if (isLogado) {
       router.push('/geral/catalogo');
     }
@@ -25,16 +31,22 @@ export default function Page() {
   function handleLogin(event: React.FormEvent) {
     event.preventDefault();
 
-    if (email === 'admin@admin.com' && senha === '123456789') {
+    if (email === 'admin@admin.com' && senha === '1234') {
       localStorage.setItem('isAdm', 'true');
-      router.push('/geral/catalogo');
     } else {
       localStorage.setItem('isAdm', 'false');
-      router.push('/geral/catalogo');
     }
-    localStorage.setItem('logado', 'true');
-  }
 
+    localStorage.setItem('logado', 'true');
+
+    if (lembreDeMim) {
+      localStorage.setItem('emailSalvo', email);
+    } else {
+      localStorage.removeItem('emailSalvo');
+    }
+
+    router.push('/geral/catalogo');
+  }
 
   return (
     <div className="informacao">
@@ -82,7 +94,13 @@ export default function Page() {
 
             <div className="opcoes">
               <label>
-                <input type="checkbox" id="lembreDeMim" /> Lembre de mim
+                <input
+                  type="checkbox"
+                  id="lembreDeMim"
+                  checked={lembreDeMim}
+                  onChange={(e) => setLembreDeMim(e.target.checked)}
+                />
+                Lembre de mim
               </label>
               <a href="#" className="esqueceu">Esqueceu a senha?</a>
             </div>
@@ -97,9 +115,15 @@ export default function Page() {
           </div>
 
           <div className="icones-sociais">
-            <IconButton><GoogleIcon className="social-icon google" /></IconButton>
-            <IconButton><FacebookIcon className="social-icon facebook" /></IconButton>
-            <IconButton><InstagramIcon className="social-icon instagram" /></IconButton>
+            <a href="https://accounts.google.com" target="_blank" rel="noopener noreferrer">
+              <IconButton><GoogleIcon className="social-icon google" /></IconButton>
+            </a>
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+              <IconButton><FacebookIcon className="social-icon facebook" /></IconButton>
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+              <IconButton><InstagramIcon className="social-icon instagram" /></IconButton>
+            </a>
           </div>
         </div>
       </div>
