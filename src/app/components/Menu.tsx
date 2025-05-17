@@ -39,7 +39,7 @@ export default function Menu({ open, toggleOpen }: MenuProps) {
         >
           <Link
             className=" flex h-20 items-end justify-start rounded-md p-2 md:h-15"
-            href="/"
+            href="/geral/catalogo"
           >
             <Box
               sx={{ display: "flex", alignItems: "center", gap: 2 }}

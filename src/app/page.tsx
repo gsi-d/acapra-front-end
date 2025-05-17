@@ -8,22 +8,20 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Loading from './components/Loading';
 
 export default function Page() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [lembreDeMim, setLembreDeMim] = useState(false);
+  const [openLoading, setOpenLoading] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
-    const isLogado = Boolean(localStorage.getItem('logado'));
-    const emailSalvo = localStorage.getItem('emailSalvo');
+    const emailSalvo = Boolean(localStorage.getItem('emailSalvo'));
     if (emailSalvo) {
-      setEmail(emailSalvo);
-      setLembreDeMim(true);
-    }
-    if (isLogado) {
+      setOpenLoading(true);
       router.push('/geral/catalogo');
     }
   }, [router]);
@@ -37,10 +35,8 @@ export default function Page() {
       localStorage.setItem('isAdm', 'false');
     }
 
-    localStorage.setItem('logado', 'true');
-
     if (lembreDeMim) {
-      localStorage.setItem('emailSalvo', email);
+      localStorage.setItem('emailSalvo', 'true');
     } else {
       localStorage.removeItem('emailSalvo');
     }
@@ -127,6 +123,7 @@ export default function Page() {
           </div>
         </div>
       </div>
+      <Loading open={openLoading}/>
     </div>
   );
 }

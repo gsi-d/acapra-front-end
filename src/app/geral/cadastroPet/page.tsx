@@ -179,7 +179,7 @@ export default function CadastroPet() {
             }}
           >
             <Typography
-              sx={{ color: " #7C3AED" }}
+              sx={{ color: "#7C3AED" }}
               variant="h6"
               color="secondary"
               fontWeight={600}
