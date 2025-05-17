@@ -1,7 +1,7 @@
 'use client';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Box, Typography, Chip, Button } from '@mui/material';
+import { Box, Typography, Chip, Button, Card } from '@mui/material';
 
 const mockAnimals = [
   {
@@ -54,8 +54,8 @@ export default function Page() {
   if (!animal) return <Typography className="p-8">Animal não encontrado.</Typography>;
 
   return (
-    <Box className="p-8 max-w-5xl mx-auto">
-      <div className="flex flex-col md:flex-row gap-10">
+    <Box className="flex p-8 max-w-5xl mx-auto items-center" sx={{ height: '80vh' }}>
+      <Card className="flex flex-col md:flex-row gap-10 py-10 px-6">
         <div className="md:w-1/2">
           <img
             src={animal.imagem}
@@ -101,7 +101,7 @@ export default function Page() {
             Quero Adotar
           </Button>
         </div>
-      </div>
+      </Card>
     </Box>
   );
 }

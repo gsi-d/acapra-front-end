@@ -10,7 +10,10 @@ import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import PetsIcon from "@mui/icons-material/Pets";
 import clsx from "clsx";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import Loading from "./Loading";
+import { Task } from "@mui/icons-material";
 
 interface NavLinksProps {
   minimized?: boolean;
@@ -48,9 +51,28 @@ const links = [
   { name: "Adoção", href: "/geral/adocao", icon: PetsIcon },
 ];
 
+
+
+
 export default function NavLinks({ minimized = false }: NavLinksProps) {
   const pathname = usePathname();
   const isAdm = localStorage.getItem("isAdm") == "true";
+  const [openLoading, setOpenLoading] = useState<boolean>(false);
+  const [previousPath, setPreviousPath] = useState(pathname);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (pathname !== previousPath) {
+      setOpenLoading(true);
+
+      const timeout = setTimeout(() => {
+        setOpenLoading(false);
+        setPreviousPath(pathname);
+      }, 800);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [pathname, previousPath]);
 
   return (
     <>
@@ -101,6 +123,7 @@ export default function NavLinks({ minimized = false }: NavLinksProps) {
           </Link>
         );
       })}
+      <Loading open={openLoading}/>
     </>
   );
 }
