@@ -63,6 +63,7 @@ export interface Pet{
 }
 
 export interface Raca{
+    Pet: any;
     id?: number;
     Especie: enumEspecie;
     Nome: string;
