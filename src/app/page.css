@@ -101,6 +101,7 @@
 }
 
 .opcoes input[type="checkbox"] {
+  margin-top: 8px;
   margin-right: 5px;
 }
 

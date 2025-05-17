@@ -8,20 +8,22 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Loading from './components/Loading';
 
 export default function Page() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [lembreDeMim, setLembreDeMim] = useState(false);
-  const [openLoading, setOpenLoading] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
-    const emailSalvo = Boolean(localStorage.getItem('emailSalvo'));
+    const isLogado = Boolean(localStorage.getItem('logado'));
+    const emailSalvo = localStorage.getItem('emailSalvo');
     if (emailSalvo) {
-      setOpenLoading(true);
+      setEmail(emailSalvo);
+      setLembreDeMim(true);
+    }
+    if (isLogado) {
       router.push('/geral/catalogo');
     }
   }, [router]);
@@ -35,8 +37,10 @@ export default function Page() {
       localStorage.setItem('isAdm', 'false');
     }
 
+    localStorage.setItem('logado', 'true');
+
     if (lembreDeMim) {
-      localStorage.setItem('emailSalvo', 'true');
+      localStorage.setItem('emailSalvo', email);
     } else {
       localStorage.removeItem('emailSalvo');
     }
@@ -114,16 +118,15 @@ export default function Page() {
             <a href="https://accounts.google.com" target="_blank" rel="noopener noreferrer">
               <IconButton><GoogleIcon className="social-icon google" /></IconButton>
             </a>
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.facebook.com/moacir.da.acapra.giraldi" target="_blank" rel="noopener noreferrer">
               <IconButton><FacebookIcon className="social-icon facebook" /></IconButton>
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.instagram.com/acaprabrusquesc/" target="_blank" rel="noopener noreferrer">
               <IconButton><InstagramIcon className="social-icon instagram" /></IconButton>
             </a>
           </div>
         </div>
       </div>
-      <Loading open={openLoading}/>
     </div>
   );
 }
