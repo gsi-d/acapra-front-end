@@ -11,6 +11,10 @@ Formulário de Adoção: Criar o formulário de adoção conforme fornecido pela
 Funções administrativas:
 
 Login e senha: Permitir que gestores e voluntários acessem as informações dos animais com privilégios adicionais.
+IMPORTANTE
+Usuário administrador (gestores e voluntários): admin@admin.com  senha: 1234
+Qualquer outro login é considerado um usuário geral.
+
 Cadastro de novos animais: Permitir que gestores e voluntários adicionem novos animais à plataforma. O cadastro deve conter informações do animal, fotos, e detalhes adicionais como saúde e necessidades especiais.
 Atualização de informações: Permitir que gestores e voluntários atualizem as informações dos animais existentes. Em caso de doação o sistema deve armazenar essa informação, a data de doação e tutor responsável pela adoção.
 Formulário de Adoção: Criar a listagem e visualização dos formulários de adoção respondidos pelos usuários.
