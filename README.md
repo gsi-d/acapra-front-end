@@ -28,8 +28,11 @@ Comunidade que deseja adotar um animal.
 Cronograma:
 
 Planejamento e design da interface (Semana 1)
+
 Protótipo Figma, Modelo Entidade-Relacionamento (MER) e definições de tecnologias.
 Link da entrega: https://www.figma.com/design/H5ZZ1045MosaGNcQ3OmfRB/Untitled?node-id=0-1&p=f&t=K2lYnaM74chukHUS-0
+
+Tecnologias escolhidas: Reactjs e Nodejs
 
 Desenvolvimento do código-fonte (Semana 2)
 Repositório GitHub.
