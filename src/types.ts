@@ -42,6 +42,14 @@ export const statusArray: OptionType[] = [
   { id: enumStatus.ADOTADO, title: 'Adotado' },
 ];
 
+export const usuariosArray: OptionType[] = [
+  { id: '1', title: 'João Silva' },
+  { id: '2', title: 'Maria Oliveira' },
+  { id: '3', title: 'Carlos Souza' },
+  { id: '4', title: 'Ana Paula' },
+  { id: '5', title: 'Ricardo Lima' },
+];
+
 
 export interface Pet{
     id?: number;
@@ -84,7 +92,7 @@ export interface Doenca{
 export interface Visita{
     id?: number;
     Id_Usuario: string;
-    NomeUsuario: string;
+    Id_Pet: string;
     Data: string;
     Status: enumStatus;
     Observacoes: string;
@@ -392,3 +400,7 @@ export const rowsPet : Pet[] = [{
     DataNascimento: '29/08/2020' 
 }];
 
+export const petsOptionArray: OptionType[] = rowsPet.map(pet => ({
+  id: pet.id ? pet.id.toString() : '',
+  title: pet.Nome,
+}));
