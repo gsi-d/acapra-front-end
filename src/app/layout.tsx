@@ -6,6 +6,7 @@ import Menu from "./components/Menu";
 import { Box } from "@mui/material";
 import Footer from "./components/Footer";
 import LayoutWrapper from "./LayoutWrapper";
+import { ContextoMockProvider } from "../contextos/ContextoMock";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased ${roboto.className}`}
       >
-        <LayoutWrapper>{children}</LayoutWrapper>
+        <ContextoMockProvider>
+          <LayoutWrapper>{children}</LayoutWrapper>
+        </ContextoMockProvider>
       </body>
     </html>
   );

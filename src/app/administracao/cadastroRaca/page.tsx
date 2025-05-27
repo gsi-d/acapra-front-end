@@ -5,27 +5,26 @@ import { Button, FormControl, FormHelperText, TextField } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { especiesArray, Raca } from "@/types";
+import { enumEspecie, especiesArray, Raca } from "@/types";
 import Alerta, { AlertaParams } from "@/app/components/Alerta";
+import { useContextoMock } from "@/contextos/ContextoMock";
+import { useRouter } from "next/navigation";
 
 export default function CadastroRaca() {
   const [racaEdicao, setRacaEdicao] = useState<Raca | undefined>(undefined);
-  const [alertaProps, setAlertaProps] = useState<AlertaParams>({
-    mensagem: "",
-    severity: "info",
-  });
-  const [alertaOpen, setAlertaOpen] = useState<boolean>(false);
+  const { racas, setRacas, openAlerta } = useContextoMock();
+  const router = useRouter();
 
   const schema = yup.object().shape({
     id: yup.number(),
     Nome: yup.string().required("Nome é obrigatório"),
-    Especie: yup.string().required("Espécie é obrigatória"),
+    Especie: yup.mixed<enumEspecie>().required("Espécie é obrigatória"),
   });
 
   const valoresIniciais = {
     id: 0,
     Nome: "",
-    Especie: "",
+    Especie: enumEspecie.CACHORRO,
   };
 
   const {
@@ -50,13 +49,21 @@ export default function CadastroRaca() {
 
   function onSubmit(data: any) {
     if (data) {
-      console.log(data);
+      const novoId = racas.length + 1;
+      const novaRaca: Raca = {
+        id: novoId,
+        Nome: data.Nome,
+        Especie: data.Especie,
+      };
+      const racasAtualizadas: Raca[] = [...racas, novaRaca];
+      setRacas(racasAtualizadas);
       reset();
       openAlerta({
         mensagem:
           "Raça gravada com sucesso. Você pode verificar o registro no console do navegador",
         severity: "success",
       });
+      router.push("/geral/catalogo");
     } else {
       openAlerta({ mensagem: "Erro ao gravar raça", severity: "error" });
     }
@@ -65,11 +72,6 @@ export default function CadastroRaca() {
   useEffect(() => {
     trigger();
   }, [trigger]);
-
-  function openAlerta(params: AlertaParams) {
-    setAlertaOpen(true);
-    setAlertaProps(params);
-  }
 
   return (
     <form
@@ -137,11 +139,6 @@ export default function CadastroRaca() {
           </Button>
         </div>
       </div>
-      <Alerta
-        open={alertaOpen}
-        params={alertaProps}
-        setAlertaOpen={setAlertaOpen}
-      />
     </form>
   );
 }
