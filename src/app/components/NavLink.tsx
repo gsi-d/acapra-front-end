@@ -51,7 +51,7 @@ const links = [
 
 export default function NavLinks({ minimized = false }: NavLinksProps) {
   const pathname = usePathname();
-  const isAdm = localStorage.getItem("isAdm") == "true";
+  const isAdm = localStorage && localStorage.getItem("isAdm") == "true";
   const [openLoading, setOpenLoading] = useState<boolean>(false);
   const [previousPath, setPreviousPath] = useState(pathname);
   const router = useRouter();

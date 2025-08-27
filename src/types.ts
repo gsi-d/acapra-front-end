@@ -21,6 +21,12 @@ export enum enumStatus{
     ADOTADO = 2,
 }
 
+export enum enumPorte{
+    PEQUENO = 1,
+    MEDIO = 2,
+    GRANDE = 3,
+}
+
 export const especiesArray: OptionType[] = [
   { id: enumEspecie.CACHORRO, title: 'Cachorro' },
   { id: enumEspecie.GATO, title: 'Gato' },
@@ -67,6 +73,22 @@ export interface Pet{
     Resgatado: boolean;
     DataResgate?: string;
     LocalResgate?: string;
+}
+
+export interface tbPet{
+    id_pet?: number;
+    tb_pet_nome: string;
+    tb_especie: enumEspecie;
+    id_raca: number;
+    tb_pet_genero: enumGenero;
+    tb_pet_status: enumStatus;
+    tb_pet_data_nascimento: string;
+    tb_pet_porte: enumPorte;
+    tb_pet_vacinado: boolean;
+    tb_pet_tutor_responsavel?: string;
+    tb_pet_resgatado: boolean;
+    tb_data_resgate?: string;
+    tb_pet_local_resgate?: string;
 }
 
 export interface Raca{
