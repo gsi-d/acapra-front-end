@@ -1,22 +1,23 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import ComboBox, { OptionType } from "@/app/components/ComboBox";
 import { Button, FormControl, FormHelperText, TextField } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { especiesArray, Doenca } from "@/types";
+import { Doenca } from "@/types";
 import Alerta, { AlertaParams } from "@/app/components/Alerta";
+import { useContextoMock } from "@/contextos/ContextoMock";
+import { useRouter } from "next/navigation";
 
 export default function CadastroDoenca() {
-  const [DoencaEdicao, setDoencaEdicao] = useState<Doenca | undefined>(
-    undefined
-  );
+  const [alertaOpen, setAlertaOpen] = useState<boolean>(false);
+  const {doencas, setDoencas, openAlerta} = useContextoMock();
+  const router = useRouter();
+  const [DoencaEdicao, setDoencaEdicao] = useState<Doenca | undefined>(undefined);
   const [alertaProps, setAlertaProps] = useState<AlertaParams>({
     mensagem: "",
     severity: "info",
   });
-  const [alertaOpen, setAlertaOpen] = useState<boolean>(false);
 
   const schema = yup.object().shape({
     id: yup.number(),
@@ -26,8 +27,8 @@ export default function CadastroDoenca() {
 
   const valoresIniciais = {
     id: 0,
-    Nome: "",
-    Descricao: "",
+    Nome: '',
+    Descricao: '',
   };
 
   const {
@@ -52,13 +53,21 @@ export default function CadastroDoenca() {
 
   function onSubmit(data: any) {
     if (data) {
-      console.log(data);
+      const novoId = doencas.length + 1;
+      const novaDoenca : Doenca = {
+        id: novoId,
+        Nome: data.Nome,
+        Descricao: data.Descricao,
+      };
+      const doencasAtualizadas : Doenca[] = [...doencas, novaDoenca];
+      setDoencas(doencasAtualizadas);
       reset();
       openAlerta({
         mensagem:
           "Doença gravada com sucesso. Você pode verificar o registro no console do navegador",
         severity: "success",
       });
+      router.push("/geral/catalogo");
     } else {
       openAlerta({ mensagem: "Erro ao gravar doença", severity: "error" });
     }
@@ -67,11 +76,6 @@ export default function CadastroDoenca() {
   useEffect(() => {
     trigger();
   }, [trigger]);
-
-  function openAlerta(params: AlertaParams) {
-    setAlertaOpen(true);
-    setAlertaProps(params);
-  }
 
   return (
     <form
@@ -140,11 +144,6 @@ export default function CadastroDoenca() {
           </Button>
         </div>
       </div>
-      <Alerta
-        open={alertaOpen}
-        params={alertaProps}
-        setAlertaOpen={setAlertaOpen}
-      />
     </form>
   );
 }

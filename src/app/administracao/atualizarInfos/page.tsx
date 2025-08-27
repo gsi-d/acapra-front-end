@@ -7,16 +7,11 @@ import {
   enumEspecie,
   enumGenero,
   enumStatus,
-  especiesArray,
   Pet,
-  rowsPet,
 } from "@/types";
 import {
   Box,
-  FormControl,
-  FormHelperText,
   IconButton,
-  TextField,
 } from "@mui/material";
 import {
   GridColDef,
@@ -26,20 +21,16 @@ import {
 } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import { useState } from "react";
-import FormCadastroBase from "@/app/components/FormCadastroBase";
 
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm, Controller } from "react-hook-form";
-import ComboBox from "@/app/components/ComboBox";
 import { useRouter } from "next/navigation";
+import { useContextoMock } from "@/contextos/ContextoMock";
 
 export default function AtualizarInfos() {
-  const [toggleFormPets, setToggleFormPets] = useState<boolean>(false);
-  const [petEdicao, setPetEdicao] = useState<Pet | undefined>(undefined);
   const router = useRouter();
+  const {pets, setPets} = useContextoMock();
+  const [selectedItems, setSelectedItems] = useState<GridRowSelectionModel>();
 
-  const columns: GridColDef<(typeof rowsPet)[number]>[] = [
+  const columns: GridColDef<(typeof pets)[number]>[] = [
     {
       width: 100,
       display: "flex",
@@ -115,78 +106,6 @@ export default function AtualizarInfos() {
     },
   ];
 
-  const schema = yup.object().shape({
-    id: yup.number(),
-    Nome: yup.string().required("Nome é obrigatório"),
-    Especie: yup.string(),
-    Raca: yup.string().required("Raça é obrigatória"),
-    Genero: yup.string().required("Gênero é obrigatório"),
-    Status: yup.string().required("Status é obrigatório"),
-    Peso: yup.number().required("Peso é obrigatório"),
-    DataNascimento: yup.string().required("Data de nascimento é obrigatória"),
-    Adotado: yup.boolean(),
-    DataAdocao: yup.string(),
-    TutorResponsavel: yup.string(),
-    Vacinado: yup.boolean(),
-    DataUltimaVacina: yup.string(),
-    Resgatado: yup.boolean(),
-    DataResgate: yup.string(),
-    LocalResgate: yup.string(),
-  });
-
-  const valoresIniciais = {
-    id: 0,
-    Nome: "",
-    Especie: "",
-    Raca: "",
-    Genero: "",
-    Status: "",
-    DataNascimento: "",
-    Peso: 0,
-    Adotado: false,
-    DataAdocao: "",
-    TutorResponsavel: "",
-    Vacinado: false,
-    DataUltimaVacina: "",
-    Resgatado: false,
-    DataResgate: "",
-    LocalResgate: "",
-  };
-
-  const {
-    reset,
-    control,
-    trigger,
-    watch,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    defaultValues: valoresIniciais,
-    values:
-      petEdicao !== undefined
-        ? {
-            id: petEdicao.id,
-            Nome: petEdicao.Nome,
-            Especie: petEdicao.Especie,
-            Raca: petEdicao.Raca,
-            Genero: petEdicao.Genero,
-            Status: petEdicao.Status,
-            Peso: petEdicao.Peso,
-            Adotado: petEdicao.Adotado,
-            DataAdocao: petEdicao.DataAdocao,
-            TutorResponsavel: petEdicao.TutorResponsavel,
-            Vacinado: petEdicao.Vacinado,
-            DataUltimaVacina: petEdicao.DataUltimaVacina,
-            Resgatado: petEdicao.Resgatado,
-            DataResgate: petEdicao.DataResgate,
-            LocalResgate: petEdicao.LocalResgate,
-            DataNascimento: petEdicao.DataNascimento,
-          }
-        : valoresIniciais,
-    mode: "onChange",
-    resolver: yupResolver(schema),
-  });
-
   function handleClickEditar(id: GridRowId) {
     router.push('/geral/cadastroPet?id=' + id);
   }
@@ -195,9 +114,20 @@ export default function AtualizarInfos() {
     router.push("/geral/cadastroPet");
   }
 
-  function handleClickSalvar() {}
+const updateSelectedItems = (newSelectionModel: GridRowSelectionModel) => {
+    setSelectedItems(newSelectionModel);
+  };
 
-  function handleClickExcluir() {}
+  function handleClickExcluir() {
+  if (selectedItems && selectedItems.ids.size > 0) {
+    const petsAtualizados = pets.filter(pet => {
+      if (pet.id === undefined) return true;
+      return !selectedItems.ids.has(pet.id);
+    });
+    setPets(petsAtualizados);
+  }
+}
+
 
   return (
     <Box
@@ -211,159 +141,11 @@ export default function AtualizarInfos() {
       <GridDados
         handleClickNovo={handleClickNovo}
         handleClickExcluir={handleClickExcluir}
-        rows={rowsPet}
+        selectedItems={selectedItems}
+        updateSelectedItems={updateSelectedItems}
+        rows={pets}
         columns={columns}
       />
-      <FormCadastroBase
-        titulo="Cadastro de Pets"
-        open={toggleFormPets}
-        setOpen={setToggleFormPets}
-        onSubmit={handleClickSalvar}
-      >
-        <Box sx={{ p: 3, display: "flex", flexDirection: "column", gap: 0 }}>
-          <FormControl fullWidth sx={{ mb: 6 }}>
-            <Controller
-              name="Nome"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange } }) => (
-                <TextField
-                  disabled={false}
-                  label={"Nome"}
-                  onChange={onChange}
-                  error={Boolean(errors.Nome)}
-                />
-              )}
-            />
-            {errors.Nome && (
-              <FormHelperText sx={{ color: "red" }}>
-                {errors.Nome.message}
-              </FormHelperText>
-            )}
-          </FormControl>
-          <FormControl fullWidth sx={{ mb: 6 }}>
-            <Controller
-              name="Especie"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange } }) => (
-                <ComboBox
-                  label={"Especie"}
-                  value={especiesArray.find((e) => e.id === value) || null}
-                  setValue={(option) => onChange(option?.id || "")}
-                  options={especiesArray}
-                  //   error={Boolean(errors.Especie)}
-                />
-              )}
-            />
-            {errors.Especie && (
-              <FormHelperText sx={{ color: "red" }}>
-                {errors.Especie.message}
-              </FormHelperText>
-            )}
-          </FormControl>
-          <FormControl fullWidth sx={{ mb: 6 }}>
-            <Controller
-              name="Raca"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange } }) => (
-                <TextField
-                  disabled={false}
-                  label={"Raca"}
-                  onChange={onChange}
-                  error={Boolean(errors.Raca)}
-                />
-              )}
-            />
-            {errors.Raca && (
-              <FormHelperText sx={{ color: "red" }}>
-                {errors.Raca.message}
-              </FormHelperText>
-            )}
-          </FormControl>
-          <FormControl fullWidth sx={{ mb: 6 }}>
-            <Controller
-              name="Genero"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange } }) => (
-                <TextField
-                  disabled={false}
-                  label={"Genero"}
-                  onChange={onChange}
-                  error={Boolean(errors.Genero)}
-                />
-              )}
-            />
-            {errors.Genero && (
-              <FormHelperText sx={{ color: "red" }}>
-                {errors.Genero.message}
-              </FormHelperText>
-            )}
-          </FormControl>
-          <FormControl fullWidth sx={{ mb: 6 }}>
-            <Controller
-              name="Status"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange } }) => (
-                <TextField
-                  disabled={false}
-                  label={"Status"}
-                  onChange={onChange}
-                  error={Boolean(errors.Status)}
-                />
-              )}
-            />
-            {errors.Status && (
-              <FormHelperText sx={{ color: "red" }}>
-                {errors.Status.message}
-              </FormHelperText>
-            )}
-          </FormControl>
-          <FormControl fullWidth sx={{ mb: 6 }}>
-            <Controller
-              name="Peso"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange } }) => (
-                <TextField
-                  disabled={false}
-                  label={"Peso"}
-                  onChange={onChange}
-                  error={Boolean(errors.Peso)}
-                />
-              )}
-            />
-            {errors.Peso && (
-              <FormHelperText sx={{ color: "red" }}>
-                {errors.Peso.message}
-              </FormHelperText>
-            )}
-          </FormControl>
-          <FormControl fullWidth sx={{ mb: 6 }}>
-            <Controller
-              name="DataAdocao"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange } }) => (
-                <TextField
-                  disabled={false}
-                  label={"DataAdocao"}
-                  onChange={onChange}
-                  error={Boolean(errors.DataAdocao)}
-                />
-              )}
-            />
-            {errors.DataAdocao && (
-              <FormHelperText sx={{ color: "red" }}>
-                {errors.DataAdocao.message}
-              </FormHelperText>
-            )}
-          </FormControl>
-        </Box>
-      </FormCadastroBase>
     </Box>
   );
 }

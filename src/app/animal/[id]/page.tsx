@@ -1,5 +1,5 @@
 'use client';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Box, Typography, Chip, Button, Card } from '@mui/material';
 
@@ -44,12 +44,17 @@ const mockAnimals = [
 
 export default function Page() {
   const { id } = useParams();
+  const router = useRouter();
   const [animal, setAnimal] = useState<any | null>(null);
 
   useEffect(() => {
     const encontrado = mockAnimals.find((a) => a.id === Number(id));
     setAnimal(encontrado || null);
   }, [id]);
+
+  function handleClickQueroAdotar(){
+    router.push('/geral/adocao');
+  }
 
   if (!animal) return <Typography className="p-8">Animal não encontrado.</Typography>;
 
@@ -97,6 +102,7 @@ export default function Page() {
             variant="contained"
             color="primary"
             className="mt-4 self-start"
+            onClick={handleClickQueroAdotar}
           >
             Quero Adotar
           </Button>

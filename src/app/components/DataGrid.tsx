@@ -15,6 +15,8 @@ interface GridDadosProps {
   width?: any;
   rows?: any;
   columns?: any;
+  selectedItems?: GridRowSelectionModel;
+  updateSelectedItems?: (param: GridRowSelectionModel) => void;
   handleClickNovo: () => void;
   handleClickExcluir: () => void;
 }
@@ -26,6 +28,8 @@ export default function GridDados(props: GridDadosProps) {
     width = "80%",
     rows,
     columns,
+    selectedItems,
+    updateSelectedItems,
     handleClickNovo,
     handleClickExcluir,
   } = props;
@@ -45,6 +49,8 @@ export default function GridDados(props: GridDadosProps) {
         pageSizeOptions={[5]}
         checkboxSelection
         showToolbar
+        rowSelectionModel={selectedItems}
+        onRowSelectionModelChange={updateSelectedItems}
         disableColumnSelector
         slots={{
           toolbar: ToolbarDataGrid,

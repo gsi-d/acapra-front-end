@@ -13,13 +13,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loading from "./Loading";
-import { Task } from "@mui/icons-material";
 
 interface NavLinksProps {
   minimized?: boolean;
 }
 
-// Map of links to display in the side navigation.
 const links = [
   {
     name: "Cadastrar raça",
@@ -51,9 +49,6 @@ const links = [
   { name: "Adoção", href: "/geral/adocao", icon: PetsIcon },
 ];
 
-
-
-
 export default function NavLinks({ minimized = false }: NavLinksProps) {
   const pathname = usePathname();
   const isAdm = localStorage.getItem("isAdm") == "true";
@@ -66,8 +61,8 @@ export default function NavLinks({ minimized = false }: NavLinksProps) {
       setOpenLoading(true);
 
       const timeout = setTimeout(() => {
-        setOpenLoading(false);
         setPreviousPath(pathname);
+        setOpenLoading(false);
       }, 800);
 
       return () => clearTimeout(timeout);

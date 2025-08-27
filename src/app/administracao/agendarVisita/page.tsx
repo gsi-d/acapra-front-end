@@ -6,38 +6,39 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   especiesArray,
-  petsOptionArray,
   Raca,
+  retornaPetsOptionArray,
   usuariosArray,
   Visita,
 } from "@/types";
 import Alerta, { AlertaParams } from "@/app/components/Alerta";
-import Input from "@/app/components/input";
 import ComboBox, { OptionType } from "@/app/components/ComboBox";
+import { useContextoMock } from "@/contextos/ContextoMock";
+import { useRouter } from "next/navigation";
 
 export default function CadastroRaca() {
-  const [visitaEdicao, setVisitaEdicao] = useState<Visita | undefined>(
-    undefined
-  );
+  const [alertaOpen, setAlertaOpen] = useState<boolean>(false);
+  const {pets} = useContextoMock();
+  const petsArray = retornaPetsOptionArray(pets);
+  const [visitaEdicao, setVisitaEdicao] = useState<Visita | undefined>(undefined);
+  const router = useRouter();
   const [alertaProps, setAlertaProps] = useState<AlertaParams>({
     mensagem: "",
     severity: "info",
   });
 
-  const [alertaOpen, setAlertaOpen] = useState<boolean>(false);
-
   const schema = yup.object().shape({
     id: yup.number(),
-    Id_Usuario: yup.string().required("Usuário é obrigatório"),
-    Id_Pet: yup.string().required("Pet é obrigatório"),
+    Id_Usuario: yup.number().required("Usuário é obrigatório"),
+    Id_Pet: yup.number().required("Pet é obrigatório"),
     Data: yup.string().required("Data é obrigatória"),
     Observacoes: yup.string(),
   });
 
   const valoresIniciais = {
     id: 0,
-    Id_Usuario: "",
-    Id_Pet: "",
+    Id_Usuario: 0,
+    Id_Pet: 0,
     Data: "",
     Observacoes: "",
   };
@@ -73,6 +74,7 @@ export default function CadastroRaca() {
           "Raça gravada com sucesso. Você pode verificar o registro no console do navegador",
         severity: "success",
       });
+      router.push("/geral/catalogo");
     } else {
       openAlerta({ mensagem: "Erro ao gravar raça", severity: "error" });
     }
@@ -127,9 +129,9 @@ export default function CadastroRaca() {
               render={({ field: { value, onChange } }) => (
                 <ComboBox
                   label="Pet"
-                  value={petsOptionArray.find((e) => e.id === value) || null}
+                  value={petsArray.find((e) => e.id === value) || null}
                   setValue={(option) => onChange(option?.id || "")}
-                  options={petsOptionArray}
+                  options={petsArray}
                   error={Boolean(errors.Id_Pet)}
                 />
               )}

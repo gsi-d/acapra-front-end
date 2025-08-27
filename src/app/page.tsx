@@ -37,10 +37,9 @@ export default function Page() {
       localStorage.setItem('isAdm', 'false');
     }
 
-    localStorage.setItem('logado', 'true');
-
     if (lembreDeMim) {
       localStorage.setItem('emailSalvo', email);
+      localStorage.setItem('logado', 'true');
     } else {
       localStorage.removeItem('emailSalvo');
     }

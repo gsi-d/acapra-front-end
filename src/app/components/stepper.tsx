@@ -12,6 +12,7 @@ import FormAdotante from '@/app/components/FormAdotante';
 import FormFamilia from '@/app/components/FormFamilia';
 import FormMoradia from '@/app/components/FormCasa';
 import FormCuidados from '@/app/components/FormCuidados';
+import { Card } from '@mui/material';
 
 const steps = [
   'Dados do Adotante',
@@ -52,7 +53,7 @@ export default function HorizontalLinearAlternativeLabelStepper() {
   };
 
   return (
-    <Box sx={{ width: '100%',marginTop:'16px' }}>
+    <Box sx={{ width: '100%', marginTop:'16px' }}>
       <Stepper
         activeStep={activeStep}
         alternativeLabel

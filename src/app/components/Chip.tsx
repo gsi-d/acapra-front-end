@@ -31,7 +31,7 @@ export default function ChipTexto(props: ChipTextoProps) {
         }
       case enumStatus:
         switch(value){
-          case enumStatus.DSIPONIVEL:
+          case enumStatus.DISPONIVEL:
             return 'success';
           case enumStatus.ADOTADO:
             return 'warning';
@@ -59,7 +59,7 @@ export default function ChipTexto(props: ChipTextoProps) {
         }
       case enumStatus:
         switch(value){
-          case enumStatus.DSIPONIVEL:
+          case enumStatus.DISPONIVEL:
             return 'Disponível';
           case enumStatus.ADOTADO:
             return 'Adotado';
