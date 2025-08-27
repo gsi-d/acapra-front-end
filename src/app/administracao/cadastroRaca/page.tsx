@@ -6,7 +6,6 @@ import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { enumEspecie, especiesArray, Raca } from "@/types";
-import Alerta, { AlertaParams } from "@/app/components/Alerta";
 import { useContextoMock } from "@/contextos/ContextoMock";
 import { useRouter } from "next/navigation";
 
