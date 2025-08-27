@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ComboBox, { OptionType } from '@/app/components/ComboBox'; // ajuste o caminho conforme seu projeto
 import {
@@ -11,59 +11,28 @@ import {
     Typography,
     Chip,
 } from '@mui/material';
+import { enumEspecie, enumGenero, enumPorte, Pet, tbPet } from '@/types';
+import { calcularIdade } from '@/app/util/DataHelper';
 
 const especies: OptionType[] = [
-    { id: 'cachorro', title: 'Cachorro' },
-    { id: 'gato', title: 'Gato' },
+    { id: 1, title: 'Cachorro' },
+    { id: 2, title: 'Gato' },
 ];
 
 const estados: OptionType[] = [
-    { id: 'SP', title: 'SP' },
-    { id: 'RJ', title: 'RJ' },
+    { id: 1, title: 'SP' },
+    { id: 2, title: 'RJ' },
 ];
 
 const portes: OptionType[] = [
-    { id: 'pequeno', title: 'Pequeno' },
-    { id: 'medio', title: 'Médio' },
-    { id: 'grande', title: 'Grande' },
+    { id: 1, title: 'Pequeno' },
+    { id: 2, title: 'Médio' },
+    { id: 3, title: 'Grande' },
 ];
 
 const sexos: OptionType[] = [
-    { id: 'macho', title: 'Macho' },
-    { id: 'femea', title: 'Fêmea' },
-];
-
-const mockAnimals = [
-    {
-        id: 1,
-        nome: 'Rodrigo Faro',
-        especie: 'cachorro',
-        sexo: 'macho',
-        raca: 'Vira-Lata',
-        porte: 'medio',
-        idade: '2 anos',
-        imagem: 'https://placedog.net/500?id=1',
-    },
-    {
-        id: 2,
-        nome: 'Rodrigo Faro',
-        especie: 'cachorro',
-        sexo: 'femea',
-        raca: 'Vira-Lata',
-        porte: 'medio',
-        idade: '2 anos',
-        imagem: 'https://placedog.net/500?id=2',
-    },
-    {
-        id: 3,
-        nome: 'Rodrigo Faro',
-        especie: 'cachorro',
-        sexo: 'macho',
-        raca: 'Vira-Lata',
-        porte: 'medio',
-        idade: '2 anos',
-        imagem: 'https://placedog.net/500?id=3',
-    },
+    { id: 1, title: 'Macho' },
+    { id: 2, title: 'Fêmea' },
 ];
 
 export default function Page() {
@@ -75,17 +44,28 @@ export default function Page() {
     const [sexo, setSexo] = React.useState<OptionType | null>(null);
     const [cidade, setCidade] = React.useState('');
     const [nome, setNome] = React.useState('');
+    const [pets, setPets] = React.useState<tbPet[] | undefined>(undefined);
 
-    // Filtragem usando os ids das opções selecionadas
-    const animaisFiltrados = mockAnimals.filter((animal) => {
-        return (
-            (especie ? animal.especie === especie.id : true) &&
-            (sexo ? animal.sexo === sexo.id : true) &&
-            (porte ? animal.porte === porte.id : true) &&
-            (nome ? animal.nome.toLowerCase().includes(nome.toLowerCase()) : true)
-            // Estado e cidade não estão no mock, mas você pode usar depois
-        );
-    });
+    const fetchAnimals = async () => {
+        try {
+            const response = await fetch('/api/pets');
+            if (!response.ok) {
+                throw new Error('Erro ao buscar os dados da API.');
+            }
+            const data = await response.json();
+            setPets(data.data);
+        } catch (err: any) {
+            console.log(err.message);
+        }
+    };
+
+    useEffect(() => {
+        fetchAnimals();
+    }, []);
+
+    useEffect(() => {
+        console.log('pets', pets);
+    }, [pets]);
 
     return (
         <Card className="p-8 max-w-7xl mx-auto" sx={{  mt: '5vh'}}>
@@ -166,26 +146,26 @@ export default function Page() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 ">
-                {animaisFiltrados.map((animal) => (
-                    <Card key={animal.id} onClick={() => router.push(`/animal/${animal.id}`)} className="cursor-pointer hover:shadow-lg transition">
+                {pets && pets.map((animal) => (
+                    <Card key={animal.id_pet} onClick={() => router.push(`/animal/${animal.id_pet}`)} className="cursor-pointer hover:shadow-lg transition">
                         <CardMedia
                             component="img"
                             height="200"
-                            image={animal.imagem}
-                            alt={animal.nome}
+                            image={''}
+                            alt={animal.tb_pet_nome}
                         />
                         <CardContent>
-                            <Typography variant="h6">{animal.nome}</Typography>
+                            <Typography variant="h6">{animal.tb_pet_nome}</Typography>
                             <Typography variant="body2" color="text.secondary">
-                                {animal.raca}
+                                {animal.id_raca}
                             </Typography>
                             <div className="mt-2 flex flex-wrap gap-2">
                                 <Chip
-                                    label={animal.sexo === 'macho' ? 'Macho' : 'Fêmea'}
-                                    color={animal.sexo === 'macho' ? 'primary' : 'secondary'}
+                                    label={animal.tb_pet_genero === enumGenero.MASCULINO ? 'Macho' : 'Fêmea'}
+                                    color={animal.tb_pet_genero === enumGenero.MASCULINO ? 'primary' : 'secondary'}
                                 />
-                                <Chip label={animal.porte} variant="outlined" />
-                                <Chip label={animal.idade} color="primary" variant="outlined" />
+                                <Chip label={enumPorte[animal.tb_pet_porte]} variant="outlined" />
+                                <Chip label={`${calcularIdade(animal.tb_pet_data_nascimento)} anos(s)`} color="primary" variant="outlined" />
                             </div>
                         </CardContent>
                     </Card>

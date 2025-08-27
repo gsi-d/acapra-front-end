@@ -58,11 +58,11 @@ export const ContextoMockProvider: React.FC<InterfaceProviderProps> = ({
     mensagem: "",
     severity: "info",
   });
-  const petsCache = localStorage.getItem("pets");
-  const racasCache = localStorage.getItem("racas");
-  const vacinasCache = localStorage.getItem("vacinas");
-  const doencasCache = localStorage.getItem("doencas");
-  const visitasCache = localStorage.getItem("visitas");
+  const petsCache = '';
+  const racasCache = '';
+  const vacinasCache = '';
+  const doencasCache = '';
+  const visitasCache = '';
 
   const [pets, setPets] = useState<Pet[]>(
     petsCache
