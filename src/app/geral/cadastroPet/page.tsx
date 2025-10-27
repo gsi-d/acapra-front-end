@@ -23,6 +23,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
 import ComboBox from "@/app/components/ComboBox";
 import CheckBox from "@/app/components/CheckBox";
 import Alerta, { AlertaParams } from "@/app/components/Alerta";
@@ -377,14 +381,14 @@ export default function CadastroPet() {
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { value, onChange } }) => (
-                  <TextField
-                    disabled={false}
-                    label={"Data de Nascimento"}
-                    value={value}
-                    onChange={onChange}
-                    sx={{ backgroundColor: "white" }}
-                    error={Boolean(errors.DataNascimento)}
-                  />
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label={"Data de Nascimento"}
+                      value={value ? dayjs(value) : null}
+                      onChange={(newValue) => onChange(newValue ? dayjs(newValue).format("YYYY-MM-DD") : "")}
+                      slotProps={{ textField: { sx: { backgroundColor: "white" }, error: Boolean(errors.DataNascimento) } }}
+                    />
+                  </LocalizationProvider>
                 )}
               />
               {errors.DataNascimento && (
@@ -420,13 +424,23 @@ export default function CadastroPet() {
                   control={control}
                   rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
+                    <>
                     <TextField
                       disabled={false}
                       label={"Data de Adoção"}
                       onChange={onChange}
-                      sx={{ backgroundColor: "white" }}
+                      sx={{ backgroundColor: "white", display: 'none' }}
                       error={Boolean(errors.DataAdocao)}
                     />
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        label={"Data de Adoção"}
+                        value={value ? dayjs(value) : null}
+                        onChange={(newValue) => onChange(newValue ? dayjs(newValue).format("YYYY-MM-DD") : "")}
+                        slotProps={{ textField: { sx: { backgroundColor: "white" } } }}
+                      />
+                    </LocalizationProvider>
+                    </>
                   )}
                 />
                 {errors.DataAdocao && (
@@ -484,13 +498,23 @@ export default function CadastroPet() {
                   control={control}
                   rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
+                    <>
                     <TextField
                       disabled={false}
                       label={"Data da última vacina"}
                       onChange={onChange}
-                      sx={{ backgroundColor: "white" }}
+                      sx={{ backgroundColor: "white", display: 'none' }}
                       error={Boolean(errors.DataUltimaVacina)}
                     />
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        label={"Data da última vacina"}
+                        value={value ? dayjs(value) : null}
+                        onChange={(newValue) => onChange(newValue ? dayjs(newValue).format("YYYY-MM-DD") : "")}
+                        slotProps={{ textField: { sx: { backgroundColor: "white" } } }}
+                      />
+                    </LocalizationProvider>
+                    </>
                   )}
                 />
                 {errors.DataUltimaVacina && (
@@ -526,13 +550,14 @@ export default function CadastroPet() {
                   control={control}
                   rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
-                    <TextField
-                      disabled={false}
-                      label={"Data do Resgate"}
-                      onChange={onChange}
-                      sx={{ backgroundColor: "white" }}
-                      error={Boolean(errors.DataResgate)}
-                    />
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        label={"Data do Resgate"}
+                        value={value ? dayjs(value) : null}
+                        onChange={(newValue) => onChange(newValue ? dayjs(newValue).format("YYYY-MM-DD") : "")}
+                        slotProps={{ textField: { sx: { backgroundColor: "white" }, error: Boolean(errors.DataResgate) } }}
+                      />
+                    </LocalizationProvider>
                   )}
                 />
                 {errors.DataResgate && (
@@ -548,6 +573,7 @@ export default function CadastroPet() {
                   control={control}
                   rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
+                    <>
                     <TextField
                       disabled={false}
                       label={"Local do Resgate"}
@@ -555,6 +581,7 @@ export default function CadastroPet() {
                       sx={{ backgroundColor: "white" }}
                       error={Boolean(errors.LocalResgate)}
                     />
+                    </>
                   )}
                 />
                 {errors.LocalResgate && (

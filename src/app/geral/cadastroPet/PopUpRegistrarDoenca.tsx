@@ -1,8 +1,6 @@
 "use client";
 
-import {
-  especiesArray,
-} from "@/types";
+import { OptionType } from "@/app/components/ComboBox";
 import {
   Box,
   FormControl,
@@ -11,13 +9,15 @@ import {
 } from "@mui/material";
 
 import FormCadastroBase from "@/app/components/FormCadastroBase";
+import { criarHistoricoDoenca } from "@/services/entities";
 
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
 import ComboBox from "@/app/components/ComboBox";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AlertaParams } from "@/app/components/Alerta";
+import { listarDoencas } from "@/services/entities";
 
 export interface PopupAtualizarInfosPet {
   togglePopup: boolean;
@@ -27,6 +27,7 @@ export interface PopupAtualizarInfosPet {
 }
 export default function PopupAtualizarInfosPet(props: PopupAtualizarInfosPet) {
   const { togglePopup, setTogglePopup, idPet, openAlerta } = props;
+  const [doencasOptions, setDoencasOptions] = useState<OptionType[]>([]);
 
   const schemaDoenca = yup.object().shape({
     id: yup.number(),
@@ -57,6 +58,12 @@ export default function PopupAtualizarInfosPet(props: PopupAtualizarInfosPet) {
 
   useEffect(() => {
     trigger();
+    listarDoencas()
+      .then((res) => {
+        const opts = (res || []).map((d: any) => ({ id: d.id_doenca, title: d.tb_doenca_nome })) as OptionType[];
+        setDoencasOptions(opts);
+      })
+      .catch(() => setDoencasOptions([]));
   }, [trigger]);
 
   function handleClickSalvar() {
@@ -90,7 +97,7 @@ export default function PopupAtualizarInfosPet(props: PopupAtualizarInfosPet) {
         titulo="Registrar Doença"
         open={togglePopup}
         setOpen={setTogglePopup}
-        onSubmit={handleClickSalvar}
+        onSubmit={() => handleSubmit(onSubmit)()}
       >
         <Box sx={{ p: 3, display: "flex", flexDirection: "column", gap: 0 }}>
           <FormControl fullWidth sx={{ mb: 3 }}>
@@ -100,10 +107,10 @@ export default function PopupAtualizarInfosPet(props: PopupAtualizarInfosPet) {
               rules={{ required: true }}
               render={({ field: { value, onChange } }) => (
                 <ComboBox
-                  label={"Doenca"}
-                  value={especiesArray.find((e) => e.id === value) || null}
+                  label={"Doença"}
+                  value={doencasOptions.find((e) => e.id === Number(value)) || null}
                   setValue={(option) => onChange(option?.id || "")}
-                  options={especiesArray}
+                  options={doencasOptions}
                   error={Boolean(errors.Doenca)}
                 />
               )}
@@ -165,3 +172,4 @@ export default function PopupAtualizarInfosPet(props: PopupAtualizarInfosPet) {
     </Box>
   );
 }
+

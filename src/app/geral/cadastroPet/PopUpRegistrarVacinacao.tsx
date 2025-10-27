@@ -1,8 +1,6 @@
 "use client";
 
-import {
-  especiesArray,
-} from "@/types";
+import { OptionType } from "@/app/components/ComboBox";
 import {
   Box,
   FormControl,
@@ -11,13 +9,15 @@ import {
 } from "@mui/material";
 
 import FormCadastroBase from "@/app/components/FormCadastroBase";
+import { criarHistoricoVacina } from "@/services/entities";
 
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
 import ComboBox from "@/app/components/ComboBox";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AlertaParams } from "@/app/components/Alerta";
+import { listarVacinas } from "@/services/entities";
 
 export interface PopupAtualizarInfosPet {
   togglePopup: boolean;
@@ -28,6 +28,7 @@ export interface PopupAtualizarInfosPet {
 
 export default function PopUpRegistrarVacinacao(props: PopupAtualizarInfosPet) {
   const { togglePopup, setTogglePopup, idPet, openAlerta } = props;
+  const [vacinasOptions, setVacinasOptions] = useState<OptionType[]>([]);
 
   const schemaVacinacao = yup.object().shape({
     id: yup.number(),
@@ -73,6 +74,12 @@ export default function PopUpRegistrarVacinacao(props: PopupAtualizarInfosPet) {
 
   useEffect(() => {
     trigger();
+    listarVacinas()
+      .then((res) => {
+        const opts = (res || []).map((v: any) => ({ id: v.id_vacina, title: v.tb_vacina_nome })) as OptionType[];
+        setVacinasOptions(opts);
+      })
+      .catch(() => setVacinasOptions([]));
   }, [trigger]);
 
   function handleClickSalvar() {
@@ -106,7 +113,7 @@ export default function PopUpRegistrarVacinacao(props: PopupAtualizarInfosPet) {
         titulo="Registrar Vacinação"
         open={togglePopup}
         setOpen={setTogglePopup}
-        onSubmit={handleClickSalvar}
+        onSubmit={() => handleSubmit(onSubmit)()}
       >
         <Box sx={{ p: 3, display: "flex", flexDirection: "column", gap: 0 }}>
           <FormControl fullWidth sx={{ mb: 3 }}>
@@ -117,9 +124,9 @@ export default function PopUpRegistrarVacinacao(props: PopupAtualizarInfosPet) {
               render={({ field: { value, onChange } }) => (
                 <ComboBox
                   label={"Vacina"}
-                  value={especiesArray.find((e) => e.id === value) || null}
+                  value={vacinasOptions.find((e) => e.id === Number(value)) || null}
                   setValue={(option) => onChange(option?.id || "")}
-                  options={especiesArray}
+                  options={vacinasOptions}
                   error={Boolean(errors.Vacina)}
                 />
               )}
@@ -181,3 +188,5 @@ export default function PopUpRegistrarVacinacao(props: PopupAtualizarInfosPet) {
     </Box>
   );
 }
+
+

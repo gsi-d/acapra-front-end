@@ -29,10 +29,9 @@ export default function FormCadastroBase(props: FormDialogProps) {
         open={open}
         onClose={handleClose}
         sx={{ '& .MuiDialog-paper': { width: '90%', maxHeight: 800 } }}
-        slotProps={{
-          paper: {
-            component: 'form',
-          },
+        PaperProps={{
+          component: 'form',
+          onSubmit: (e) => { e.preventDefault(); onSubmit(); }
         }}
       >
         <DialogTitle sx={{top: 0, left: 0, position: 'sticky', zIndex: 10, backgroundColor: 'white', padding: '16px'}} variant="h5" color='secondary'>{titulo}</DialogTitle>
