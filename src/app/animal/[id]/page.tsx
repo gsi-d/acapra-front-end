@@ -1,61 +1,55 @@
-'use client';
-import { useParams } from 'next/navigation';
+"use client";
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Box, Typography, Chip, Button } from '@mui/material';
-
-const mockAnimals = [
-  {
-    id: 1,
-    nome: 'Rodrigo Faro',
-    especie: 'cachorro',
-    sexo: 'macho',
-    raca: 'Vira-Lata',
-    porte: 'medio',
-    idade: '2 anos',
-    imagem: 'https://placedog.net/500?id=1',
-    descricao: 'Rodrigo Faro é um cachorro muito simpático e brincalhão. Está esperando um lar cheio de amor.',
-    tags: ['Vacinado', 'Castrado', 'FELV+', 'Vira-Lata', 'Brincalhão']
-  },
-  {
-    id: 2,
-    nome: 'Rodrigo Faro',
-    especie: 'cachorro',
-    sexo: 'femea',
-    raca: 'Vira-Lata',
-    porte: 'medio',
-    idade: '2 anos',
-    imagem: 'https://placedog.net/500?id=2',
-    descricao: 'Essa é a versão feminina do Rodrigo Faro. Doce, amorosa e pronta para ser adotada.',
-    tags: ['Vacinado', 'FELV+', 'Vira-Lata']
-  },
-  {
-    id: 3,
-    nome: 'Rodrigo Faro',
-    especie: 'cachorro',
-    sexo: 'macho',
-    raca: 'Vira-Lata',
-    porte: 'medio',
-    idade: '2 anos',
-    imagem: 'https://placedog.net/500?id=3',
-    descricao: 'Mais um Rodrigo Faro! Cheio de energia e amor pra dar.',
-    tags: ['Castrado', 'Manso', 'Vira-Lata']
-  },
-];
+import { Box, Typography, Chip, Button, Card } from '@mui/material';
+import { retornarPet } from '@/services/pets';
+import { calcularIdade } from '@/app/util/DataHelper';
 
 export default function Page() {
   const { id } = useParams();
+  const router = useRouter();
   const [animal, setAnimal] = useState<any | null>(null);
 
   useEffect(() => {
-    const encontrado = mockAnimals.find((a) => a.id === Number(id));
-    setAnimal(encontrado || null);
+    const load = async () => {
+      if (!id) return;
+      try {
+        const pet = await retornarPet(Number(id));
+        if (!pet) {
+          setAnimal(null);
+          return;
+        }
+        const especie = pet.Especie === 1 ? 'cachorro' : 'gato';
+        const sexo = pet.Genero === 1 ? 'macho' : 'femea';
+        const idade = pet.DataNascimento ? `${calcularIdade(pet.DataNascimento)} anos` : '';
+        setAnimal({
+          id: pet.id,
+          nome: pet.Nome,
+          especie,
+          sexo,
+          raca: pet.Id_Raca,
+          porte: '',
+          idade,
+          imagem: 'https://placedog.net/500?id=' + (pet.id ?? 1),
+          descricao: 'Animal disponível para adoção.',
+          tags: [pet.Vacinado ? 'Vacinado' : ''].filter(Boolean),
+        });
+      } catch (e) {
+        setAnimal(null);
+      }
+    };
+    load();
   }, [id]);
+
+  function handleClickQueroAdotar() {
+    router.push('/geral/adocao');
+  }
 
   if (!animal) return <Typography className="p-8">Animal não encontrado.</Typography>;
 
   return (
-    <Box className="p-8 max-w-5xl mx-auto">
-      <div className="flex flex-col md:flex-row gap-10">
+    <Box className="flex p-8 max-w-5xl mx-auto items-center" sx={{ height: '80vh' }}>
+      <Card className="flex flex-col md:flex-row gap-10 py-10 px-6">
         <div className="md:w-1/2">
           <img
             src={animal.imagem}
@@ -97,11 +91,13 @@ export default function Page() {
             variant="contained"
             color="primary"
             className="mt-4 self-start"
+            onClick={handleClickQueroAdotar}
           >
             Quero Adotar
           </Button>
         </div>
-      </div>
+      </Card>
     </Box>
   );
 }
+

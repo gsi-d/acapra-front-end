@@ -1,9 +1,12 @@
 "use client";
 import {
+  enumEspecie,
+  enumGenero,
+  enumStatus,
   especiesArray,
   generosArray,
   Pet,
-  rowsPet,
+  retornaRacasOptionArray,
   statusArray,
 } from "@/types";
 import { useEffect, useState } from "react";
@@ -20,56 +23,155 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
 import ComboBox from "@/app/components/ComboBox";
 import CheckBox from "@/app/components/CheckBox";
 import Alerta, { AlertaParams } from "@/app/components/Alerta";
 import { useRouter, useSearchParams } from "next/navigation";
 import PopUpRegistrarVacinacao from "./PopUpRegistrarVacinacao";
 import PopUpRegistrarDoenca from "./PopUpRegistrarDoenca";
+import { useContextoMock } from "@/contextos/ContextoMock";
+import { listarRacas } from "@/services/entities";
+import { criarPet, atualizarPet, retornarPet } from "@/services/pets";
+import ImageUploader from "@/app/components/ImageUploader";
 
 export default function CadastroPet() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const router = useRouter();
-
-  const [petEdicao, setPetEdicao] = useState<Pet | undefined>(
-    id !== null ? rowsPet.filter((pet) => pet.id === Number(id))[0] : undefined
-  );
-  const [alertaProps, setAlertaProps] = useState<AlertaParams>({
-    mensagem: "",
-    severity: "info",
-  });
-  const [alertaOpen, setAlertaOpen] = useState<boolean>(false);
   const [togglePopupVacinacao, setTogglePopupVacinacao] =
     useState<boolean>(false);
   const [togglePopupDoenca, setTogglePopupDoenca] = useState<boolean>(false);
+  const { pets, setPets, racas, setRacas, openAlerta } = useContextoMock();
+  const racasArray = retornaRacasOptionArray(racas);
+
+  const [petEdicao, setPetEdicao] = useState<Pet | undefined>(undefined);
+  const [fotoFile, setFotoFile] = useState<File | null>(null);
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null);
+
+  // Carrega dados do pet em modo edição a partir da API
+  useEffect(() => {
+    let cancelled = false;
+    const carregarPet = async () => {
+      const idNum = id ? Number(id) : 0;
+      if (!idNum) return;
+      try {
+        const pet = await retornarPet(idNum);
+        if (!cancelled) setPetEdicao(pet ?? undefined);
+      } catch (e) {
+        openAlerta({ mensagem: 'Falha ao carregar pet para edição', severity: 'error' });
+      }
+    };
+    carregarPet();
+    return () => {
+      cancelled = true;
+    };
+  }, [id, openAlerta]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function carregarRacas() {
+      try {
+        if (racas.length > 0) return;
+        const lista = await listarRacas();
+        if (cancelled) return;
+        const mapeadas = (lista || []).map((row: any) => ({
+          id: row.id ?? row.id_raca ?? row.idRaca ?? 0,
+          Nome:
+            row.Nome ?? row.nome ?? row.tb_raca_nome_raca ?? row.tb_raca_nome ?? "",
+          Especie:
+            row.Especie ??
+            (row.tb_raca_nome_especie === "Cachorro"
+              ? enumEspecie.CACHORRO
+              : row.tb_raca_nome_especie === "Gato"
+              ? enumEspecie.GATO
+              : enumEspecie.CACHORRO),
+        }));
+        if (mapeadas.length > 0) setRacas(mapeadas);
+      } catch (e: any) {
+        openAlerta({ mensagem: e?.message || "Falha ao carregar raças", severity: "error" });
+      }
+    }
+    carregarRacas();
+    return () => {
+      cancelled = true;
+    };
+  }, [racas.length, setRacas, openAlerta]);
+
+  // Ajusta preview de foto com base nos dados carregados do pet em edição
+  useEffect(() => {
+    if (petEdicao) {
+      const url = (petEdicao as any)?.tb_pet_foto_url
+        ?? (petEdicao as any)?.tb_pet_foto
+        ?? (petEdicao as any)?.fotoUrl
+        ?? (petEdicao as any)?.foto
+        ?? null;
+      setFotoPreview(url);
+    } else {
+      setFotoPreview(null);
+      setFotoFile(null);
+    }
+  }, [petEdicao]);
 
   const schema = yup.object().shape({
     id: yup.number(),
-    Nome: yup.string().required("Nome é obrigatório"),
-    Especie: yup.string().required("Espécie é obrigatória"),
-    Raca: yup.string().required("Raça é obrigatória"),
-    Genero: yup.string().required("Gênero é obrigatório"),
-    Status: yup.string().required("Status é obrigatório"),
-    Peso: yup.number().required("Peso é obrigatório"),
-    DataNascimento: yup.string().required("Data de nascimento é obrigatória"),
-    Adotado: yup.boolean().required(),
-    DataAdocao: yup.string(),
-    TutorResponsavel: yup.string(),
-    Vacinado: yup.boolean().required(),
-    DataUltimaVacina: yup.string(),
-    Resgatado: yup.boolean().required(),
-    DataResgate: yup.string(),
-    LocalResgate: yup.string(),
+    Nome: yup.string().required("Nome é obrigatório"),
+    Especie: yup.mixed<enumEspecie>().required("Espécie é obrigatória"),
+    Id_Raca: yup.number().required("Raça é obrigatória"),
+    Genero: yup.mixed<enumGenero>().required("Gênero é obrigatório"),
+    Status: yup.mixed<enumStatus>().required("Status é obrigatório"),
+    Peso: yup.number().required("Peso é obrigatório"),
+    DataNascimento: yup.string().required("Data de nascimento é obrigatória"),
+    Adotado: yup.boolean(),
+    DataAdocao: yup
+      .string()
+      .when([], {
+        is: () => adotado,
+        then: schema => schema.required("Data de adoção é obrigatória"),
+        otherwise: schema => schema.notRequired()
+      }),
+    TutorResponsavel: yup
+      .string()
+      .when([], {
+        is: () => adotado,
+        then: schema => schema.required("Tutor responsável é obrigatório"),
+        otherwise: schema => schema.notRequired()
+      }),
+    Vacinado: yup.boolean(),
+    DataUltimaVacina: yup
+      .string()
+      .when([], {
+        is: () => vacinado,
+        then: schema => schema.required("Data da última vacina é obrigatória"),
+        otherwise: schema => schema.notRequired()
+      }),
+    Resgatado: yup.boolean(),
+    DataResgate: yup
+      .string()
+      .when([], {
+        is: () => resgatado,
+        then: schema => schema.required("Data de resgate é obrigatória"),
+        otherwise: schema => schema.notRequired()
+      }),
+    LocalResgate: yup
+      .string()
+      .when([], {
+        is: () => resgatado,
+        then: schema => schema.required("Local de resgate é obrigatório"),
+        otherwise: schema => schema.notRequired()
+      }),
   });
 
   const valoresIniciais = {
     id: 0,
     Nome: "",
-    Especie: "",
-    Raca: "",
-    Genero: "",
-    Status: "",
+    Especie: enumEspecie.CACHORRO,
+    Id_Raca: 0,
+    Genero: enumGenero.MASCULINO,
+    Status: enumStatus.DISPONIVEL,
     DataNascimento: "",
     Peso: 0,
     Adotado: false,
@@ -85,8 +187,8 @@ export default function CadastroPet() {
   const {
     reset,
     control,
-    trigger,
     watch,
+    trigger,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm({
@@ -97,7 +199,7 @@ export default function CadastroPet() {
             id: petEdicao.id,
             Nome: petEdicao.Nome,
             Especie: petEdicao.Especie,
-            Raca: petEdicao.Raca,
+            Id_Raca: petEdicao.Id_Raca,
             Genero: petEdicao.Genero,
             Status: petEdicao.Status,
             Peso: petEdicao.Peso,
@@ -116,6 +218,33 @@ export default function CadastroPet() {
     resolver: yupResolver(schema),
   });
 
+  const adotado = watch("Adotado");
+  const vacinado = watch("Vacinado");
+  const resgatado = watch("Resgatado");
+
+  // Quando o pet de edição é carregado da API, reseta o formulário com os dados
+  useEffect(() => {
+    if (!petEdicao) return;
+    reset({
+      id: petEdicao.id || 0,
+      Nome: petEdicao.Nome,
+      Especie: petEdicao.Especie,
+      Id_Raca: petEdicao.Id_Raca,
+      Genero: petEdicao.Genero,
+      Status: petEdicao.Status,
+      Peso: petEdicao.Peso,
+      Adotado: petEdicao.Adotado,
+      DataAdocao: petEdicao.DataAdocao || "",
+      TutorResponsavel: petEdicao.TutorResponsavel || "",
+      Vacinado: petEdicao.Vacinado,
+      DataUltimaVacina: petEdicao.DataUltimaVacina || "",
+      Resgatado: petEdicao.Resgatado,
+      DataResgate: petEdicao.DataResgate || "",
+      LocalResgate: petEdicao.LocalResgate || "",
+      DataNascimento: petEdicao.DataNascimento || "",
+    });
+  }, [petEdicao, reset]);
+
   function handleClose() {}
 
   function handleRegistrarDoencaClick() {
@@ -132,27 +261,56 @@ export default function CadastroPet() {
 
   useEffect(() => {
     trigger();
-  }, [trigger]);
+  }, [trigger, adotado, vacinado, resgatado]);
 
-  function onSubmit(data: any) {
-    console.log(data);
-    if (data) {
-      rowsPet.push(data);
-      console.log(rowsPet);
+  async function onSubmit(data: any) {
+    try {
+      const payload: Pet = {
+        id: petEdicao?.id,
+        Nome: data.Nome,
+        Especie: data.Especie,
+        Id_Raca: data.Id_Raca,
+        Genero: data.Genero,
+        Status: data.Status,
+        Peso: data.Peso,
+        Adotado: data.Adotado,
+        DataAdocao: data.DataAdocao,
+        TutorResponsavel: data.TutorResponsavel,
+        Vacinado: data.Vacinado,
+        DataUltimaVacina: data.DataUltimaVacina,
+        Resgatado: data.Resgatado,
+        DataResgate: data.DataResgate,
+        LocalResgate: data.LocalResgate,
+        DataNascimento: data.DataNascimento,
+      };
+
+      if (payload.id && payload.id > 0) {
+        await atualizarPet(payload);
+        const idx = pets.findIndex((p) => p.id === payload.id);
+        if (idx >= 0) {
+          const clone = [...pets];
+          clone[idx] = { ...clone[idx], ...payload } as Pet;
+          setPets(clone);
+        }
+        openAlerta({ mensagem: "Pet atualizado com sucesso.", severity: "success" });
+      } else {
+        const novoId = await criarPet(payload);
+        setPets([
+          ...pets,
+          {
+            ...payload,
+            id: novoId,
+          },
+        ]);
+        openAlerta({ mensagem: "Pet criado com sucesso.", severity: "success" });
+      }
       reset();
-      openAlerta({
-        mensagem:
-          "Pet gravado com sucesso. Você pode verificar o registro no console do navegador",
-        severity: "success",
-      });
-    } else {
-      openAlerta({ mensagem: "Erro ao gravar pet", severity: "error" });
+      router.push("/geral/catalogo");
+      return;
+    } catch (e: any) {
+      openAlerta({ mensagem: e?.message || "Erro ao gravar pet", severity: "error" });
+      return;
     }
-  }
-
-  function openAlerta(params: AlertaParams) {
-    setAlertaOpen(true);
-    setAlertaProps(params);
   }
 
   return (
@@ -179,7 +337,7 @@ export default function CadastroPet() {
             }}
           >
             <Typography
-              sx={{ color: " #7C3AED" }}
+              sx={{ color: "#7C3AED" }}
               variant="h6"
               color="secondary"
               fontWeight={600}
@@ -189,6 +347,13 @@ export default function CadastroPet() {
               Cadastro de Pets
             </Typography>
             <Divider sx={{ my: 2, backgroundColor: "white", height: "2px" }} />
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <ImageUploader
+                label="Foto do Pet"
+                value={fotoPreview}
+                onChange={(file, preview) => { setFotoFile(file); setFotoPreview(preview); }}
+              />
+            </FormControl>
             <FormControl fullWidth sx={{ mb: 3 }}>
               <Controller
                 name="Nome"
@@ -234,23 +399,22 @@ export default function CadastroPet() {
             </FormControl>
             <FormControl fullWidth sx={{ mb: 3 }}>
               <Controller
-                name="Raca"
+                name="Id_Raca"
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { value, onChange } }) => (
-                  <TextField
-                    disabled={false}
-                    label={"Raça"}
-                    value={value}
-                    onChange={onChange}
-                    sx={{ backgroundColor: "white" }}
-                    error={Boolean(errors.Raca)}
+                  <ComboBox
+                    label="Raca"
+                    value={racasArray.find((e) => e.id === value) || null}
+                    setValue={(option) => onChange(option?.id || "")}
+                    options={racasArray}
+                    error={Boolean(errors.Id_Raca)}
                   />
                 )}
               />
-              {errors.Raca && (
+              {errors.Id_Raca && (
                 <FormHelperText sx={{ color: "red" }}>
-                  {errors.Raca.message}
+                  {errors.Id_Raca.message}
                 </FormHelperText>
               )}
             </FormControl>
@@ -319,6 +483,29 @@ export default function CadastroPet() {
               )}
             </FormControl>
 
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <Controller
+                name="DataNascimento"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { value, onChange } }) => (
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label={"Data de Nascimento"}
+                      value={value ? dayjs(value) : null}
+                      onChange={(newValue) => onChange(newValue ? dayjs(newValue).format("YYYY-MM-DD") : "")}
+                      slotProps={{ textField: { sx: { backgroundColor: "white" }, error: Boolean(errors.DataNascimento) } }}
+                    />
+                  </LocalizationProvider>
+                )}
+              />
+              {errors.DataNascimento && (
+                <FormHelperText sx={{ color: "red" }}>
+                  {errors.DataNascimento.message}
+                </FormHelperText>
+              )}
+            </FormControl>
+
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
               <FormControl fullWidth sx={{ mb: 6, width: "50%" }}>
                 <Controller
@@ -333,9 +520,9 @@ export default function CadastroPet() {
                     />
                   )}
                 />
-                {errors.DataAdocao && (
+                {errors.Adotado && (
                   <FormHelperText sx={{ color: "red" }}>
-                    {errors.DataAdocao.message}
+                    {errors.Adotado.message}
                   </FormHelperText>
                 )}
               </FormControl>
@@ -345,13 +532,23 @@ export default function CadastroPet() {
                   control={control}
                   rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
+                    <>
                     <TextField
                       disabled={false}
                       label={"Data de Adoção"}
                       onChange={onChange}
-                      sx={{ backgroundColor: "white" }}
+                      sx={{ backgroundColor: "white", display: 'none' }}
                       error={Boolean(errors.DataAdocao)}
                     />
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        label={"Data de Adoção"}
+                        value={value ? dayjs(value) : null}
+                        onChange={(newValue) => onChange(newValue ? dayjs(newValue).format("YYYY-MM-DD") : "")}
+                        slotProps={{ textField: { sx: { backgroundColor: "white" } } }}
+                      />
+                    </LocalizationProvider>
+                    </>
                   )}
                 />
                 {errors.DataAdocao && (
@@ -397,9 +594,9 @@ export default function CadastroPet() {
                     />
                   )}
                 />
-                {errors.DataAdocao && (
+                {errors.Vacinado && (
                   <FormHelperText sx={{ color: "red" }}>
-                    {errors.DataAdocao.message}
+                    {errors.Vacinado.message}
                   </FormHelperText>
                 )}
               </FormControl>
@@ -409,13 +606,23 @@ export default function CadastroPet() {
                   control={control}
                   rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
+                    <>
                     <TextField
                       disabled={false}
                       label={"Data da última vacina"}
                       onChange={onChange}
-                      sx={{ backgroundColor: "white" }}
+                      sx={{ backgroundColor: "white", display: 'none' }}
                       error={Boolean(errors.DataUltimaVacina)}
                     />
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        label={"Data da última vacina"}
+                        value={value ? dayjs(value) : null}
+                        onChange={(newValue) => onChange(newValue ? dayjs(newValue).format("YYYY-MM-DD") : "")}
+                        slotProps={{ textField: { sx: { backgroundColor: "white" } } }}
+                      />
+                    </LocalizationProvider>
+                    </>
                   )}
                 />
                 {errors.DataUltimaVacina && (
@@ -439,9 +646,9 @@ export default function CadastroPet() {
                     />
                   )}
                 />
-                {errors.DataAdocao && (
+                {errors.Resgatado && (
                   <FormHelperText sx={{ color: "red" }}>
-                    {errors.DataAdocao.message}
+                    {errors.Resgatado.message}
                   </FormHelperText>
                 )}
               </FormControl>
@@ -451,13 +658,14 @@ export default function CadastroPet() {
                   control={control}
                   rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
-                    <TextField
-                      disabled={false}
-                      label={"Data do Resgate"}
-                      onChange={onChange}
-                      sx={{ backgroundColor: "white" }}
-                      error={Boolean(errors.DataResgate)}
-                    />
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        label={"Data do Resgate"}
+                        value={value ? dayjs(value) : null}
+                        onChange={(newValue) => onChange(newValue ? dayjs(newValue).format("YYYY-MM-DD") : "")}
+                        slotProps={{ textField: { sx: { backgroundColor: "white" }, error: Boolean(errors.DataResgate) } }}
+                      />
+                    </LocalizationProvider>
                   )}
                 />
                 {errors.DataResgate && (
@@ -473,6 +681,7 @@ export default function CadastroPet() {
                   control={control}
                   rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
+                    <>
                     <TextField
                       disabled={false}
                       label={"Local do Resgate"}
@@ -480,6 +689,7 @@ export default function CadastroPet() {
                       sx={{ backgroundColor: "white" }}
                       error={Boolean(errors.LocalResgate)}
                     />
+                    </>
                   )}
                 />
                 {errors.LocalResgate && (
@@ -490,34 +700,33 @@ export default function CadastroPet() {
               </FormControl>
             </Box>
             {petEdicao !== undefined && (
-               <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <Button
-                sx={{ background: "#7C3AED" }}
-                variant="contained"
-                color="secondary"
-                onClick={handleRegistrarVacinaClick}
-              >
-                Registrar Vacinação
-              </Button>
-              <Button
-                sx={{ background: "#7C3AED" }}
-                variant="contained"
-                color="secondary"
-                onClick={handleRegistrarDoencaClick}
-              >
-                Registrar Doença
-              </Button>
-              <Button
-                sx={{ background: "#7C3AED" }}
-                variant="contained"
-                color="secondary"
-                onClick={handleAgendarVisitaClick}
-              >
-                Agendar Visita
-              </Button>
-            </Box>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Button
+                  sx={{ background: "#7C3AED" }}
+                  variant="contained"
+                  color="secondary"
+                  onClick={handleRegistrarVacinaClick}
+                >
+                  Registrar Vacinação
+                </Button>
+                <Button
+                  sx={{ background: "#7C3AED" }}
+                  variant="contained"
+                  color="secondary"
+                  onClick={handleRegistrarDoencaClick}
+                >
+                  Registrar Doença
+                </Button>
+                <Button
+                  sx={{ background: "#7C3AED" }}
+                  variant="contained"
+                  color="secondary"
+                  onClick={handleAgendarVisitaClick}
+                >
+                  Agendar Visita
+                </Button>
+              </Box>
             )}
-           
 
             <Box
               sx={{
@@ -547,11 +756,6 @@ export default function CadastroPet() {
               </Button>
             </Box>
           </Box>
-          <Alerta
-            open={alertaOpen}
-            params={alertaProps}
-            setAlertaOpen={setAlertaOpen}
-          />
         </Box>
       </form>
       <PopUpRegistrarVacinacao

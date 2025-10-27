@@ -1,8 +1,6 @@
 "use client";
 
-import {
-  especiesArray,
-} from "@/types";
+import { OptionType } from "@/app/components/ComboBox";
 import {
   Box,
   FormControl,
@@ -11,13 +9,19 @@ import {
 } from "@mui/material";
 
 import FormCadastroBase from "@/app/components/FormCadastroBase";
+import { criarHistoricoDoenca } from "@/services/entities";
 
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
 import ComboBox from "@/app/components/ComboBox";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AlertaParams } from "@/app/components/Alerta";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
+import { listarDoencas } from "@/services/entities";
 
 export interface PopupAtualizarInfosPet {
   togglePopup: boolean;
@@ -27,6 +31,7 @@ export interface PopupAtualizarInfosPet {
 }
 export default function PopupAtualizarInfosPet(props: PopupAtualizarInfosPet) {
   const { togglePopup, setTogglePopup, idPet, openAlerta } = props;
+  const [doencasOptions, setDoencasOptions] = useState<OptionType[]>([]);
 
   const schemaDoenca = yup.object().shape({
     id: yup.number(),
@@ -57,6 +62,12 @@ export default function PopupAtualizarInfosPet(props: PopupAtualizarInfosPet) {
 
   useEffect(() => {
     trigger();
+    listarDoencas()
+      .then((res) => {
+        const opts = (res || []).map((d: any) => ({ id: d.id_doenca, title: d.tb_doenca_nome })) as OptionType[];
+        setDoencasOptions(opts);
+      })
+      .catch(() => setDoencasOptions([]));
   }, [trigger]);
 
   function handleClickSalvar() {
@@ -64,19 +75,22 @@ export default function PopupAtualizarInfosPet(props: PopupAtualizarInfosPet) {
     setTogglePopup(false);
   }
 
-  function onSubmit(data: any) {
-      console.log(data);
-      if (data) {
-        reset();
-        openAlerta({
-          mensagem:
-            "Pet gravado com sucesso. Você pode verificar o registro no console do navegador",
-          severity: "success",
-        });
-      } else {
-        openAlerta({ mensagem: "Erro ao gravar pet", severity: "error" });
-      }
+  async function onSubmitDoenca(data: any) {
+    try {
+      const dataDiagnostico = data?.DataDiagnostico ? String(data.DataDiagnostico) : null;
+      await criarHistoricoDoenca({
+        id_pet: Number(idPet),
+        id_doenca: Number(data.Doenca),
+        dataDiagnostico,
+        status: String(data.Status),
+      });
+      reset();
+      setTogglePopup(false);
+      openAlerta({ mensagem: "Doença registrada com sucesso.", severity: "success" });
+    } catch (e: any) {
+      openAlerta({ mensagem: e?.message || "Erro ao registrar doença", severity: "error" });
     }
+  }
 
   return (
     <Box
@@ -90,7 +104,7 @@ export default function PopupAtualizarInfosPet(props: PopupAtualizarInfosPet) {
         titulo="Registrar Doença"
         open={togglePopup}
         setOpen={setTogglePopup}
-        onSubmit={handleClickSalvar}
+        onSubmit={() => handleSubmit(onSubmitDoenca)()}
       >
         <Box sx={{ p: 3, display: "flex", flexDirection: "column", gap: 0 }}>
           <FormControl fullWidth sx={{ mb: 3 }}>
@@ -100,10 +114,10 @@ export default function PopupAtualizarInfosPet(props: PopupAtualizarInfosPet) {
               rules={{ required: true }}
               render={({ field: { value, onChange } }) => (
                 <ComboBox
-                  label={"Doenca"}
-                  value={especiesArray.find((e) => e.id === value) || null}
+                  label={"Doença"}
+                  value={doencasOptions.find((e) => e.id === Number(value)) || null}
                   setValue={(option) => onChange(option?.id || "")}
-                  options={especiesArray}
+                  options={doencasOptions}
                   error={Boolean(errors.Doenca)}
                 />
               )}
@@ -121,14 +135,14 @@ export default function PopupAtualizarInfosPet(props: PopupAtualizarInfosPet) {
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { value, onChange } }) => (
-                  <TextField
-                    disabled={false}
-                    label={"Data do diagnóstico"}
-                    value={value}
-                    onChange={onChange}
-                    sx={{ backgroundColor: "white" }}
-                    error={Boolean(errors.DataDiagnostico)}
-                  />
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label={"Data do diagnóstico"}
+                      value={value ? dayjs(value) : null}
+                      onChange={(newValue) => onChange(newValue ? dayjs(newValue).format("YYYY-MM-DD") : "")}
+                      slotProps={{ textField: { sx: { backgroundColor: "white" }, error: Boolean(errors.DataDiagnostico) } }}
+                    />
+                  </LocalizationProvider>
                 )}
               />
               {errors.DataDiagnostico && (
@@ -165,3 +179,5 @@ export default function PopupAtualizarInfosPet(props: PopupAtualizarInfosPet) {
     </Box>
   );
 }
+
+

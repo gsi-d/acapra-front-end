@@ -12,21 +12,22 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-image: url('/src/app/login/Images/patas.png');
+  background-image: url('/images/patas.png');
   background-repeat: repeat;  
-  background-position: left center;
-  background-size: 100px 100px;
+  background-position: center;
+  background-size: 1000px 1100px;
   text-align: center;
-  padding: 20px 40px;
+  padding: 20px 20px;
   box-sizing: border-box;
-  min-width: 320px;             
+  min-width: 600px;             
 }
 
 .mensagem h2 {
-  font-size: 2rem;
+  font-size: 3rem;
   margin-bottom: 0.5rem;
   margin-top: 0;
   max-width: 90%;
+  font-weight: 600;
 }
 
 .mensagem p {
@@ -100,6 +101,7 @@
 }
 
 .opcoes input[type="checkbox"] {
+  margin-top: 8px;
   margin-right: 5px;
 }
 

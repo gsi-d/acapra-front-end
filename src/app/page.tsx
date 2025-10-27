@@ -8,36 +8,58 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Alerta, { AlertaParams } from './components/Alerta';
+import { login as apiLogin } from '@/services/auth';
 
 export default function Page() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [lembreDeMim, setLembreDeMim] = useState(false);
+  const [alertaOpen, setAlertaOpen] = useState(false);
+  const [alertaParams, setAlertaParams] = useState<AlertaParams>({ mensagem: '', severity: 'error' });
   const router = useRouter();
-  
+
   useEffect(() => {
     const isLogado = Boolean(localStorage.getItem('logado'));
+    const emailSalvo = localStorage.getItem('emailSalvo');
+    if (emailSalvo) {
+      setEmail(emailSalvo);
+      setLembreDeMim(true);
+    }
     if (isLogado) {
       router.push('/geral/catalogo');
     }
   }, [router]);
 
-  function handleLogin(event: React.FormEvent) {
+  async function handleLogin(event: React.FormEvent) {
     event.preventDefault();
+    try {
+      const res = await apiLogin(email, senha);
+      if (!res?.success || !res?.data) {
+        throw new Error(res?.message || 'Credenciais inválidas.');
+      }
+      const adminFlag = Boolean((res.data as any).tb_usuario_admin ?? (res.data as any).admin ?? false);
+      localStorage.setItem('isAdm', adminFlag ? 'true' : 'false');
 
-    if (email === 'admin@admin.com' && senha === '123456789') {
-      localStorage.setItem('isAdm', 'true');
+      if (lembreDeMim) {
+        localStorage.setItem('emailSalvo', email);
+        localStorage.setItem('logado', 'true');
+      } else {
+        localStorage.removeItem('emailSalvo');
+      }
+
       router.push('/geral/catalogo');
-    } else {
-      localStorage.setItem('isAdm', 'false');
-      router.push('/geral/catalogo');
+    } catch (err: any) {
+      const msg = err?.message || 'Não foi possível realizar o login.';
+      setAlertaParams({ mensagem: msg, severity: 'error' });
+      setAlertaOpen(true);
     }
-    localStorage.setItem('logado', 'true');
   }
-
 
   return (
     <div className="informacao">
+      <Alerta open={alertaOpen} setAlertaOpen={setAlertaOpen} params={alertaParams} />
       <div className="mensagem">
         <h2>Oi, Bem-vindo de volta!</h2>
         <p>Você está em uma boa companhia</p>
@@ -61,7 +83,6 @@ export default function Page() {
 
             <label htmlFor="senha">Digite sua senha</label>
             <FormControl variant="outlined" fullWidth>
-              <InputLabel htmlFor="senha">Senha</InputLabel>
               <OutlinedInput
                 id="senha"
                 type={mostrarSenha ? 'text' : 'password'}
@@ -78,13 +99,18 @@ export default function Page() {
                     </IconButton>
                   </InputAdornment>
                 }
-                label="Senha"
               />
             </FormControl>
 
             <div className="opcoes">
               <label>
-                <input type="checkbox" id="lembreDeMim" /> Lembre de mim
+                <input
+                  type="checkbox"
+                  id="lembreDeMim"
+                  checked={lembreDeMim}
+                  onChange={(e) => setLembreDeMim(e.target.checked)}
+                />
+                Lembre de mim
               </label>
               <a href="#" className="esqueceu">Esqueceu a senha?</a>
             </div>
@@ -99,9 +125,15 @@ export default function Page() {
           </div>
 
           <div className="icones-sociais">
-            <IconButton><GoogleIcon className="social-icon google" /></IconButton>
-            <IconButton><FacebookIcon className="social-icon facebook" /></IconButton>
-            <IconButton><InstagramIcon className="social-icon instagram" /></IconButton>
+            <a href="https://accounts.google.com" target="_blank" rel="noopener noreferrer">
+              <IconButton><GoogleIcon className="social-icon google" /></IconButton>
+            </a>
+            <a href="https://www.facebook.com/moacir.da.acapra.giraldi" target="_blank" rel="noopener noreferrer">
+              <IconButton><FacebookIcon className="social-icon facebook" /></IconButton>
+            </a>
+            <a href="https://www.instagram.com/acaprabrusquesc/" target="_blank" rel="noopener noreferrer">
+              <IconButton><InstagramIcon className="social-icon instagram" /></IconButton>
+            </a>
           </div>
         </div>
       </div>

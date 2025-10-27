@@ -4,7 +4,7 @@ import Checkbox from '@mui/material/Checkbox';
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
 interface CheckBoxProps {
-    value: boolean;
+    value?: boolean;
     onChange?: () => void
 }
 

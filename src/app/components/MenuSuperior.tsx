@@ -32,7 +32,7 @@ export default function MenuSuperior() {
 
   const handleLogoutClick = () => {
     localStorage.removeItem("isAdm");
-    localStorage.removeItem("logado");
+    localStorage.removeItem("emailSalvo");
     setAnchorEl(null);
     router.push("/");
   };
