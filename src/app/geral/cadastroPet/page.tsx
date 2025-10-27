@@ -34,6 +34,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import PopUpRegistrarVacinacao from "./PopUpRegistrarVacinacao";
 import PopUpRegistrarDoenca from "./PopUpRegistrarDoenca";
 import { useContextoMock } from "@/contextos/ContextoMock";
+import { listarRacas } from "@/services/entities";
+import { criarPet, atualizarPet, retornarPet } from "@/services/pets";
+import ImageUploader from "@/app/components/ImageUploader";
 
 export default function CadastroPet() {
   const searchParams = useSearchParams();
@@ -42,12 +45,76 @@ export default function CadastroPet() {
   const [togglePopupVacinacao, setTogglePopupVacinacao] =
     useState<boolean>(false);
   const [togglePopupDoenca, setTogglePopupDoenca] = useState<boolean>(false);
-  const { pets, setPets, racas, openAlerta } = useContextoMock();
+  const { pets, setPets, racas, setRacas, openAlerta } = useContextoMock();
   const racasArray = retornaRacasOptionArray(racas);
 
-  const [petEdicao, setPetEdicao] = useState<Pet | undefined>(
-    id !== null ? pets.filter((pet) => pet.id === Number(id))[0] : undefined
-  );
+  const [petEdicao, setPetEdicao] = useState<Pet | undefined>(undefined);
+  const [fotoFile, setFotoFile] = useState<File | null>(null);
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null);
+
+  // Carrega dados do pet em modo edição a partir da API
+  useEffect(() => {
+    let cancelled = false;
+    const carregarPet = async () => {
+      const idNum = id ? Number(id) : 0;
+      if (!idNum) return;
+      try {
+        const pet = await retornarPet(idNum);
+        if (!cancelled) setPetEdicao(pet ?? undefined);
+      } catch (e) {
+        openAlerta({ mensagem: 'Falha ao carregar pet para edição', severity: 'error' });
+      }
+    };
+    carregarPet();
+    return () => {
+      cancelled = true;
+    };
+  }, [id, openAlerta]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function carregarRacas() {
+      try {
+        if (racas.length > 0) return;
+        const lista = await listarRacas();
+        if (cancelled) return;
+        const mapeadas = (lista || []).map((row: any) => ({
+          id: row.id ?? row.id_raca ?? row.idRaca ?? 0,
+          Nome:
+            row.Nome ?? row.nome ?? row.tb_raca_nome_raca ?? row.tb_raca_nome ?? "",
+          Especie:
+            row.Especie ??
+            (row.tb_raca_nome_especie === "Cachorro"
+              ? enumEspecie.CACHORRO
+              : row.tb_raca_nome_especie === "Gato"
+              ? enumEspecie.GATO
+              : enumEspecie.CACHORRO),
+        }));
+        if (mapeadas.length > 0) setRacas(mapeadas);
+      } catch (e: any) {
+        openAlerta({ mensagem: e?.message || "Falha ao carregar raças", severity: "error" });
+      }
+    }
+    carregarRacas();
+    return () => {
+      cancelled = true;
+    };
+  }, [racas.length, setRacas, openAlerta]);
+
+  // Ajusta preview de foto com base nos dados carregados do pet em edição
+  useEffect(() => {
+    if (petEdicao) {
+      const url = (petEdicao as any)?.tb_pet_foto_url
+        ?? (petEdicao as any)?.tb_pet_foto
+        ?? (petEdicao as any)?.fotoUrl
+        ?? (petEdicao as any)?.foto
+        ?? null;
+      setFotoPreview(url);
+    } else {
+      setFotoPreview(null);
+      setFotoFile(null);
+    }
+  }, [petEdicao]);
 
   const schema = yup.object().shape({
     id: yup.number(),
@@ -155,9 +222,28 @@ export default function CadastroPet() {
   const vacinado = watch("Vacinado");
   const resgatado = watch("Resgatado");
 
+  // Quando o pet de edição é carregado da API, reseta o formulário com os dados
   useEffect(() => {
-      console.log('errors', errors);
-  }, [errors]);
+    if (!petEdicao) return;
+    reset({
+      id: petEdicao.id || 0,
+      Nome: petEdicao.Nome,
+      Especie: petEdicao.Especie,
+      Id_Raca: petEdicao.Id_Raca,
+      Genero: petEdicao.Genero,
+      Status: petEdicao.Status,
+      Peso: petEdicao.Peso,
+      Adotado: petEdicao.Adotado,
+      DataAdocao: petEdicao.DataAdocao || "",
+      TutorResponsavel: petEdicao.TutorResponsavel || "",
+      Vacinado: petEdicao.Vacinado,
+      DataUltimaVacina: petEdicao.DataUltimaVacina || "",
+      Resgatado: petEdicao.Resgatado,
+      DataResgate: petEdicao.DataResgate || "",
+      LocalResgate: petEdicao.LocalResgate || "",
+      DataNascimento: petEdicao.DataNascimento || "",
+    });
+  }, [petEdicao, reset]);
 
   function handleClose() {}
 
@@ -177,11 +263,10 @@ export default function CadastroPet() {
     trigger();
   }, [trigger, adotado, vacinado, resgatado]);
 
-  function onSubmit(data: any) {
-    if (data) {
-      const novoId = pets.length + 1;
-      const novoPet: Pet = {
-        id: novoId,
+  async function onSubmit(data: any) {
+    try {
+      const payload: Pet = {
+        id: petEdicao?.id,
         Nome: data.Nome,
         Especie: data.Especie,
         Id_Raca: data.Id_Raca,
@@ -198,17 +283,33 @@ export default function CadastroPet() {
         LocalResgate: data.LocalResgate,
         DataNascimento: data.DataNascimento,
       };
-      const petsAtualizados: Pet[] = [...pets, novoPet];
-      setPets(petsAtualizados);
+
+      if (payload.id && payload.id > 0) {
+        await atualizarPet(payload);
+        const idx = pets.findIndex((p) => p.id === payload.id);
+        if (idx >= 0) {
+          const clone = [...pets];
+          clone[idx] = { ...clone[idx], ...payload } as Pet;
+          setPets(clone);
+        }
+        openAlerta({ mensagem: "Pet atualizado com sucesso.", severity: "success" });
+      } else {
+        const novoId = await criarPet(payload);
+        setPets([
+          ...pets,
+          {
+            ...payload,
+            id: novoId,
+          },
+        ]);
+        openAlerta({ mensagem: "Pet criado com sucesso.", severity: "success" });
+      }
       reset();
-      openAlerta({
-        mensagem:
-          "Pet gravado com sucesso. Você pode verificar o registro no console do navegador",
-        severity: "success",
-      });
       router.push("/geral/catalogo");
-    } else {
-      openAlerta({ mensagem: "Erro ao gravar pet", severity: "error" });
+      return;
+    } catch (e: any) {
+      openAlerta({ mensagem: e?.message || "Erro ao gravar pet", severity: "error" });
+      return;
     }
   }
 
@@ -246,6 +347,13 @@ export default function CadastroPet() {
               Cadastro de Pets
             </Typography>
             <Divider sx={{ my: 2, backgroundColor: "white", height: "2px" }} />
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <ImageUploader
+                label="Foto do Pet"
+                value={fotoPreview}
+                onChange={(file, preview) => { setFotoFile(file); setFotoPreview(preview); }}
+              />
+            </FormControl>
             <FormControl fullWidth sx={{ mb: 3 }}>
               <Controller
                 name="Nome"

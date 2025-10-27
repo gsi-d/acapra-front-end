@@ -98,7 +98,7 @@ export async function criarAdocao(payload: Record<string, any>) {
 }
 
 // Históricos
-export async function criarHistoricoVacina(payload: { id_pet: number; id_vacina: number; dataAplicacao: string; dataProximaAplicacao: string }) {
+export async function criarHistoricoVacina(payload: { id_pet: number; id_vacina: number; dataAplicacao: string | null; dataProximaAplicacao: string | null }) {
   const body = {
     id_pet: payload.id_pet,
     id_vacina: payload.id_vacina,
@@ -108,7 +108,7 @@ export async function criarHistoricoVacina(payload: { id_pet: number; id_vacina:
   };
   return apiPost<CreateResponse>(`/historicoVacina`, body);
 }
-export async function criarHistoricoDoenca(payload: { id_pet: number; id_doenca: number; dataDiagnostico: string; status: string }) {
+export async function criarHistoricoDoenca(payload: { id_pet: number; id_doenca: number; dataDiagnostico: string | null; status: string }) {
   const body = {
     id_pet: payload.id_pet,
     id_doenca: payload.id_doenca,

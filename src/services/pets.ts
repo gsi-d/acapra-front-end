@@ -14,10 +14,10 @@ export function mapUiPetToDb(payload: Pet) {
     id_raca: payload.Id_Raca,
     tb_pet_genero: payload.Genero,
     tb_pet_status_pet: payload.Status,
-    tb_pet_data_nascimento: payload.DataNascimento,
+    tb_pet_data_nascimento: payload.DataNascimento ? payload.DataNascimento : null,
     tb_pet_vacinado: payload.Vacinado,
     tb_pet_resgatado: payload.Resgatado,
-    tb_pet_data_resgaste: payload.DataResgate,
+    tb_pet_data_resgaste: payload.DataResgate ? payload.DataResgate : null,
     tb_pet_local_resgaste: payload.LocalResgate,
   };
 }

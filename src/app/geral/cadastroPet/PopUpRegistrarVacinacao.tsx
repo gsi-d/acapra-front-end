@@ -1,12 +1,7 @@
 "use client";
 
 import { OptionType } from "@/app/components/ComboBox";
-import {
-  Box,
-  FormControl,
-  FormHelperText,
-  TextField,
-} from "@mui/material";
+import { Box, FormControl, FormHelperText } from "@mui/material";
 
 import FormCadastroBase from "@/app/components/FormCadastroBase";
 import { criarHistoricoVacina } from "@/services/entities";
@@ -18,6 +13,10 @@ import ComboBox from "@/app/components/ComboBox";
 import { useEffect, useState } from "react";
 import { AlertaParams } from "@/app/components/Alerta";
 import { listarVacinas } from "@/services/entities";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
 
 export interface PopupAtualizarInfosPet {
   togglePopup: boolean;
@@ -87,19 +86,23 @@ export default function PopUpRegistrarVacinacao(props: PopupAtualizarInfosPet) {
     setTogglePopup(false);
   }
 
-  function onSubmit(data: any) {
-      console.log(data);
-      if (data) {
-        reset();
-        openAlerta({
-          mensagem:
-            "Pet gravado com sucesso. Você pode verificar o registro no console do navegador",
-          severity: "success",
-        });
-      } else {
-        openAlerta({ mensagem: "Erro ao gravar pet", severity: "error" });
-      }
+  async function onSubmitVacina(data: any) {
+    try {
+      const dataAplicacao = data?.DataAplicacao ? String(data.DataAplicacao) : null;
+      const dataProximaAplicacao = data?.DataProximaAplicacao ? String(data.DataProximaAplicacao) : null;
+      await criarHistoricoVacina({
+        id_pet: Number(idPet),
+        id_vacina: Number(data.Vacina),
+        dataAplicacao,
+        dataProximaAplicacao,
+      });
+      reset();
+      setTogglePopup(false);
+      openAlerta({ mensagem: "Vacinação registrada com sucesso.", severity: "success" });
+    } catch (e: any) {
+      openAlerta({ mensagem: e?.message || "Erro ao registrar vacinação", severity: "error" });
     }
+  }
 
   return (
     <Box
@@ -113,7 +116,7 @@ export default function PopUpRegistrarVacinacao(props: PopupAtualizarInfosPet) {
         titulo="Registrar Vacinação"
         open={togglePopup}
         setOpen={setTogglePopup}
-        onSubmit={() => handleSubmit(onSubmit)()}
+        onSubmit={() => handleSubmit(onSubmitVacina)()}
       >
         <Box sx={{ p: 3, display: "flex", flexDirection: "column", gap: 0 }}>
           <FormControl fullWidth sx={{ mb: 3 }}>
@@ -144,14 +147,14 @@ export default function PopUpRegistrarVacinacao(props: PopupAtualizarInfosPet) {
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { value, onChange } }) => (
-                  <TextField
-                    disabled={false}
-                    label={"Data da aplicação"}
-                    value={value}
-                    onChange={onChange}
-                    sx={{ backgroundColor: "white" }}
-                    error={Boolean(errors.DataAplicacao)}
-                  />
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label={"Data da aplicação"}
+                      value={value ? dayjs(value) : null}
+                      onChange={(newValue) => onChange(newValue ? dayjs(newValue).format("YYYY-MM-DD") : "")}
+                      slotProps={{ textField: { sx: { backgroundColor: "white" }, error: Boolean(errors.DataAplicacao) } }}
+                    />
+                  </LocalizationProvider>
                 )}
               />
               {errors.DataAplicacao && (
@@ -166,14 +169,14 @@ export default function PopUpRegistrarVacinacao(props: PopupAtualizarInfosPet) {
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { value, onChange } }) => (
-                  <TextField
-                    disabled={false}
-                    label={"Data da próxima aplicação"}
-                    value={value}
-                    onChange={onChange}
-                    sx={{ backgroundColor: "white" }}
-                    error={Boolean(errors.DataProximaAplicacao)}
-                  />
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label={"Data da próxima aplicação"}
+                      value={value ? dayjs(value) : null}
+                      onChange={(newValue) => onChange(newValue ? dayjs(newValue).format("YYYY-MM-DD") : "")}
+                      slotProps={{ textField: { sx: { backgroundColor: "white" }, error: Boolean(errors.DataProximaAplicacao) } }}
+                    />
+                  </LocalizationProvider>
                 )}
               />
               {errors.DataProximaAplicacao && (
