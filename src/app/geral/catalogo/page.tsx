@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { enumEspecie, enumGenero, enumPorte, Pet, tbPet } from '@/types';
 import { calcularIdade } from '@/app/util/DataHelper';
+import { listarPets } from '@/services/pets';
 
 const especies: OptionType[] = [
     { id: 1, title: 'Cachorro' },
@@ -48,12 +49,8 @@ export default function Page() {
 
     const fetchAnimals = async () => {
         try {
-            const response = await fetch('/api/pets');
-            if (!response.ok) {
-                throw new Error('Erro ao buscar os dados da API.');
-            }
-            const data = await response.json();
-            setPets(data.data);
+            const data = await listarPets();
+            setPets(data);
         } catch (err: any) {
             console.log(err.message);
         }
@@ -151,7 +148,7 @@ export default function Page() {
                         <CardMedia
                             component="img"
                             height="200"
-                            image={''}
+                            image={`https://placedog.net/500?id=${animal.id_pet}`}
                             alt={animal.tb_pet_nome}
                         />
                         <CardContent>

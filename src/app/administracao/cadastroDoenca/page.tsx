@@ -7,6 +7,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Doenca } from "@/types";
 import Alerta, { AlertaParams } from "@/app/components/Alerta";
 import { useContextoMock } from "@/contextos/ContextoMock";
+import { criarDoenca } from "@/services/entities";
 import { useRouter } from "next/navigation";
 
 export default function CadastroDoenca() {
@@ -51,6 +52,19 @@ export default function CadastroDoenca() {
     resolver: yupResolver(schema),
   });
 
+  async function handleSubmitDoenca(data: any) {
+    try {
+      await criarDoenca({ Nome: data.Nome, Descricao: data.Descricao });
+      const novoId = doencas.length + 1;
+      setDoencas([...doencas, { id: novoId, Nome: data.Nome, Descricao: data.Descricao }]);
+      reset();
+      openAlerta({ mensagem: "Doença gravada com sucesso.", severity: "success" });
+      router.push("/geral/catalogo");
+    } catch (e: any) {
+      openAlerta({ mensagem: e?.message || "Erro ao gravar doença", severity: "error" });
+    }
+  }
+
   function onSubmit(data: any) {
     if (data) {
       const novoId = doencas.length + 1;
@@ -79,7 +93,7 @@ export default function CadastroDoenca() {
 
   return (
     <form
-      onSubmit={handleSubmit((data) => onSubmit(data))}
+      onSubmit={handleSubmit(handleSubmitDoenca)}
       className="flex items-center justify-center bg-gray-100"
       style={{ height: "80vh" }}
     >

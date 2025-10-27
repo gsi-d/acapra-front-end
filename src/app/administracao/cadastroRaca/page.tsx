@@ -8,6 +8,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { enumEspecie, especiesArray, Raca } from "@/types";
 import { useContextoMock } from "@/contextos/ContextoMock";
 import { useRouter } from "next/navigation";
+import { criarRaca } from "@/services/entities";
 
 export default function CadastroRaca() {
   const [racaEdicao, setRacaEdicao] = useState<Raca | undefined>(undefined);
@@ -46,6 +47,19 @@ export default function CadastroRaca() {
     resolver: yupResolver(schema),
   });
 
+  async function handleSubmitRaca(data: any) {
+    try {
+      await criarRaca({ Nome: data.Nome, Especie: data.Especie });
+      const novoId = racas.length + 1;
+      setRacas([...racas, { id: novoId, Nome: data.Nome, Especie: data.Especie }]);
+      reset();
+      openAlerta({ mensagem: "Raça gravada com sucesso.", severity: "success" });
+      router.push("/geral/catalogo");
+    } catch (e: any) {
+      openAlerta({ mensagem: e?.message || "Erro ao gravar raça", severity: "error" });
+    }
+  }
+
   function onSubmit(data: any) {
     if (data) {
       const novoId = racas.length + 1;
@@ -74,7 +88,7 @@ export default function CadastroRaca() {
 
   return (
     <form
-      onSubmit={handleSubmit((data) => onSubmit(data))}
+      onSubmit={handleSubmit(handleSubmitRaca)}
       className="flex items-center justify-center bg-gray-100"
       style={{ height: "80vh" }}
     >
@@ -141,3 +155,4 @@ export default function CadastroRaca() {
     </form>
   );
 }
+

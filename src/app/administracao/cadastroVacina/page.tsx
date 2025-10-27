@@ -1,12 +1,17 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Button, FormControl, FormHelperText, TextField } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Vacina } from "@/types";
 import Alerta, { AlertaParams } from "@/app/components/Alerta";
 import { useContextoMock } from "@/contextos/ContextoMock";
+import { criarVacina } from "@/services/entities";
 import { useRouter } from "next/navigation";
 
 export default function CadastroVacina() {
@@ -50,6 +55,19 @@ export default function CadastroVacina() {
     resolver: yupResolver(schema),
   });
 
+  async function handleSubmitVacina(data: any) {
+    try {
+      await criarVacina({ Nome: data.Nome, DataVacina: data.DataVacina });
+      const novaVacina: Vacina = { id: data.id, Nome: data.Nome, DataVacina: data.DataVacina };
+      setVacinas([...vacinas, novaVacina]);
+      reset();
+      openAlerta({ mensagem: "Vacina gravada com sucesso.", severity: "success" });
+      router.push("/geral/catalogo");
+    } catch (e: any) {
+      openAlerta({ mensagem: e?.message || "Erro ao gravar vacina", severity: "error" });
+    }
+  }
+
   function onSubmit(data: any) {
       if (data) {
         const novaVacina : Vacina = {
@@ -77,7 +95,7 @@ export default function CadastroVacina() {
 
   return (
     <form
-      onSubmit={handleSubmit((data) => onSubmit(data))}
+      onSubmit={handleSubmit(handleSubmitVacina)}
       className="flex items-center justify-center bg-gray-100"
       style={{ height: "80vh" }}
     >
@@ -109,21 +127,21 @@ export default function CadastroVacina() {
           )}
         </FormControl>
         <FormControl fullWidth sx={{ mb: 2 }}>
-          <Controller
-            name="DataVacina"
-            control={control}
-            rules={{ required: true }}
-            render={({ field: { value, onChange } }) => (
-              <TextField
-                disabled={false}
-                label={"Data para Vacina"}
-                value={value}
-                onChange={onChange}
-                sx={{ backgroundColor: "white" }}
-                error={Boolean(errors.DataVacina)}
-              />
-            )}
-          />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Controller
+              name="DataVacina"
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { value, onChange } }) => (
+                <DatePicker
+                  label={"Data para Vacina"}
+                  value={value ? dayjs(value) : null}
+                  onChange={(newValue) => onChange(newValue ? dayjs(newValue).format("YYYY-MM-DD") : "")}
+                  slotProps={{ textField: { sx: { backgroundColor: "white" }, error: Boolean(errors.DataVacina) } }}
+                />
+              )}
+            />
+          </LocalizationProvider>
           {errors.DataVacina && (
             <FormHelperText sx={{ color: "red" }}>
               {errors.DataVacina.message}

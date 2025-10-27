@@ -13,24 +13,24 @@ import {
 } from '@mui/material';
 
 const especies: OptionType[] = [
-  { id: 'cachorro', title: 'Cachorro' },
-  { id: 'gato', title: 'Gato' },
+  { id: 1, title: 'Cachorro' },
+  { id: 2, title: 'Gato' },
 ];
 
 const estados: OptionType[] = [
-  { id: 'SP', title: 'SP' },
-  { id: 'RJ', title: 'RJ' },
+  { id: 1, title: 'SP' },
+  { id: 2, title: 'RJ' },
 ];
 
 const portes: OptionType[] = [
-  { id: 'pequeno', title: 'Pequeno' },
-  { id: 'medio', title: 'Médio' },
-  { id: 'grande', title: 'Grande' },
+  { id: 1, title: 'Pequeno' },
+  { id: 2, title: 'Médio' },
+  { id: 3, title: 'Grande' },
 ];
 
 const sexos: OptionType[] = [
-  { id: 'macho', title: 'Macho' },
-  { id: 'femea', title: 'Fêmea' },
+  { id: 1, title: 'Macho' },
+  { id: 2, title: 'Fêmea' },
 ];
 
 const mockAnimals = [
@@ -79,9 +79,9 @@ export default function Page() {
   // Filtragem usando os ids das opções selecionadas
   const animaisFiltrados = mockAnimals.filter((animal) => {
     return (
-      (especie ? animal.especie === especie.id : true) &&
-      (sexo ? animal.sexo === sexo.id : true) &&
-      (porte ? animal.porte === porte.id : true) &&
+      (especie ? animal.especie === especie.title.toLowerCase() : true) &&
+      (sexo ? animal.sexo === sexo.title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') : true) &&
+      (porte ? animal.porte === porte.title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') : true) &&
       (nome ? animal.nome.toLowerCase().includes(nome.toLowerCase()) : true)
       // Estado e cidade não estão no mock, mas você pode usar depois
     );
@@ -190,3 +190,4 @@ export default function Page() {
     </Box>
   );
 }
+
