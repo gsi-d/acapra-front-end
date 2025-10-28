@@ -8,12 +8,16 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Alerta, { AlertaParams } from './components/Alerta';
+import { login as apiLogin } from '@/services/auth';
 
 export default function Page() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [lembreDeMim, setLembreDeMim] = useState(false);
+  const [alertaOpen, setAlertaOpen] = useState(false);
+  const [alertaParams, setAlertaParams] = useState<AlertaParams>({ mensagem: '', severity: 'error' });
   const router = useRouter();
 
   useEffect(() => {
@@ -28,27 +32,34 @@ export default function Page() {
     }
   }, [router]);
 
-  function handleLogin(event: React.FormEvent) {
+  async function handleLogin(event: React.FormEvent) {
     event.preventDefault();
+    try {
+      const res = await apiLogin(email, senha);
+      if (!res?.success || !res?.data) {
+        throw new Error(res?.message || 'Credenciais inválidas.');
+      }
+      const adminFlag = Boolean((res.data as any).tb_usuario_admin ?? (res.data as any).admin ?? false);
+      localStorage.setItem('isAdm', adminFlag ? 'true' : 'false');
 
-    if (email === 'admin@admin.com' && senha === '1234') {
-      localStorage.setItem('isAdm', 'true');
-    } else {
-      localStorage.setItem('isAdm', 'false');
+      if (lembreDeMim) {
+        localStorage.setItem('emailSalvo', email);
+        localStorage.setItem('logado', 'true');
+      } else {
+        localStorage.removeItem('emailSalvo');
+      }
+
+      router.push('/geral/catalogo');
+    } catch (err: any) {
+      const msg = err?.message || 'Não foi possível realizar o login.';
+      setAlertaParams({ mensagem: msg, severity: 'error' });
+      setAlertaOpen(true);
     }
-
-    if (lembreDeMim) {
-      localStorage.setItem('emailSalvo', email);
-      localStorage.setItem('logado', 'true');
-    } else {
-      localStorage.removeItem('emailSalvo');
-    }
-
-    router.push('/geral/catalogo');
   }
 
   return (
     <div className="informacao">
+      <Alerta open={alertaOpen} setAlertaOpen={setAlertaOpen} params={alertaParams} />
       <div className="mensagem">
         <h2>Oi, Bem-vindo de volta!</h2>
         <p>Você está em uma boa companhia</p>
