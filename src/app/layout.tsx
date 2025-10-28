@@ -2,11 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { roboto } from "./ui/fonts";
-import Menu from "./components/Menu";
-import { Box } from "@mui/material";
-import Footer from "./components/Footer";
 import LayoutWrapper from "./LayoutWrapper";
 import { ContextoMockProvider } from "../contextos/ContextoMock";
+import { SessaoProvider } from "../contextos/ContextoSessao";
+import ThemeRegistry from "@/ThemeRegistry";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,9 +32,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased ${roboto.className}`}
       >
-        <ContextoMockProvider>
-          <LayoutWrapper>{children}</LayoutWrapper>
-        </ContextoMockProvider>
+        <ThemeRegistry>
+          <SessaoProvider>
+            <ContextoMockProvider>
+              <LayoutWrapper>{children}</LayoutWrapper>
+            </ContextoMockProvider>
+          </SessaoProvider>
+        </ThemeRegistry>
       </body>
     </html>
   );

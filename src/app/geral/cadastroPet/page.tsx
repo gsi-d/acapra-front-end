@@ -400,7 +400,7 @@ export default function CadastroPet() {
               Cadastro de Pets
             </Typography>
             <Divider sx={{ my: 2, backgroundColor: "white", height: "2px" }} />
-            <FormControl fullWidth sx={{ mb: 3 }}>
+            <FormControl fullWidth sx={{ mb: 3, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <ImageUploader
                 label="Foto do Pet"
                 value={fotoPreview}

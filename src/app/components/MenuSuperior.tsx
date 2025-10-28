@@ -17,12 +17,14 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import Logout from "@mui/icons-material/Logout";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSessao } from "@/contextos/ContextoSessao";
 
 export default function MenuSuperior() {
   const [mode, setMode] = useState<string>("light");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const router = useRouter();
+  const { limparSessao } = useSessao();
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -31,8 +33,7 @@ export default function MenuSuperior() {
   };
 
   const handleLogoutClick = () => {
-    localStorage.removeItem("isAdm");
-    localStorage.removeItem("emailSalvo");
+    limparSessao();
     setAnchorEl(null);
     router.push("/");
   };
