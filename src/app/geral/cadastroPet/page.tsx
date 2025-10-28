@@ -409,26 +409,6 @@ export default function CadastroPet() {
             </FormControl>
             <FormControl fullWidth sx={{ mb: 3 }}>
               <Controller
-                name="Porte"
-                control={control}
-                render={({ field: { value, onChange } }) => (
-                  <ComboBox
-                    label={"Porte"}
-                    value={portesOptions.find((p) => p.id === value) || null}
-                    setValue={(option) => onChange(option?.id || "")}
-                    options={portesOptions}
-                    error={Boolean((errors as any).Porte)}
-                  />
-                )}
-              />
-              {(errors as any).Porte && (
-                <FormHelperText sx={{ color: "red" }}>
-                  {(errors as any).Porte.message as any}
-                </FormHelperText>
-              )}
-            </FormControl>
-            <FormControl fullWidth sx={{ mb: 3 }}>
-              <Controller
                 name="Nome"
                 control={control}
                 rules={{ required: true }}
@@ -509,6 +489,26 @@ export default function CadastroPet() {
               {errors.Genero && (
                 <FormHelperText sx={{ color: "red" }}>
                   {errors.Genero.message}
+                </FormHelperText>
+              )}
+            </FormControl>
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <Controller
+                name="Porte"
+                control={control}
+                render={({ field: { value, onChange } }) => (
+                  <ComboBox
+                    label={"Porte"}
+                    value={portesOptions.find((p) => p.id === value) || null}
+                    setValue={(option) => onChange(option?.id || "")}
+                    options={portesOptions}
+                    error={Boolean((errors as any).Porte)}
+                  />
+                )}
+              />
+              {(errors as any).Porte && (
+                <FormHelperText sx={{ color: "red" }}>
+                  {(errors as any).Porte.message as any}
                 </FormHelperText>
               )}
             </FormControl>
