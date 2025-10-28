@@ -62,6 +62,7 @@ export interface Pet{
     Especie: enumEspecie;
     Id_Raca: number;
     Genero: enumGenero;
+    Porte?: enumPorte;
     Status: enumStatus;
     DataNascimento: string;
     Peso: number;
