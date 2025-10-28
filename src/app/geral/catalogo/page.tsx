@@ -1,173 +1,199 @@
 'use client';
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import ComboBox, { OptionType } from '@/app/components/ComboBox'; // ajuste o caminho conforme seu projeto
+import ComboBox, { OptionType } from '@/app/components/ComboBox';
 import {
-    Box,
-    Button,
-    Card,
-    CardContent,
-    CardMedia,
-    Typography,
-    Chip,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Chip,
+  TextField,
 } from '@mui/material';
-import { enumEspecie, enumGenero, enumPorte, Pet, tbPet } from '@/types';
+import { enumEspecie, enumGenero, enumPorte, Pet, tbPet, statusArray } from '@/types';
 import { calcularIdade } from '@/app/util/DataHelper';
-import { listarPets } from '@/services/pets';
+import { listarPets, retornarFotosPorPet, FiltroPets } from '@/services/pets';
+import { listarRacas } from '@/services/entities';
 
 const especies: OptionType[] = [
-    { id: 1, title: 'Cachorro' },
-    { id: 2, title: 'Gato' },
-];
-
-const estados: OptionType[] = [
-    { id: 1, title: 'SP' },
-    { id: 2, title: 'RJ' },
+  { id: 1, title: 'Cachorro' },
+  { id: 2, title: 'Gato' },
 ];
 
 const portes: OptionType[] = [
-    { id: 1, title: 'Pequeno' },
-    { id: 2, title: 'Médio' },
-    { id: 3, title: 'Grande' },
+  { id: 1, title: 'Pequeno' },
+  { id: 2, title: 'Médio' },
+  { id: 3, title: 'Grande' },
 ];
 
 const sexos: OptionType[] = [
-    { id: 1, title: 'Macho' },
-    { id: 2, title: 'Fêmea' },
+  { id: 1, title: 'Macho' },
+  { id: 2, title: 'Fêmea' },
 ];
 
 export default function Page() {
-    const router = useRouter();
-    // Estados com OptionType ou undefined
-    const [especie, setEspecie] = React.useState<OptionType | null>(null);
-    const [estado, setEstado] = React.useState<OptionType | null>(null);
-    const [porte, setPorte] = React.useState<OptionType | null>(null);
-    const [sexo, setSexo] = React.useState<OptionType | null>(null);
-    const [cidade, setCidade] = React.useState('');
-    const [nome, setNome] = React.useState('');
-    const [pets, setPets] = React.useState<tbPet[] | undefined>(undefined);
+  const router = useRouter();
+  // Estados com OptionType ou null
+  const [especie, setEspecie] = React.useState<OptionType | null>(null);
+  const [porte, setPorte] = React.useState<OptionType | null>(null);
+  const [sexo, setSexo] = React.useState<OptionType | null>(null);
+  const [raca, setRaca] = React.useState<OptionType | null>(null);
+  const [status, setStatus] = React.useState<OptionType | null>(null);
+  const [idade, setIdade] = React.useState<number | ''>('');
+  const [nome, setNome] = React.useState('');
+  const [pets, setPets] = React.useState<tbPet[] | undefined>(undefined);
+  const [fotoMap, setFotoMap] = React.useState<Record<string, string>>({});
+  const [racasOptions, setRacasOptions] = React.useState<OptionType[]>([]);
 
-    const fetchAnimals = async () => {
-        try {
-            const data = await listarPets();
-            setPets(data);
-        } catch (err: any) {
-            console.log(err.message);
-        }
-    };
+  const fetchAnimals = async (f?: FiltroPets) => {
+    try {
+      const data = await listarPets(f);
+      setPets(data);
+      // Carrega fotos dos pets em paralelo e cria um mapa id -> url
+      const entries = await Promise.all(
+        (data || []).map(async (p) => {
+          const id = p.id_pet;
+          if (!id) return [String(id ?? ''), ''] as const;
+          try {
+            const fotos = await retornarFotosPorPet(id);
+            return [String(id), (fotos && fotos.length > 0) ? fotos[0] : ''] as const;
+          } catch {
+            return [String(id), ''] as const;
+          }
+        })
+      );
+      const map: Record<string, string> = {};
+      for (const [id, url] of entries) map[id] = url;
+      setFotoMap(map);
+    } catch (err: any) {
+      console.log(err.message);
+    }
+  };
 
-    useEffect(() => {
-        fetchAnimals();
-    }, []);
+  useEffect(() => {
+    // Carrega opções de raças
+    (async () => {
+      try {
+        const racas = await listarRacas();
+        const opts: OptionType[] = (racas || []).map((r: any) => ({
+          id: r.id ?? r.id_raca ?? 0,
+          title: r.Nome ?? r.tb_raca_nome_raca ?? r.nome ?? ''
+        }));
+        setRacasOptions(opts);
+      } catch {}
+    })();
+    fetchAnimals();
+  }, []);
 
-    useEffect(() => {
-        console.log('pets', pets);
-    }, [pets]);
+  useEffect(() => {
+    console.log('pets', pets);
+  }, [pets]);
 
-    return (
-        <Card className="p-8 max-w-7xl mx-auto" sx={{  mt: '5vh'}}>
-            <Typography variant="h4" mb={4} sx={{ color: "#7C3AED" }}>
-                Buscar animal
-            </Typography>
+  function handleBuscar() {
+    const filtros: FiltroPets = {};
+    if (especie?.id) filtros.especie = Number(especie.id);
+    if (porte?.id) filtros.porte = Number(porte.id);
+    if (sexo?.id) filtros.genero = Number(sexo.id);
+    if (raca?.id) filtros.raca = Number(raca.id);
+    if (status?.id) filtros.status = Number(status.id);
+    if (nome && nome.trim()) filtros.nome = nome.trim();
+    if (idade !== '' && Number(idade) >= 0) filtros.idade = Number(idade);
+    fetchAnimals(filtros);
+  }
 
-            <div className="flex flex-wrap gap-6">
-                <div className='flex gap-6'>
+  return (
+    <Card className="p-8 max-w-7xl mx-auto" sx={{ mt: '5vh' }}>
+      <Typography variant="h4" mb={4} sx={{ color: '#7C3AED' }}>
+        Buscar animal
+      </Typography>
 
-                    <div className="w-48">
-                        <ComboBox
-                            label="Espécie"
-                            options={especies}
-                            value={especie}
-                            setValue={setEspecie}
-                        />
-                    </div>
+      {/* Filtros em grid: 3 colunas */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Linha 1 */}
+        <div className="md:col-span-2 col-span-1">
+          <TextField
+            fullWidth
+            label="Nome"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            size="small"
+          />
+        </div>
+        <div className="col-span-1">
+          <ComboBox label="Espécie" options={especies} value={especie} setValue={setEspecie} />
+        </div>
 
-                    <div className="w-48">
-                        <ComboBox
-                            label="Estado"
-                            options={estados}
-                            value={estado}
-                            setValue={setEstado}
-                        />
-                    </div>
+        {/* Linha 2 */}
+        <div className="col-span-1">
+          <ComboBox label="Raça" options={racasOptions} value={raca} setValue={setRaca} />
+        </div>
+        <div className="col-span-1">
+          <ComboBox label="Porte" options={portes} value={porte} setValue={setPorte} />
+        </div>
+        <div className="col-span-1">
+          <ComboBox label="Gênero" options={sexos} value={sexo} setValue={setSexo} />
+        </div>
 
-                    <div className="w-48">
-                        <ComboBox
-                            label="Porte"
-                            options={portes}
-                            value={porte}
-                            setValue={setPorte}
-                        />
-                    </div>
+        {/* Linha 3 */}
+        <div className="col-span-1">
+          <ComboBox label="Status" options={statusArray} value={status} setValue={setStatus} />
+        </div>
+        <div className="col-span-1">
+          <TextField
+            fullWidth
+            label="Idade (anos)"
+            type="number"
+            value={idade}
+            onChange={(e) => setIdade(e.target.value === '' ? '' : Number(e.target.value))}
+            size="small"
+          />
+        </div>
+        <div className="col-span-1" />
+      </div>
+      <div className="mt-4 mb-6">
+        <Button variant="contained" color="secondary" onClick={handleBuscar}>
+          Buscar
+        </Button>
+      </div>
 
-                    <div className="w-48">
-                        <ComboBox
-                            label="Sexo"
-                            options={sexos}
-                            value={sexo}
-                            setValue={setSexo}
-                        />
-                    </div>
-                </div>
-
-            </div>
-            <div className='flex gap-6 mt-6'>
-                <div className="w-48">
-                    <label className="block">
-                        <span className="text-gray-700">Cidade</span>
-                        <input
-                            type="text"
-                            value={cidade}
-                            onChange={(e) => setCidade(e.target.value)}
-                            className="mt-1 block w-full rounded border border-gray-300 px-2 py-1"
-                        />
-                    </label>
-                </div>
-
-                <div className="w-48">
-                    <label className="block">
-                        <span className="text-gray-700">Nome do bicho</span>
-                        <input
-                            type="text"
-                            value={nome}
-                            onChange={(e) => setNome(e.target.value)}
-                            className="mt-1 block w-full rounded border border-gray-300 px-2 py-1"
-                        />
-                    </label>
-                </div>
-                <div className="mt-6 mb-10">
-                    <Button variant="contained" color="secondary">
-                        Buscar
-                    </Button>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 ">
-                {pets && pets.map((animal) => (
-                    <Card key={animal.id_pet} onClick={() => router.push(`/animal/${animal.id_pet}`)} className="cursor-pointer hover:shadow-lg transition">
-                        <CardMedia
-                            component="img"
-                            height="200"
-                            image={`https://placedog.net/500?id=${animal.id_pet}`}
-                            alt={animal.tb_pet_nome}
-                        />
-                        <CardContent>
-                            <Typography variant="h6">{animal.tb_pet_nome}</Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                {animal.id_raca}
-                            </Typography>
-                            <div className="mt-2 flex flex-wrap gap-2">
-                                <Chip
-                                    label={animal.tb_pet_genero === enumGenero.MASCULINO ? 'Macho' : 'Fêmea'}
-                                    color={animal.tb_pet_genero === enumGenero.MASCULINO ? 'primary' : 'secondary'}
-                                />
-                                <Chip label={enumPorte[animal.tb_pet_porte]} variant="outlined" />
-                                <Chip label={`${calcularIdade(animal.tb_pet_data_nascimento)} anos(s)`} color="primary" variant="outlined" />
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
-        </Card>
-    );
+      {/* Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 ">
+        {pets && pets.map((animal) => (
+          <Card
+            key={animal.id_pet}
+            onClick={() => router.push(`/animal/${animal.id_pet}`)}
+            className="cursor-pointer hover:shadow-lg transition"
+          >
+            <CardMedia
+              component="img"
+              sx={{ height: 180, objectFit: 'cover' }}
+              image={
+                (fotoMap[String(animal.id_pet ?? '')] && fotoMap[String(animal.id_pet ?? '')].length > 0)
+                  ? fotoMap[String(animal.id_pet ?? '')]
+                  : '/images/patas.png'
+              }
+              alt={animal.tb_pet_nome}
+            />
+            <CardContent>
+              <Typography variant="h6">{animal.tb_pet_nome}</Typography>
+              <Typography variant="body2" color="text.secondary">
+                {animal.id_raca}
+              </Typography>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <Chip
+                  label={animal.tb_pet_genero === enumGenero.MASCULINO ? 'Macho' : 'Fêmea'}
+                  color={animal.tb_pet_genero === enumGenero.MASCULINO ? 'primary' : 'secondary'}
+                />
+                <Chip label={enumPorte[animal.tb_pet_porte]} variant="outlined" />
+                <Chip label={`${calcularIdade(animal.tb_pet_data_nascimento)} anos(s)`} color="primary" variant="outlined" />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </Card>
+  );
 }
+

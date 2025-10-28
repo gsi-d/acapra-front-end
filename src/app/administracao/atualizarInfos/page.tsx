@@ -20,15 +20,54 @@ import {
   GridRowSelectionModel,
 } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 import { useContextoMock } from "@/contextos/ContextoMock";
+import { listarPets } from "@/services/pets";
+import { tbPet } from "@/types";
 
 export default function AtualizarInfos() {
   const router = useRouter();
-  const {pets, setPets} = useContextoMock();
+  const {pets, setPets, openAlerta} = useContextoMock();
   const [selectedItems, setSelectedItems] = useState<GridRowSelectionModel>();
+
+  // Carrega a listagem de pets da API ao abrir a tela
+  useEffect(() => {
+    let cancelled = false;
+    async function carregarPets() {
+      try {
+        if (pets && pets.length > 0) return;
+        const lista = await listarPets(); // retorna tbPet[]
+        if (cancelled) return;
+        const uiPets: Pet[] = (lista || []).map((row: tbPet) => ({
+          id: row.id_pet,
+          Nome: row.tb_pet_nome,
+          Especie: row.tb_especie,
+          Id_Raca: row.id_raca,
+          Genero: row.tb_pet_genero,
+          Status: row.tb_pet_status,
+          DataNascimento: row.tb_pet_data_nascimento,
+          Peso: 0,
+          Adotado: false,
+          DataAdocao: undefined,
+          Vacinado: row.tb_pet_vacinado,
+          DataUltimaVacina: undefined,
+          TutorResponsavel: row.tb_pet_tutor_responsavel,
+          Resgatado: row.tb_pet_resgatado,
+          DataResgate: row.tb_data_resgate,
+          LocalResgate: row.tb_pet_local_resgate,
+        }));
+        setPets(uiPets);
+      } catch (e: any) {
+        openAlerta({ mensagem: e?.message || "Falha ao carregar pets", severity: "error" });
+      }
+    }
+    carregarPets();
+    return () => {
+      cancelled = true;
+    };
+  }, [pets, setPets, openAlerta]);
 
   const columns: GridColDef<(typeof pets)[number]>[] = [
     {

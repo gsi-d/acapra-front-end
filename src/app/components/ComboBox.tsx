@@ -22,6 +22,7 @@ export default function ComboBox(props: ComboBoxProps) {
   return (
     <div className="flex justify-center items-center ">
       <Autocomplete
+        size="small"
         disablePortal
         sx={{
           width: "100%",
@@ -69,6 +70,7 @@ export default function ComboBox(props: ComboBoxProps) {
         }}
         renderInput={(params: any) => (
           <TextField
+            size="small"
             sx={{ backgroundColor: "white" }}
             {...params}
             label={label}

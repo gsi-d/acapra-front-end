@@ -2,13 +2,15 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Box, Typography, Chip, Button, Card } from '@mui/material';
-import { retornarPet } from '@/services/pets';
+import { retornarPet, retornarFotosPorPet } from '@/services/pets';
 import { calcularIdade } from '@/app/util/DataHelper';
 
 export default function Page() {
   const { id } = useParams();
   const router = useRouter();
   const [animal, setAnimal] = useState<any | null>(null);
+  const [imagens, setImagens] = useState<string[]>([]);
+  const [indiceAtivo, setIndiceAtivo] = useState<number>(0);
 
   useEffect(() => {
     const load = async () => {
@@ -34,6 +36,15 @@ export default function Page() {
           descricao: 'Animal disponível para adoção.',
           tags: [pet.Vacinado ? 'Vacinado' : ''].filter(Boolean),
         });
+        // Carrega fotos do pet para o carrossel
+        try {
+          const fotos = await retornarFotosPorPet(Number(id));
+          setImagens((fotos && fotos.length > 0) ? fotos : ['/images/patas.png']);
+          setIndiceAtivo(0);
+        } catch {
+          setImagens(['/images/patas.png']);
+          setIndiceAtivo(0);
+        }
       } catch (e) {
         setAnimal(null);
       }
@@ -47,19 +58,27 @@ export default function Page() {
 
   if (!animal) return <Typography className="p-8">Animal não encontrado.</Typography>;
 
+  const imagemAtiva = imagens[indiceAtivo] || '/images/patas.png';
+
   return (
-    <Box className="flex p-8 max-w-5xl mx-auto items-center" sx={{ height: '80vh' }}>
-      <Card className="flex flex-col md:flex-row gap-10 py-10 px-6">
+    <Box className="flex p-8 w-full mx-auto items-center justify-center" sx={{ height: '80vh' }}>
+      <Card className="flex flex-col md:flex-row gap-10 py-10 px-6 w-[960px] h-[500px] mx-auto">
         <div className="md:w-1/2">
           <img
-            src={animal.imagem}
+            src={imagemAtiva}
             alt={animal.nome}
-            className="rounded-xl w-full h-auto"
+            className="rounded-xl w-full h-80 object-cover"
           />
           <div className="flex gap-2 mt-4 justify-center">
-            <img src={animal.imagem} alt="thumb" className="w-16 h-16 rounded-lg cursor-pointer" />
-            <img src={animal.imagem} alt="thumb" className="w-16 h-16 rounded-lg cursor-pointer" />
-            <img src={animal.imagem} alt="thumb" className="w-16 h-16 rounded-lg cursor-pointer" />
+            {imagens.map((src, idx) => (
+              <img
+                key={idx}
+                src={src}
+                alt={`thumb-${idx}`}
+                className={`w-16 h-16 rounded-lg cursor-pointer ${idx === indiceAtivo ? 'ring-2 ring-purple-500' : ''}`}
+                onClick={() => setIndiceAtivo(idx)}
+              />
+            ))}
           </div>
         </div>
 
