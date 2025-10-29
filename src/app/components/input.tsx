@@ -8,6 +8,8 @@ interface CustomTextFieldProps {
   required?: boolean;
   defaultValue?: string;
   id?: string;
+  type?: string;
+  name?: string;
 }
 
 export default function CustomTextField({
@@ -16,11 +18,15 @@ export default function CustomTextField({
   required = false,
   defaultValue = '',
   id = 'custom-input',
+  type,
+  name,
 }: CustomTextFieldProps) {
   return (
     <TextField
       required={required}
       id={id}
+      name={name}
+      type={type}
       label={label}
       placeholder={placeholder}
       defaultValue={defaultValue}

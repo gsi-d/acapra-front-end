@@ -65,7 +65,7 @@ export default function Page() {
   }, [id]);
 
   function handleClickQueroAdotar() {
-    router.push('/geral/adocao');
+    router.push(`/geral/adocao?id=${animal?.id}`);
   }
 
   async function abrirHistoricoDoenca() {
