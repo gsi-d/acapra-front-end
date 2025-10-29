@@ -118,7 +118,8 @@ export default function Page() {
             label="Nome"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            size="small"
+            size="medium"
+            sx={{ backgroundColor: 'white', '& .MuiOutlinedInput-root': { minHeight: 56 } }}
           />
         </div>
         <div className="col-span-1">
@@ -147,7 +148,8 @@ export default function Page() {
             type="number"
             value={idade}
             onChange={(e) => setIdade(e.target.value === '' ? '' : Number(e.target.value))}
-            size="small"
+            size="medium"
+            sx={{ backgroundColor: 'white', '& .MuiOutlinedInput-root': { minHeight: 56 } }}
           />
         </div>
         <div className="col-span-1" />

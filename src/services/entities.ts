@@ -133,3 +133,50 @@ export async function listarUsuarios() {
     return [];
   }
 }
+
+// List history - disease
+export async function listarHistoricoDoenca(filtro?: { id_pet?: number; id_doenca?: number; id_historico_doenca?: number }) {
+  const qs = new URLSearchParams();
+  if (filtro?.id_historico_doenca) qs.append('id_historico_doenca', String(filtro.id_historico_doenca));
+  if (filtro?.id_pet) qs.append('id_pet', String(filtro.id_pet));
+  if (filtro?.id_doenca) qs.append('id_doenca', String(filtro.id_doenca));
+  const url = qs.toString() ? `/historicoDoenca/listarHistoricoDoenca?${qs.toString()}` : `/listarHistoricoDoenca`;
+  const res = await apiGet<any>(url);
+  if (Array.isArray(res)) return res;
+  if (res && Array.isArray(res.data)) return res.data;
+  return [];
+}
+
+// List history - adoption (route provided by backend)
+export async function listarHistoricoAdocao(filtro?: { id_pet?: number; id_historico_adocao?: number }) {
+  const qs = new URLSearchParams();
+  if (filtro?.id_historico_adocao) qs.append('id_historico_adocao', String(filtro.id_historico_adocao));
+  if (filtro?.id_pet) qs.append('id_pet', String(filtro.id_pet));
+  const url = qs.toString() ? `/historicoAdocao/listarHistoricoAdocao?${qs.toString()}` : `/listarHistoricoAdocao`;
+  const res = await apiGet<any>(url);
+  if (Array.isArray(res)) return res;
+  if (res && Array.isArray(res.data)) return res.data;
+  return [];
+}
+
+// New explicit endpoints by pet
+export async function listarHistoricoDoencaPorPet(id_pet: number) {
+  const res = await apiGet<any>(`/historicoDoenca/listarHistoricoDoencaPorPet?id_pet=${encodeURIComponent(String(id_pet))}`);
+  if (Array.isArray(res)) return res;
+  if (res && Array.isArray(res.data)) return res.data;
+  return [];
+}
+
+export async function listarHistoricoAdocaoPorPet(id_pet: number) {
+  const res = await apiGet<any>(`/historicoAdocao/listarHistoricoAdocaoPorPet?id_pet=${encodeURIComponent(String(id_pet))}`);
+  if (Array.isArray(res)) return res;
+  if (res && Array.isArray(res.data)) return res.data;
+  return [];
+}
+
+export async function listarHistoricoVacinaPorPet(id_pet: number) {
+  const res = await apiGet<any>(`/historicoVacina/listarHistoricoVacinaPorPet?id_pet=${encodeURIComponent(String(id_pet))}`);
+  if (Array.isArray(res)) return res;
+  if (res && Array.isArray(res.data)) return res.data;
+  return [];
+}
