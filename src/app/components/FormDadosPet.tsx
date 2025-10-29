@@ -198,13 +198,13 @@ export default function FormDadosPet({
               </div>
 
               <div className="flex gap-2 mt-2 items-center">
-                <IconButton color="secondary" onClick={abrirHistoricoDoenca} aria-label="Histórico de doenças">
+                <IconButton color="secondary" onClick={abrirHistoricoDoenca} aria-label="Histórico de doenças" title="Histórico de doenças">
                   <CoronavirusIcon />
                 </IconButton>
-                <IconButton color="secondary" onClick={abrirHistoricoAdocao} aria-label="Histórico de adoção">
+                <IconButton color="secondary" onClick={abrirHistoricoAdocao} aria-label="Histórico de adoção" title="Histórico de adoção">
                   <VolunteerActivismIcon />
                 </IconButton>
-                <IconButton color="secondary" onClick={abrirHistoricoVacina} aria-label="Histórico de vacinação">
+                <IconButton color="secondary" onClick={abrirHistoricoVacina} aria-label="Histórico de vacinação" title="Histórico de vacinação">
                   <VaccinesIcon />
                 </IconButton>
               </div>
