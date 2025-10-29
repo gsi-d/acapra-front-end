@@ -30,6 +30,7 @@ export function mapDbPetToTbPet(row: any): tbPet {
     tb_pet_nome: row.tb_pet_nome,
     tb_especie: row.tb_especie,
     id_raca: row.id_raca,
+    tb_raca_nome: row.tb_raca_nome ?? row.tb_raca_nome_raca ?? row.raca ?? row.nome_raca ?? row.nomeRaca,
     tb_pet_genero: row.tb_pet_genero,
     tb_pet_status: row.tb_pet_status ?? row.tb_pet_status_pet,
     tb_pet_data_nascimento: row.tb_pet_data_nascimento,

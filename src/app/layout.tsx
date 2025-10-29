@@ -5,6 +5,7 @@ import { roboto } from "./ui/fonts";
 import LayoutWrapper from "./LayoutWrapper";
 import { ContextoMockProvider } from "../contextos/ContextoMock";
 import { SessaoProvider } from "../contextos/ContextoSessao";
+import { LoadingProvider } from "../contextos/ContextoLoading";
 import ThemeRegistry from "@/ThemeRegistry";
 
 const geistSans = Geist({
@@ -33,11 +34,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased ${roboto.className}`}
       >
         <ThemeRegistry>
-          <SessaoProvider>
+        <SessaoProvider>
+          <LoadingProvider>
             <ContextoMockProvider>
               <LayoutWrapper>{children}</LayoutWrapper>
             </ContextoMockProvider>
-          </SessaoProvider>
+          </LoadingProvider>
+        </SessaoProvider>
         </ThemeRegistry>
       </body>
     </html>

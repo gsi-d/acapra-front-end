@@ -81,6 +81,7 @@ export interface tbPet{
     tb_pet_nome: string;
     tb_especie: enumEspecie;
     id_raca: number;
+    tb_raca_nome?: string; // novo: nome da raça vindo do backend
     tb_pet_genero: enumGenero;
     tb_pet_status: enumStatus;
     tb_pet_data_nascimento: string;
