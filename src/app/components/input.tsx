@@ -10,6 +10,9 @@ interface CustomTextFieldProps {
   id?: string;
   type?: string;
   name?: string;
+  value?: string | number;
+  disabled?: boolean;
+  onChange?: (e: any) => void;
 }
 
 export default function CustomTextField({
@@ -20,16 +23,23 @@ export default function CustomTextField({
   id = 'custom-input',
   type,
   name,
+  value,
+  disabled,
+  onChange,
 }: CustomTextFieldProps) {
+  const isControlled = value !== undefined;
   return (
     <TextField
       required={required}
       id={id}
       name={name}
       type={type}
+      value={value}
+      onChange={onChange}
       label={label}
       placeholder={placeholder}
-      defaultValue={defaultValue}
+      defaultValue={isControlled ? undefined : defaultValue}
+      disabled={disabled}
       fullWidth
       sx={{
         width: '100%',

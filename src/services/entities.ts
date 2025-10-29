@@ -134,6 +134,16 @@ export async function listarUsuarios() {
   }
 }
 
+// Retorna um único usuário por id (rota: /usuario/:id)
+export async function retornarUsuario(id_usuario: number) {
+  try {
+    const res = await apiGet<any>(`/usuario/${encodeURIComponent(String(id_usuario))}`);
+    if (res && Array.isArray(res.data) && res.data.length > 0) return res.data[0];
+    if (Array.isArray(res) && res.length > 0) return res[0];
+  } catch {}
+  return null;
+}
+
 // List history - disease
 export async function listarHistoricoDoenca(filtro?: { id_pet?: number; id_doenca?: number; id_historico_doenca?: number }) {
   const qs = new URLSearchParams();

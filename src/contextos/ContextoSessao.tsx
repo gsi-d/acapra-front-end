@@ -6,6 +6,7 @@ export interface Sessao {
   isAdm: boolean;
   logado: boolean;
   emailSalvo: string | null;
+  userId?: number | null;
 }
 
 interface SessaoContextValue {
@@ -19,6 +20,7 @@ const defaultSessao: Sessao = {
   isAdm: false,
   logado: false,
   emailSalvo: null,
+  userId: null,
 };
 
 const SessaoContext = createContext<SessaoContextValue>({
@@ -97,6 +99,7 @@ export function SessaoProvider({ children }: { children: ReactNode }) {
           isAdm: Boolean(s.isAdm),
           logado: true,
           emailSalvo: s.emailSalvo ?? null,
+          userId: typeof (s as any).userId === 'number' ? (s as any).userId : ((s as any).userId ? Number((s as any).userId) : null),
         });
         setReady(true);
         return;
@@ -104,11 +107,12 @@ export function SessaoProvider({ children }: { children: ReactNode }) {
       // 2) Se não houver sessão, tenta cookie de "lembrar de mim"
       const v = getCookie(COOKIE_NAME);
       if (v) {
-        const parsed = JSON.parse(v) as { isAdm?: boolean; email?: string };
+        const parsed = JSON.parse(v) as { isAdm?: boolean; email?: string; userId?: number };
         setSessaoState({
           isAdm: Boolean(parsed.isAdm),
           logado: true,
           emailSalvo: parsed.email ?? null,
+          userId: typeof parsed.userId === 'number' ? parsed.userId : null,
         });
       }
     } catch {}
@@ -118,7 +122,7 @@ export function SessaoProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!ready) return;
     if (sessao.logado && sessao.emailSalvo) {
-      const payload = { isAdm: sessao.isAdm, email: sessao.emailSalvo };
+      const payload = { isAdm: sessao.isAdm, email: sessao.emailSalvo, userId: sessao.userId } as any;
       setCookie(COOKIE_NAME, JSON.stringify(payload), 30); // 30 days
     } else {
       deleteCookie(COOKIE_NAME);
@@ -129,11 +133,11 @@ export function SessaoProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!ready) return;
     if (sessao.logado) {
-      writeSession({ isAdm: sessao.isAdm, logado: true, emailSalvo: sessao.emailSalvo });
+      writeSession({ isAdm: sessao.isAdm, logado: true, emailSalvo: sessao.emailSalvo, userId: sessao.userId });
     } else {
       writeSession(null);
     }
-  }, [sessao.logado, sessao.isAdm, sessao.emailSalvo, ready]);
+  }, [sessao.logado, sessao.isAdm, sessao.emailSalvo, sessao.userId, ready]);
 
   const value = useMemo(
     () => ({ sessao, setSessao, limparSessao, ready }),
