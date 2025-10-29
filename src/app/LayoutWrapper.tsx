@@ -4,11 +4,15 @@ import { usePathname, useRouter } from "next/navigation";
 import Menu from "./components/Menu";
 import Footer from "./components/Footer";
 import { Box } from "@mui/material";
-import { useState, useEffect } from "react"; 
+import { useState, useEffect } from "react";
 import MenuSuperior from "./components/MenuSuperior";
 import { useSessao } from "@/contextos/ContextoSessao";
 
-export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
+export default function LayoutWrapper({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -21,7 +25,6 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   const { sessao, ready } = useSessao();
   const [menuOpen, setMenuOpen] = useState(true);
 
-  // Redirect to login if not remembered/logged when visiting protected routes
   useEffect(() => {
     if (!isClient || !ready) return;
     if (!isLogin && !sessao.logado) {
@@ -49,7 +52,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
           width: "100%",
         }}
       >
-        <Box sx={{ minHeight: '80vh' }}>
+        <Box sx={{ minHeight: "80vh" }}>
           <MenuSuperior />
           {children}
         </Box>

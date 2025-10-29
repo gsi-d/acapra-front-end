@@ -29,7 +29,6 @@ export default function MoradiaForm({
       }}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {/* Checkboxes no topo, um por linha */}
         <FormControlLabel
           control={<CheckBox value={values.possuiEspacoExterno} onChange={() => onChange({ possuiEspacoExterno: !values.possuiEspacoExterno })} />}
           label="Possui espaço externo (quintal/jardim)?"
@@ -41,7 +40,6 @@ export default function MoradiaForm({
           sx={{ color: 'black' }}
         />
 
-        {/* TextFields abaixo, um por linha */}
         <Input
           label="Tipo de moradia (Casa, Apartamento, Sítio/chácara)"
           required
@@ -49,7 +47,7 @@ export default function MoradiaForm({
           onChange={(e) => onChange({ tipoMoradia: e.target.value })}
         />
         <Input
-          label="A residência é (Própria ou Alugada)?"
+          label="A residência é Própria ou Alugada?"
           required
           value={values.residencia}
           onChange={(e) => onChange({ residencia: e.target.value })}

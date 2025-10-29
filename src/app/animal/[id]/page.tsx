@@ -1,15 +1,19 @@
 "use client";
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { Box, Typography, Chip, Button, Card, IconButton } from '@mui/material';
-import { retornarPet, retornarFotosPorPet } from '@/services/pets';
-import { calcularIdade } from '@/app/util/DataHelper';
-import TimelineDialog, { TimelineItem } from '@/app/components/TimelineDialog';
-import VaccinesIcon from '@mui/icons-material/Vaccines';
-import CoronavirusIcon from '@mui/icons-material/Coronavirus';
-import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
-import dayjs from 'dayjs';
-import { listarHistoricoAdocaoPorPet, listarHistoricoDoencaPorPet, listarHistoricoVacinaPorPet } from '@/services/entities';
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Box, Typography, Chip, Button, Card, IconButton } from "@mui/material";
+import { retornarPet, retornarFotosPorPet } from "@/services/pets";
+import { calcularIdade } from "@/app/util/DataHelper";
+import TimelineDialog, { TimelineItem } from "@/app/components/TimelineDialog";
+import VaccinesIcon from "@mui/icons-material/Vaccines";
+import CoronavirusIcon from "@mui/icons-material/Coronavirus";
+import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
+import dayjs from "dayjs";
+import {
+  listarHistoricoAdocaoPorPet,
+  listarHistoricoDoencaPorPet,
+  listarHistoricoVacinaPorPet,
+} from "@/services/entities";
 
 export default function Page() {
   const { id } = useParams();
@@ -33,28 +37,29 @@ export default function Page() {
           setAnimal(null);
           return;
         }
-        const especie = pet.Especie === 1 ? 'cachorro' : 'gato';
-        const sexo = pet.Genero === 1 ? 'macho' : 'femea';
-        const idade = pet.DataNascimento ? `${calcularIdade(pet.DataNascimento)} anos` : '';
+        const especie = pet.Especie === 1 ? "cachorro" : "gato";
+        const sexo = pet.Genero === 1 ? "macho" : "femea";
+        const idade = pet.DataNascimento
+          ? `${calcularIdade(pet.DataNascimento)} anos`
+          : "";
         setAnimal({
           id: pet.id,
           nome: pet.Nome,
           especie,
           sexo,
           raca: pet.Id_Raca,
-          porte: '',
+          porte: "",
           idade,
-          imagem: 'https://placedog.net/500?id=' + (pet.id ?? 1),
-          descricao: 'Animal disponível para adoção.',
-          tags: [pet.Vacinado ? 'Vacinado' : ''].filter(Boolean),
+          imagem: "https://placedog.net/500?id=" + (pet.id ?? 1),
+          descricao: "Animal disponível para adoção.",
+          tags: [pet.Vacinado ? "Vacinado" : ""].filter(Boolean),
         });
-        // Carrega fotos do pet para o carrossel
         try {
           const fotos = await retornarFotosPorPet(Number(id));
-          setImagens((fotos && fotos.length > 0) ? fotos : ['/images/patas.png']);
+          setImagens(fotos && fotos.length > 0 ? fotos : ["/images/patas.png"]);
           setIndiceAtivo(0);
         } catch {
-          setImagens(['/images/patas.png']);
+          setImagens(["/images/patas.png"]);
           setIndiceAtivo(0);
         }
       } catch (e) {
@@ -74,19 +79,33 @@ export default function Page() {
       const lista = await listarHistoricoDoencaPorPet(Number(animal.id));
       const items: TimelineItem[] = (lista || [])
         .map((r: any) => {
-          const dataRaw = r.tb_historico_doenca_data_diagnostico || r.data || r.dataDiagnostico || r.created_at;
-          const dataFmt = dataRaw ? dayjs(dataRaw).format('DD/MM/YYYY') : undefined;
-          const status = r.tb_historico_doenca_status || r.status || '';
-          const nome = (r as any).tb_doenca_nome || '';
+          const dataRaw =
+            r.tb_historico_doenca_data_diagnostico ||
+            r.data ||
+            r.dataDiagnostico ||
+            r.created_at;
+          const dataFmt = dataRaw
+            ? dayjs(dataRaw).format("DD/MM/YYYY")
+            : undefined;
+          const status = r.tb_historico_doenca_status || r.status || "";
+          const nome = (r as any).tb_doenca_nome || "";
           return {
             date: dataFmt ?? null,
-            title: nome ? `Doenca: ${nome}` : (status ? `Status: ${status}` : 'Doenca'),
+            title: nome
+              ? `Doenca: ${nome}`
+              : status
+              ? `Status: ${status}`
+              : "Doenca",
             subtitle: status ? `Status: ${status}` : null,
           } as TimelineItem;
         })
         .sort((a: TimelineItem, b: TimelineItem) => {
-          const da = a.date ? dayjs(a.date, 'DD/MM/YYYY').toDate().getTime() : 0;
-          const db = b.date ? dayjs(b.date, 'DD/MM/YYYY').toDate().getTime() : 0;
+          const da = a.date
+            ? dayjs(a.date, "DD/MM/YYYY").toDate().getTime()
+            : 0;
+          const db = b.date
+            ? dayjs(b.date, "DD/MM/YYYY").toDate().getTime()
+            : 0;
           return db - da;
         });
       setItemsDoenca(items);
@@ -102,18 +121,28 @@ export default function Page() {
       const lista = await listarHistoricoAdocaoPorPet(Number(animal.id));
       const items: TimelineItem[] = (lista || [])
         .map((r: any) => {
-          const dataRaw = r.tb_historico_adocao_data || r.data || r.data_adocao || r.created_at;
-          const dataFmt = dataRaw ? dayjs(dataRaw).format('DD/MM/YYYY') : undefined;
-          const status = r.tb_historico_adocao_status || r.status || '';
+          const dataRaw =
+            r.tb_historico_adocao_data ||
+            r.data ||
+            r.data_adocao ||
+            r.created_at;
+          const dataFmt = dataRaw
+            ? dayjs(dataRaw).format("DD/MM/YYYY")
+            : undefined;
+          const status = r.tb_historico_adocao_status || r.status || "";
           return {
             date: dataFmt ?? null,
-            title: status ? `Status: ${status}` : 'Evento de adocao',
+            title: status ? `Status: ${status}` : "Evento de adocao",
             subtitle: null,
           } as TimelineItem;
         })
         .sort((a: TimelineItem, b: TimelineItem) => {
-          const da = a.date ? dayjs(a.date, 'DD/MM/YYYY').toDate().getTime() : 0;
-          const db = b.date ? dayjs(b.date, 'DD/MM/YYYY').toDate().getTime() : 0;
+          const da = a.date
+            ? dayjs(a.date, "DD/MM/YYYY").toDate().getTime()
+            : 0;
+          const db = b.date
+            ? dayjs(b.date, "DD/MM/YYYY").toDate().getTime()
+            : 0;
           return db - da;
         });
       setItemsAdocao(items);
@@ -130,20 +159,33 @@ export default function Page() {
         const lista = await listarHistoricoVacinaPorPet(Number(animal.id));
         const items: TimelineItem[] = (lista || [])
           .map((r: any) => {
-            const dataRaw = r.tb_his_vacina_data_aplicacao || r.data || r.data_aplicacao || r.created_at;
-            const dataFmt = dataRaw ? dayjs(dataRaw).format('DD/MM/YYYY') : undefined;
-            const nome = r.tb_vacina_nome || '';
-            const proxRaw = r.tb_his_vacina_proxima_aplicacao || r.data_proxima || null;
-            const proxFmt = proxRaw ? dayjs(proxRaw).format('DD/MM/YYYY') : null;
+            const dataRaw =
+              r.tb_his_vacina_data_aplicacao ||
+              r.data ||
+              r.data_aplicacao ||
+              r.created_at;
+            const dataFmt = dataRaw
+              ? dayjs(dataRaw).format("DD/MM/YYYY")
+              : undefined;
+            const nome = r.tb_vacina_nome || "";
+            const proxRaw =
+              r.tb_his_vacina_proxima_aplicacao || r.data_proxima || null;
+            const proxFmt = proxRaw
+              ? dayjs(proxRaw).format("DD/MM/YYYY")
+              : null;
             return {
               date: dataFmt ?? null,
-              title: nome ? `Vacina: ${nome}` : 'Vacinacao',
+              title: nome ? `Vacina: ${nome}` : "Vacinacao",
               subtitle: proxFmt ? `Proxima: ${proxFmt}` : null,
             } as TimelineItem;
           })
           .sort((a: TimelineItem, b: TimelineItem) => {
-            const da = a.date ? dayjs(a.date, 'DD/MM/YYYY').toDate().getTime() : 0;
-            const db = b.date ? dayjs(b.date, 'DD/MM/YYYY').toDate().getTime() : 0;
+            const da = a.date
+              ? dayjs(a.date, "DD/MM/YYYY").toDate().getTime()
+              : 0;
+            const db = b.date
+              ? dayjs(b.date, "DD/MM/YYYY").toDate().getTime()
+              : 0;
             return db - da;
           });
         setItemsVacina(items);
@@ -154,12 +196,16 @@ export default function Page() {
     })();
   }
 
-  if (!animal) return <Typography className="p-8">Animal não encontrado.</Typography>;
+  if (!animal)
+    return <Typography className="p-8">Animal não encontrado.</Typography>;
 
-  const imagemAtiva = imagens[indiceAtivo] || '/images/patas.png';
+  const imagemAtiva = imagens[indiceAtivo] || "/images/patas.png";
 
   return (
-    <Box className="flex p-8 w-full mx-auto items-center justify-center" sx={{ height: '80vh' }}>
+    <Box
+      className="flex p-8 w-full mx-auto items-center justify-center"
+      sx={{ height: "80vh" }}
+    >
       <Card className="flex flex-col md:flex-row gap-10 py-10 px-6 w-[960px] h-[500px] mx-auto">
         <div className="md:w-1/2">
           <img
@@ -173,7 +219,9 @@ export default function Page() {
                 key={idx}
                 src={src}
                 alt={`thumb-${idx}`}
-                className={`w-16 h-16 rounded-lg cursor-pointer ${idx === indiceAtivo ? 'ring-2 ring-purple-500' : ''}`}
+                className={`w-16 h-16 rounded-lg cursor-pointer ${
+                  idx === indiceAtivo ? "ring-2 ring-purple-500" : ""
+                }`}
                 onClick={() => setIndiceAtivo(idx)}
               />
             ))}
@@ -185,13 +233,18 @@ export default function Page() {
             {animal.nome}
           </Typography>
           <Typography variant="body1" color="textSecondary">
-            {animal.especie} | {animal.sexo === 'macho' ? 'Macho' : 'Fêmea'} | {animal.idade} | {animal.porte}
+            {animal.especie} | {animal.sexo === "macho" ? "Macho" : "Fêmea"} |{" "}
+            {animal.idade} | {animal.porte}
           </Typography>
 
-          <Typography variant="subtitle1" fontWeight="bold" color='textSecondary'>
+          <Typography
+            variant="subtitle1"
+            fontWeight="bold"
+            color="textSecondary"
+          >
             Descrição
           </Typography>
-          <Typography variant="body2" color='textSecondary'>
+          <Typography variant="body2" color="textSecondary">
             {animal.descricao}
           </Typography>
 
@@ -214,13 +267,25 @@ export default function Page() {
           </Button>
 
           <div className="flex gap-2 mt-2 items-center">
-            <IconButton color="secondary" onClick={abrirHistoricoDoenca} aria-label="Histórico de doenças">
+            <IconButton
+              color="secondary"
+              onClick={abrirHistoricoDoenca}
+              aria-label="Histórico de doenças"
+            >
               <CoronavirusIcon />
             </IconButton>
-            <IconButton color="secondary" onClick={abrirHistoricoAdocao} aria-label="Histórico de adoção">
+            <IconButton
+              color="secondary"
+              onClick={abrirHistoricoAdocao}
+              aria-label="Histórico de adoção"
+            >
               <VolunteerActivismIcon />
             </IconButton>
-            <IconButton color="secondary" onClick={abrirHistoricoVacina} aria-label="Histórico de vacinação">
+            <IconButton
+              color="secondary"
+              onClick={abrirHistoricoVacina}
+              aria-label="Histórico de vacinação"
+            >
               <VaccinesIcon />
             </IconButton>
           </div>
@@ -247,6 +312,3 @@ export default function Page() {
     </Box>
   );
 }
-
-
-

@@ -30,7 +30,6 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import ComboBox, { OptionType } from "@/app/components/ComboBox";
 import CheckBox from "@/app/components/CheckBox";
-import Alerta, { AlertaParams } from "@/app/components/Alerta";
 import { useRouter, useSearchParams } from "next/navigation";
 import PopUpRegistrarVacinacao from "./PopUpRegistrarVacinacao";
 import PopUpRegistrarDoenca from "./PopUpRegistrarDoenca";
@@ -116,7 +115,6 @@ export default function CadastroPet() {
     };
   }, [racas.length, setRacas, openAlerta]);
 
-  // Ajusta preview de foto com base nos dados carregados do pet em edição
   useEffect(() => {
     if (petEdicao) {
       const url = (petEdicao as any)?.tb_pet_foto_url
@@ -131,7 +129,6 @@ export default function CadastroPet() {
     }
   }, [petEdicao]);
 
-  // Em modo edição, busca as fotos do pet e define a primeira como preview (se existir)
   useEffect(() => {
     let cancelled = false;
     async function carregarFotos() {
@@ -142,7 +139,6 @@ export default function CadastroPet() {
         if (cancelled) return;
         if (urls && urls.length > 0) setFotoPreview(urls[0]);
       } catch {
-        // Foto é opcional; ignorar silenciosamente
       }
     }
     carregarFotos();
@@ -265,7 +261,7 @@ export default function CadastroPet() {
       Nome: petEdicao.Nome,
       Especie: petEdicao.Especie,
       Id_Raca: petEdicao.Id_Raca,
-      Porte: (petEdicao as any).Porte ?? (petEdicao as any).tb_pet_porte ?? enumPorte.PEQUENO,
+      Porte: (petEdicao as Pet).Porte ?? (petEdicao as any).tb_pet_porte ?? enumPorte.PEQUENO,
       Genero: petEdicao.Genero,
       Status: petEdicao.Status,
       Peso: petEdicao.Peso,

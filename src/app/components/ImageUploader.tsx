@@ -5,10 +5,10 @@ import { useEffect, useRef, useState } from "react";
 
 export interface ImageUploaderProps {
   label?: string;
-  value?: string | null; // URL existente para edição
+  value?: string | null;
   onChange?: (file: File | null, previewUrl: string | null) => void;
   disabled?: boolean;
-  accept?: string; // default image/*
+  accept?: string;
 }
 
 export default function ImageUploader(props: ImageUploaderProps) {
@@ -23,7 +23,6 @@ export default function ImageUploader(props: ImageUploaderProps) {
 
   useEffect(() => {
     return () => {
-      // cleanup blob URLs
       if (previewUrl?.startsWith("blob:")) URL.revokeObjectURL(previewUrl);
     };
   }, [previewUrl]);

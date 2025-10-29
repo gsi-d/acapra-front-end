@@ -47,7 +47,6 @@ export default function FormDadosPet({
   const [itemsAdocao, setItemsAdocao] = React.useState<TimelineItem[]>([]);
   const [itemsVacina, setItemsVacina] = React.useState<TimelineItem[]>([]);
 
-  // Carrega lista de pets disponíveis
   React.useEffect(() => {
     (async () => {
       try {
@@ -60,22 +59,18 @@ export default function FormDadosPet({
     })();
   }, []);
 
-  // Pré-seleciona pet vindo do catálogo se houver ?id= na URL
   React.useEffect(() => {
     if (!preselectId) return;
     const idNum = Number(preselectId);
     if (!Number.isFinite(idNum)) return;
-    // Quando options carregarem, seta o value e carrega dados
     const opt = options.find((o) => o.id === idNum);
     if (opt) {
       setValue(opt);
     }
-    // Mesmo que o option ainda não exista, já carrega o card
     carregarAnimalEImagens(idNum);
     onChangePetId && onChangePetId(idNum);
   }, [preselectId, options?.length]);
 
-  // Mantém combobox sincronizado quando selectedPetId vier de fora
   React.useEffect(() => {
     if (selectedPetId && options.length > 0) {
       const opt = options.find((o) => o.id === selectedPetId) || null;
@@ -122,7 +117,6 @@ export default function FormDadosPet({
     }
   }
 
-  // Ao selecionar no ComboBox, carrega o card
   function handleChangeOption(opt: OptionType | null) {
     setValue(opt);
     if (opt && opt.id) {
@@ -135,9 +129,6 @@ export default function FormDadosPet({
     }
   }
 
-  // Handlers de histórico (copiados do card de detalhes)
-  // Como a origem dos dados de histórico está no componente da página de detalhes,
-  // aqui exibiremos apenas diálogos vazios por padrão para manter paridade visual
   function abrirHistoricoDoenca() {
     setItemsDoenca([]);
     setOpenDoenca(true);
@@ -155,7 +146,6 @@ export default function FormDadosPet({
 
   return (
     <Box sx={{ backgroundColor: '#E5E5E5', padding: 3, borderRadius: 2, maxWidth: 960, margin: '0 auto' }}>
-      {/* Combobox de pets disponíveis */}
       <Box sx={{ mb: 2 }}>
         <ComboBox
           options={options}
@@ -165,7 +155,6 @@ export default function FormDadosPet({
         />
       </Box>
 
-      {/* Card do pet selecionado */}
       {animal && (
         <Box className="flex w-full mx-auto items-center justify-center" sx={{ mt: 2 }}>
           <Card className="flex flex-col md:flex-row gap-10 py-10 px-6 w-[960px] mx-auto">
@@ -208,7 +197,6 @@ export default function FormDadosPet({
                 ))}
               </div>
 
-              {/* Sem botão QUERO ADOTAR aqui */}
               <div className="flex gap-2 mt-2 items-center">
                 <IconButton color="secondary" onClick={abrirHistoricoDoenca} aria-label="Histórico de doenças">
                   <CoronavirusIcon />
@@ -223,7 +211,6 @@ export default function FormDadosPet({
             </div>
           </Card>
 
-          {/* Diálogos (vazios se não carregarmos histórico aqui) */}
           <TimelineDialog open={openDoenca} onClose={() => setOpenDoenca(false)} title="Histórico de Doenças" items={itemsDoenca} />
           <TimelineDialog open={openAdocao} onClose={() => setOpenAdocao(false)} title="Histórico de Adoção" items={itemsAdocao} />
           <TimelineDialog open={openVacina} onClose={() => setOpenVacina(false)} title="Historico de Vacinacao" items={itemsVacina} />
