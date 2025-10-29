@@ -12,9 +12,11 @@ import FormAdotante from '@/app/components/FormAdotante';
 import FormFamilia from '@/app/components/FormFamilia';
 import FormMoradia from '@/app/components/FormCasa';
 import FormCuidados from '@/app/components/FormCuidados';
+import FormDadosPet from '@/app/components/FormDadosPet';
 import { Card } from '@mui/material';
 
 const steps = [
+  'Dados do pet',
   'Dados do Adotante',
   'Sobre você e sua Família',
   'Sobre a moradia',
@@ -40,12 +42,14 @@ export default function HorizontalLinearAlternativeLabelStepper() {
   const getStepContent = (step: number) => {
     switch (step) {
       case 0:
-        return <FormAdotante />;
+        return <FormDadosPet />;
       case 1:
-        return <FormFamilia />;
+        return <FormAdotante />;
       case 2:
-        return <FormMoradia />;
+        return <FormFamilia />;
       case 3:
+        return <FormMoradia />;
+      case 4:
         return <FormCuidados />;
       default:
         return null;
