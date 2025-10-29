@@ -40,10 +40,12 @@ export default function Page() {
         throw new Error(res?.message || 'Credenciais inválidas.');
       }
       const adminFlag = Boolean((res.data as any).tb_usuario_admin ?? (res.data as any).admin ?? false);
+      const idUsuario = (res.data as any).id_usuario ?? (res.data as any).id ?? null;
       setSessao({
         isAdm: adminFlag,
         logado: true,
         emailSalvo: lembreDeMim ? email : null,
+        userId: idUsuario !== null ? Number(idUsuario) : null,
       });
 
       router.push('/geral/catalogo');

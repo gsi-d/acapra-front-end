@@ -23,7 +23,13 @@ interface AnimalView {
   tags: string[];
 }
 
-export default function FormDadosPet() {
+export default function FormDadosPet({
+  selectedPetId,
+  onChangePetId,
+}: {
+  selectedPetId?: number | null;
+  onChangePetId?: (id: number | null) => void;
+}) {
   const searchParams = useSearchParams();
   const preselectId = searchParams.get('id');
 
@@ -66,7 +72,17 @@ export default function FormDadosPet() {
     }
     // Mesmo que o option ainda não exista, já carrega o card
     carregarAnimalEImagens(idNum);
+    onChangePetId && onChangePetId(idNum);
   }, [preselectId, options?.length]);
+
+  // Mantém combobox sincronizado quando selectedPetId vier de fora
+  React.useEffect(() => {
+    if (selectedPetId && options.length > 0) {
+      const opt = options.find((o) => o.id === selectedPetId) || null;
+      setValue(opt);
+      if (opt) carregarAnimalEImagens(opt.id);
+    }
+  }, [selectedPetId, options]);
 
   async function carregarAnimalEImagens(idPet: number) {
     try {
@@ -111,9 +127,11 @@ export default function FormDadosPet() {
     setValue(opt);
     if (opt && opt.id) {
       carregarAnimalEImagens(opt.id);
+      onChangePetId && onChangePetId(opt.id);
     } else {
       setAnimal(null);
       setImagens([]);
+      onChangePetId && onChangePetId(null);
     }
   }
 
