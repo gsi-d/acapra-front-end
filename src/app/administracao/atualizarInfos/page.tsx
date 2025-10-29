@@ -1,18 +1,10 @@
-'use client';
+"use client";
 
 import CheckBox from "@/app/components/CheckBox";
 import ChipTexto from "@/app/components/Chip";
 import GridDados from "@/app/components/DataGrid";
-import {
-  enumEspecie,
-  enumGenero,
-  enumStatus,
-  Pet,
-} from "@/types";
-import {
-  Box,
-  IconButton,
-} from "@mui/material";
+import { enumEspecie, enumGenero, enumStatus, Pet } from "@/types";
+import { Box, IconButton } from "@mui/material";
 import {
   GridColDef,
   GridRenderCellParams,
@@ -29,16 +21,15 @@ import { tbPet } from "@/types";
 
 export default function AtualizarInfos() {
   const router = useRouter();
-  const {pets, setPets, openAlerta} = useContextoMock();
+  const { pets, setPets, openAlerta } = useContextoMock();
   const [selectedItems, setSelectedItems] = useState<GridRowSelectionModel>();
 
-  // Carrega a listagem de pets da API ao abrir a tela
   useEffect(() => {
     let cancelled = false;
     async function carregarPets() {
       try {
         if (pets && pets.length > 0) return;
-        const lista = await listarPets(); // retorna tbPet[]
+        const lista = await listarPets();
         if (cancelled) return;
         const uiPets: Pet[] = (lista || []).map((row: tbPet) => ({
           id: row.id_pet,
@@ -60,7 +51,10 @@ export default function AtualizarInfos() {
         }));
         setPets(uiPets);
       } catch (e: any) {
-        openAlerta({ mensagem: e?.message || "Falha ao carregar pets", severity: "error" });
+        openAlerta({
+          mensagem: e?.message || "Falha ao carregar pets",
+          severity: "error",
+        });
       }
     }
     carregarPets();
@@ -146,27 +140,26 @@ export default function AtualizarInfos() {
   ];
 
   function handleClickEditar(id: GridRowId) {
-    router.push('/geral/cadastroPet?id=' + id);
+    router.push("/geral/cadastroPet?id=" + id);
   }
 
   function handleClickNovo() {
     router.push("/geral/cadastroPet");
   }
 
-const updateSelectedItems = (newSelectionModel: GridRowSelectionModel) => {
+  const updateSelectedItems = (newSelectionModel: GridRowSelectionModel) => {
     setSelectedItems(newSelectionModel);
   };
 
   function handleClickExcluir() {
-  if (selectedItems && selectedItems.ids.size > 0) {
-    const petsAtualizados = pets.filter(pet => {
-      if (pet.id === undefined) return true;
-      return !selectedItems.ids.has(pet.id);
-    });
-    setPets(petsAtualizados);
+    if (selectedItems && selectedItems.ids.size > 0) {
+      const petsAtualizados = pets.filter((pet) => {
+        if (pet.id === undefined) return true;
+        return !selectedItems.ids.has(pet.id);
+      });
+      setPets(petsAtualizados);
+    }
   }
-}
-
 
   return (
     <Box

@@ -51,18 +51,11 @@ export default function PopUpRegistrarVacinacao(props: PopupAtualizarInfosPet) {
     DataAplicacao: "",
     DataProximaAplicacao: "",
   };
-  const valoresIniciaisDoenca = {
-    id: 0,
-    Doenca: "",
-    DataDiagnostico: "",
-    Status: "",
-  };
 
   const {
     reset,
     control,
     trigger,
-    watch,
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -75,21 +68,23 @@ export default function PopUpRegistrarVacinacao(props: PopupAtualizarInfosPet) {
     trigger();
     listarVacinas()
       .then((res) => {
-        const opts = (res || []).map((v: any) => ({ id: v.id_vacina, title: v.tb_vacina_nome })) as OptionType[];
+        const opts = (res || []).map((v: any) => ({
+          id: v.id_vacina,
+          title: v.tb_vacina_nome,
+        })) as OptionType[];
         setVacinasOptions(opts);
       })
       .catch(() => setVacinasOptions([]));
   }, [trigger]);
 
-  function handleClickSalvar() {
-    reset();
-    setTogglePopup(false);
-  }
-
   async function onSubmitVacina(data: any) {
     try {
-      const dataAplicacao = data?.DataAplicacao ? String(data.DataAplicacao) : null;
-      const dataProximaAplicacao = data?.DataProximaAplicacao ? String(data.DataProximaAplicacao) : null;
+      const dataAplicacao = data?.DataAplicacao
+        ? String(data.DataAplicacao)
+        : null;
+      const dataProximaAplicacao = data?.DataProximaAplicacao
+        ? String(data.DataProximaAplicacao)
+        : null;
       await criarHistoricoVacina({
         id_pet: Number(idPet),
         id_vacina: Number(data.Vacina),
@@ -98,9 +93,15 @@ export default function PopUpRegistrarVacinacao(props: PopupAtualizarInfosPet) {
       });
       reset();
       setTogglePopup(false);
-      openAlerta({ mensagem: "Vacinação registrada com sucesso.", severity: "success" });
+      openAlerta({
+        mensagem: "Vacinação registrada com sucesso.",
+        severity: "success",
+      });
     } catch (e: any) {
-      openAlerta({ mensagem: e?.message || "Erro ao registrar vacinação", severity: "error" });
+      openAlerta({
+        mensagem: e?.message || "Erro ao registrar vacinação",
+        severity: "error",
+      });
     }
   }
 
@@ -127,7 +128,9 @@ export default function PopUpRegistrarVacinacao(props: PopupAtualizarInfosPet) {
               render={({ field: { value, onChange } }) => (
                 <ComboBox
                   label={"Vacina"}
-                  value={vacinasOptions.find((e) => e.id === Number(value)) || null}
+                  value={
+                    vacinasOptions.find((e) => e.id === Number(value)) || null
+                  }
                   setValue={(option) => onChange(option?.id || "")}
                   options={vacinasOptions}
                   error={Boolean(errors.Vacina)}
@@ -151,8 +154,17 @@ export default function PopUpRegistrarVacinacao(props: PopupAtualizarInfosPet) {
                     <DatePicker
                       label={"Data da aplicação"}
                       value={value ? dayjs(value) : null}
-                      onChange={(newValue) => onChange(newValue ? dayjs(newValue).format("YYYY-MM-DD") : "")}
-                      slotProps={{ textField: { sx: { backgroundColor: "white" }, error: Boolean(errors.DataAplicacao) } }}
+                      onChange={(newValue) =>
+                        onChange(
+                          newValue ? dayjs(newValue).format("YYYY-MM-DD") : ""
+                        )
+                      }
+                      slotProps={{
+                        textField: {
+                          sx: { backgroundColor: "white" },
+                          error: Boolean(errors.DataAplicacao),
+                        },
+                      }}
                     />
                   </LocalizationProvider>
                 )}
@@ -173,8 +185,17 @@ export default function PopUpRegistrarVacinacao(props: PopupAtualizarInfosPet) {
                     <DatePicker
                       label={"Data da próxima aplicação"}
                       value={value ? dayjs(value) : null}
-                      onChange={(newValue) => onChange(newValue ? dayjs(newValue).format("YYYY-MM-DD") : "")}
-                      slotProps={{ textField: { sx: { backgroundColor: "white" }, error: Boolean(errors.DataProximaAplicacao) } }}
+                      onChange={(newValue) =>
+                        onChange(
+                          newValue ? dayjs(newValue).format("YYYY-MM-DD") : ""
+                        )
+                      }
+                      slotProps={{
+                        textField: {
+                          sx: { backgroundColor: "white" },
+                          error: Boolean(errors.DataProximaAplicacao),
+                        },
+                      }}
                     />
                   </LocalizationProvider>
                 )}
@@ -191,5 +212,3 @@ export default function PopUpRegistrarVacinacao(props: PopupAtualizarInfosPet) {
     </Box>
   );
 }
-
-

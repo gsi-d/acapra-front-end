@@ -60,28 +60,6 @@ export default function CadastroRaca() {
     }
   }
 
-  function onSubmit(data: any) {
-    if (data) {
-      const novoId = racas.length + 1;
-      const novaRaca: Raca = {
-        id: novoId,
-        Nome: data.Nome,
-        Especie: data.Especie,
-      };
-      const racasAtualizadas: Raca[] = [...racas, novaRaca];
-      setRacas(racasAtualizadas);
-      reset();
-      openAlerta({
-        mensagem:
-          "Raça gravada com sucesso. Você pode verificar o registro no console do navegador",
-        severity: "success",
-      });
-      router.push("/geral/catalogo");
-    } else {
-      openAlerta({ mensagem: "Erro ao gravar raça", severity: "error" });
-    }
-  }
-
   useEffect(() => {
     trigger();
   }, [trigger]);

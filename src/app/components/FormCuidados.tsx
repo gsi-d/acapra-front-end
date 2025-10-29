@@ -31,7 +31,6 @@ export default function CuidadosForm({
       }}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {/* Checkboxes no topo, um por linha */}
         <FormControlLabel
           control={<CheckBox value={values.cienteCustos} onChange={() => onChange({ cienteCustos: !values.cienteCustos })} />}
           label="Está ciente dos custos com alimentação, vacinas e saúde?"
@@ -48,7 +47,6 @@ export default function CuidadosForm({
           sx={{ color: 'black' }}
         />
 
-        {/* TextFields abaixo, um por linha */}
         <Input
           label="Por que você deseja adotar um animal?"
           required

@@ -32,13 +32,11 @@ export default function FamiliaForm({
       }}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {/* Checkboxes no topo, um por linha */}
         <FormControlLabel
           control={<CheckBox value={values.temCriancas} onChange={() => onChange({ temCriancas: !values.temCriancas })} />}
           label="Há crianças na casa?"
           sx={{ color: 'black' }}
         />
-        {/* Idades logo abaixo do checkbox de crianças */}
         <Input
           label="Se sim, quais as idades?"
           value={values.idadesCriancas}
@@ -65,7 +63,6 @@ export default function FamiliaForm({
           sx={{ color: 'black' }}
         />
 
-        {/* TextFields abaixo, um por linha */}
         <Input
           label="Quantas pessoas moram na sua casa?"
           required

@@ -1,4 +1,3 @@
-// src/app/components/AdotanteForm.tsx
 "use client";
 import * as React from 'react';
 import Box from '@mui/material/Box';
@@ -37,7 +36,6 @@ export default function AdotanteForm() {
         gap: 2,
       }}
     >
-      {/* Campos desabilitados preenchidos com dados do usuário */}
       <Input label="Nome" value={dados?.tb_usuario_nome ?? ''} disabled />
       <Input label="Email" value={dados?.tb_usuario_email ?? ''} disabled />
       <Input label="Telefone" value={dados?.tb_usuario_telefone ?? ''} disabled />

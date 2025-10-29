@@ -9,19 +9,16 @@ import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Vacina } from "@/types";
-import Alerta, { AlertaParams } from "@/app/components/Alerta";
 import { useContextoMock } from "@/contextos/ContextoMock";
 import { criarVacina } from "@/services/entities";
 import { useRouter } from "next/navigation";
 
 export default function CadastroVacina() {
-  const [VacinaEdicao, setVacinaEdicao] = useState<Vacina | undefined>(undefined);
-  const {vacinas, setVacinas, openAlerta} = useContextoMock();
+  const [VacinaEdicao, setVacinaEdicao] = useState<Vacina | undefined>(
+    undefined
+  );
+  const { vacinas, setVacinas, openAlerta } = useContextoMock();
   const router = useRouter();
-  const [alertaProps, setAlertaProps] = useState<AlertaParams>({
-    mensagem: "",
-    severity: "info",
-  });
 
   const schema = yup.object().shape({
     id: yup.number(),
@@ -58,36 +55,25 @@ export default function CadastroVacina() {
   async function handleSubmitVacina(data: any) {
     try {
       await criarVacina({ Nome: data.Nome, DataVacina: data.DataVacina });
-      const novaVacina: Vacina = { id: data.id, Nome: data.Nome, DataVacina: data.DataVacina };
+      const novaVacina: Vacina = {
+        id: data.id,
+        Nome: data.Nome,
+        DataVacina: data.DataVacina,
+      };
       setVacinas([...vacinas, novaVacina]);
       reset();
-      openAlerta({ mensagem: "Vacina gravada com sucesso.", severity: "success" });
+      openAlerta({
+        mensagem: "Vacina gravada com sucesso.",
+        severity: "success",
+      });
       router.push("/geral/catalogo");
     } catch (e: any) {
-      openAlerta({ mensagem: e?.message || "Erro ao gravar vacina", severity: "error" });
+      openAlerta({
+        mensagem: e?.message || "Erro ao gravar vacina",
+        severity: "error",
+      });
     }
   }
-
-  function onSubmit(data: any) {
-      if (data) {
-        const novaVacina : Vacina = {
-          id: data.id,
-          Nome: data.Nome,
-          DataVacina: data.DataVacina,
-        };
-        const vacinasAtualizadas : Vacina[] = [...vacinas, novaVacina];
-        setVacinas(vacinasAtualizadas);
-        reset();
-        openAlerta({
-          mensagem:
-            "Vacina gravada com sucesso. Você pode verificar o registro no console do navegador",
-          severity: "success",
-        });
-        router.push("/geral/catalogo");
-      } else {
-        openAlerta({ mensagem: "Erro ao gravar vacina", severity: "error" });
-      }
-    }
 
   useEffect(() => {
     trigger();
@@ -136,8 +122,17 @@ export default function CadastroVacina() {
                 <DatePicker
                   label={"Data para Vacina"}
                   value={value ? dayjs(value) : null}
-                  onChange={(newValue) => onChange(newValue ? dayjs(newValue).format("YYYY-MM-DD") : "")}
-                  slotProps={{ textField: { sx: { backgroundColor: "white" }, error: Boolean(errors.DataVacina) } }}
+                  onChange={(newValue) =>
+                    onChange(
+                      newValue ? dayjs(newValue).format("YYYY-MM-DD") : ""
+                    )
+                  }
+                  slotProps={{
+                    textField: {
+                      sx: { backgroundColor: "white" },
+                      error: Boolean(errors.DataVacina),
+                    },
+                  }}
                 />
               )}
             />
