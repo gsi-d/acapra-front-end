@@ -106,7 +106,7 @@ export async function criarHistoricoVacina(payload: { id_pet: number; id_vacina:
     tb_his_vacina_proxima_aplicacao: payload.dataProximaAplicacao,
     tb_his_vacina_inativo: false,
   };
-  return apiPost<CreateResponse>(`/historicoVacina`, body);
+  return apiPost<CreateResponse>(`/historicoVacina/criarHistoricoVacina`, body);
 }
 export async function criarHistoricoDoenca(payload: { id_pet: number; id_doenca: number; dataDiagnostico: string | null; status: string }) {
   const body = {
@@ -115,7 +115,7 @@ export async function criarHistoricoDoenca(payload: { id_pet: number; id_doenca:
     tb_historico_doenca_data_diagnostico: payload.dataDiagnostico,
     tb_historico_doenca_status: payload.status,
   };
-  return apiPost<CreateResponse>(`/historicoDoenca`, body);
+  return apiPost<CreateResponse>(`/historicoDoenca/criarHistoricoDoenca`, body);
 }
 
 export async function listarUsuarios() {

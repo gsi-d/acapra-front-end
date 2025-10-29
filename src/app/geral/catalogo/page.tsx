@@ -178,10 +178,11 @@ export default function Page() {
             />
             <CardContent>
               <Typography variant="h6">{animal.tb_pet_nome}</Typography>
-              <Typography variant="body2" color="text.secondary">
-                {animal.id_raca}
-              </Typography>
+              {/* Raça exibida como chip junto com os demais */}
               <div className="mt-2 flex flex-wrap gap-2">
+                {animal.tb_raca_nome && (
+                  <Chip label={animal.tb_raca_nome} variant="outlined" />
+                )}
                 <Chip
                   label={animal.tb_pet_genero === enumGenero.MASCULINO ? 'Macho' : 'Fêmea'}
                   color={animal.tb_pet_genero === enumGenero.MASCULINO ? 'primary' : 'secondary'}
@@ -196,4 +197,5 @@ export default function Page() {
     </Card>
   );
 }
+
 
