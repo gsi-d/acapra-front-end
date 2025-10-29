@@ -271,6 +271,7 @@ export default function Page() {
               color="secondary"
               onClick={abrirHistoricoDoenca}
               aria-label="Histórico de doenças"
+              title="Histórico de doenças"
             >
               <CoronavirusIcon />
             </IconButton>
@@ -278,6 +279,7 @@ export default function Page() {
               color="secondary"
               onClick={abrirHistoricoAdocao}
               aria-label="Histórico de adoção"
+              title="Histórico de adoção"
             >
               <VolunteerActivismIcon />
             </IconButton>
@@ -285,6 +287,7 @@ export default function Page() {
               color="secondary"
               onClick={abrirHistoricoVacina}
               aria-label="Histórico de vacinação"
+              title="Histórico de vacinação"
             >
               <VaccinesIcon />
             </IconButton>

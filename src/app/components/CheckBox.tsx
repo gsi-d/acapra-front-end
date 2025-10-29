@@ -5,7 +5,7 @@ const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
 interface CheckBoxProps {
     value?: boolean;
-    onChange?: () => void
+    onChange?: (...args: any[]) => void;
 }
 
 export default function CheckBox(props: CheckBoxProps) {
