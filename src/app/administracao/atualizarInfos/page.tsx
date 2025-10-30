@@ -44,7 +44,6 @@ export default function AtualizarInfos() {
           DataAdocao: undefined,
           Vacinado: row.tb_pet_vacinado,
           DataUltimaVacina: undefined,
-          TutorResponsavel: row.tb_pet_tutor_responsavel,
           Resgatado: row.tb_pet_resgatado,
           DataResgate: row.tb_data_resgate,
           LocalResgate: row.tb_pet_local_resgate,

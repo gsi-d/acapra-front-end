@@ -60,7 +60,6 @@ export default function CadastroPet() {
     Peso: number;
     Adotado: boolean;
     DataAdocao: string;
-    TutorResponsavel: string;
     Vacinado: boolean;
     DataUltimaVacina: string;
     Resgatado: boolean;
@@ -182,13 +181,14 @@ export default function CadastroPet() {
         then: schema => schema.required("Data de adoção é obrigatória"),
         otherwise: schema => schema.notRequired()
       }),
-    TutorResponsavel: yup
-      .string()
-      .when([], {
-        is: () => adotado,
-        then: schema => schema.required("Tutor responsável é obrigatório"),
-        otherwise: schema => schema.notRequired()
-      }),
+    // TutorResponsavel removido
+      
+      // removed when chain start
+        // Somente exigir em edição
+        // removed: is: () => false,
+        // removed: then required
+        // removed: otherwise not required
+      // removed end of when
     Vacinado: yup.boolean(),
     DataUltimaVacina: yup
       .string()
@@ -226,7 +226,6 @@ export default function CadastroPet() {
     Peso: 0,
     Adotado: false,
     DataAdocao: "",
-    TutorResponsavel: "",
     Vacinado: false,
     DataUltimaVacina: "",
     Resgatado: false,
@@ -256,7 +255,6 @@ export default function CadastroPet() {
             Peso: petEdicao.Peso,
             Adotado: petEdicao.Adotado,
             DataAdocao: petEdicao.DataAdocao || "",
-            TutorResponsavel: petEdicao.TutorResponsavel || "",
             Vacinado: petEdicao.Vacinado,
             DataUltimaVacina: petEdicao.DataUltimaVacina || "",
             Resgatado: petEdicao.Resgatado,
@@ -287,7 +285,6 @@ export default function CadastroPet() {
       Peso: petEdicao.Peso,
       Adotado: petEdicao.Adotado,
       DataAdocao: petEdicao.DataAdocao || "",
-      TutorResponsavel: petEdicao.TutorResponsavel || "",
       Vacinado: petEdicao.Vacinado,
       DataUltimaVacina: petEdicao.DataUltimaVacina || "",
       Resgatado: petEdicao.Resgatado,
@@ -328,7 +325,6 @@ export default function CadastroPet() {
         Peso: data.Peso,
         Adotado: data.Adotado,
         DataAdocao: data.DataAdocao,
-        TutorResponsavel: data.TutorResponsavel,
         Vacinado: data.Vacinado,
         DataUltimaVacina: data.DataUltimaVacina,
         Resgatado: data.Resgatado,
@@ -594,7 +590,7 @@ export default function CadastroPet() {
             </FormControl>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <FormControl fullWidth sx={{ mb: 6, width: "50%" }}>
+              <FormControl fullWidth sx={{ mb: 6, width: "24%" }}>
                 <Controller
                   name="Adotado"
                   control={control}
@@ -641,28 +637,6 @@ export default function CadastroPet() {
                 {errors.DataAdocao && (
                   <FormHelperText sx={{ color: "red" }}>
                     {errors.DataAdocao.message}
-                  </FormHelperText>
-                )}
-              </FormControl>
-
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <Controller
-                  name="TutorResponsavel"
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <TextField
-                      disabled={false}
-                      label={"Tutor Responsável"}
-                      onChange={onChange}
-                      sx={{ backgroundColor: "white" }}
-                      error={Boolean(errors.TutorResponsavel)}
-                    />
-                  )}
-                />
-                {errors.TutorResponsavel && (
-                  <FormHelperText sx={{ color: "red" }}>
-                    {errors.TutorResponsavel.message}
                   </FormHelperText>
                 )}
               </FormControl>
