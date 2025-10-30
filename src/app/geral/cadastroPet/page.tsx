@@ -431,7 +431,7 @@ export default function CadastroPet() {
                     disabled={false}
                     label={"Nome"}
                     value={value}
-                    onChange={(e) => onChange(Number((e as any).target?.value ?? 0))}
+                    onChange={(e) => onChange(e.target.value)}
                     sx={{ backgroundColor: "white" }}
                     error={Boolean(errors.Nome)}
                   />
