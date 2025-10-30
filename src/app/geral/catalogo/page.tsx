@@ -49,9 +49,10 @@ export default function Page() {
   const fetchAnimals = async (f?: FiltroPets) => {
     try {
       const data = await listarPets(f);
-      setPets(data);
+      const naoAdotados = (data || []).filter((p) => !p.tb_pet_adotado);
+      setPets(naoAdotados);
       const entries = await Promise.all(
-        (data || []).map(async (p) => {
+        (naoAdotados || []).map(async (p) => {
           const id = p.id_pet;
           if (!id) return [String(id ?? ""), ""] as const;
           try {

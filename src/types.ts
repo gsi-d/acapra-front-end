@@ -70,7 +70,6 @@ export interface Pet{
     DataAdocao?: string;
     Vacinado: boolean;
     DataUltimaVacina?: string;
-    TutorResponsavel?: string;
     Resgatado: boolean;
     DataResgate?: string;
     LocalResgate?: string;
@@ -87,10 +86,10 @@ export interface tbPet{
     tb_pet_data_nascimento: string;
     tb_pet_porte: enumPorte;
     tb_pet_vacinado: boolean;
-    tb_pet_tutor_responsavel?: string;
     tb_pet_resgatado: boolean;
     tb_data_resgate?: string;
     tb_pet_local_resgate?: string;
+    tb_pet_adotado?: boolean;
 }
 
 export interface Raca{

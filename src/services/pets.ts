@@ -16,6 +16,9 @@ export function mapUiPetToDb(payload: Pet) {
     tb_pet_porte: payload.Porte ?? null,
     tb_pet_status_pet: payload.Status,
     tb_pet_data_nascimento: payload.DataNascimento ? payload.DataNascimento : null,
+    // adoção
+    tb_pet_adotado: payload.Adotado,
+    tb_data_adocao: payload.DataAdocao ? payload.DataAdocao : null,
     tb_pet_vacinado: payload.Vacinado,
     tb_pet_resgatado: payload.Resgatado,
     tb_pet_data_resgaste: payload.DataResgate ? payload.DataResgate : null,
@@ -36,10 +39,10 @@ export function mapDbPetToTbPet(row: any): tbPet {
     tb_pet_data_nascimento: row.tb_pet_data_nascimento,
     tb_pet_porte: row.tb_pet_porte,
     tb_pet_vacinado: row.tb_pet_vacinado,
-    tb_pet_tutor_responsavel: row.tb_pet_tutor_responsavel,
     tb_pet_resgatado: row.tb_pet_resgatado,
     tb_data_resgate: row.tb_pet_data_resgaste,
     tb_pet_local_resgate: row.tb_pet_local_resgaste,
+    tb_pet_adotado: Boolean(row.tb_pet_adotado ?? row.tb_adotado),
   } as tbPet;
 }
 
@@ -55,11 +58,10 @@ export function mapDbPetToUi(row: any): Pet {
     Status: row.tb_pet_status ?? row.tb_pet_status_pet,
     DataNascimento: row.tb_pet_data_nascimento,
     Peso: 0, // not provided by backend schema
-    Adotado: Boolean(row.tb_pet_adotado),
-    DataAdocao: row.tb_pet_data_adocao,
+    Adotado: Boolean(row.tb_pet_adotado ?? row.tb_adotado),
+    DataAdocao: row.tb_pet_data_adocao ?? row.tb_data_adocao,
     Vacinado: Boolean(row.tb_pet_vacinado),
     DataUltimaVacina: row.tb_pet_data_ultima_vacina,
-    TutorResponsavel: row.tb_pet_tutor_responsavel,
     Resgatado: Boolean(row.tb_pet_resgatado),
     DataResgate: row.tb_pet_data_resgaste,
     LocalResgate: row.tb_pet_local_resgaste,
