@@ -9,22 +9,15 @@ import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
-  especiesArray,
-  Raca,
-  retornaPetsOptionArray,
-  usuariosArray,
-  Visita,
+  Visita
 } from "@/types";
 import Alerta, { AlertaParams } from "@/app/components/Alerta";
 import ComboBox, { OptionType } from "@/app/components/ComboBox";
-import { useContextoMock } from "@/contextos/ContextoMock";
 import { useRouter } from "next/navigation";
-import { criarVisita, listarUsuarios } from "@/services/entities";
-import { listarPets } from "@/services/pets";
+import { criarVisita } from "@/services/entities";
 
 export default function CadastroRaca() {
   const [alertaOpen, setAlertaOpen] = useState<boolean>(false);
-  const {pets} = useContextoMock();
   const [petsArray, setPetsArray] = useState<OptionType[]>([]);
   const [usuariosArrayApi, setUsuariosArrayApi] = useState<OptionType[]>([]);
   const [visitaEdicao, setVisitaEdicao] = useState<Visita | undefined>(undefined);
@@ -80,21 +73,6 @@ export default function CadastroRaca() {
       router.push("/geral/catalogo");
     } catch (e: any) {
       openAlerta({ mensagem: e?.message || "Erro ao agendar visita", severity: "error" });
-    }
-  }
-
-  function onSubmit(data: any) {
-    if (data) {
-      console.log(data);
-      reset();
-      openAlerta({
-        mensagem:
-          "Raça gravada com sucesso. Você pode verificar o registro no console do navegador",
-        severity: "success",
-      });
-      router.push("/geral/catalogo");
-    } else {
-      openAlerta({ mensagem: "Erro ao gravar raça", severity: "error" });
     }
   }
 

@@ -81,8 +81,7 @@
   font-size: 0.95rem;
 }
 
-#login-email input[type="email"],
-#login-email input[type="password"] {
+#login-email input[type="email"] {
   padding: 10px;
   margin-bottom: 20px;
   border: 1px solid #ddd;
@@ -90,6 +89,17 @@
   font-size: 1rem;
   color: #000;
   background-color: white;
+}
+
+/* Ajustes para o campo de senha do MUI ficar do mesmo tamanho do e-mail */
+.senha-field .MuiOutlinedInput-input {
+  padding: 10px !important; /* igual ao e-mail */
+}
+.senha-field .MuiOutlinedInput-root {
+  border-radius: 5px; /* igual ao e-mail */
+}
+.senha-field {
+  margin-bottom: 20px; /* igual ao e-mail */
 }
 
 .opcoes {

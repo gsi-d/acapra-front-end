@@ -1,4 +1,3 @@
-// components/CustomTextField.tsx
 import * as React from 'react';
 import TextField from '@mui/material/TextField';
 
@@ -8,6 +7,11 @@ interface CustomTextFieldProps {
   required?: boolean;
   defaultValue?: string;
   id?: string;
+  type?: string;
+  name?: string;
+  value?: string | number;
+  disabled?: boolean;
+  onChange?: (e: any) => void;
 }
 
 export default function CustomTextField({
@@ -16,14 +20,25 @@ export default function CustomTextField({
   required = false,
   defaultValue = '',
   id = 'custom-input',
+  type,
+  name,
+  value,
+  disabled,
+  onChange,
 }: CustomTextFieldProps) {
+  const isControlled = value !== undefined;
   return (
     <TextField
       required={required}
       id={id}
+      name={name}
+      type={type}
+      value={value}
+      onChange={onChange}
       label={label}
       placeholder={placeholder}
-      defaultValue={defaultValue}
+      defaultValue={isControlled ? undefined : defaultValue}
+      disabled={disabled}
       fullWidth
       sx={{
         width: '100%',

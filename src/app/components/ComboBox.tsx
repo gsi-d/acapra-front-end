@@ -22,11 +22,13 @@ export default function ComboBox(props: ComboBoxProps) {
   return (
     <div className="flex justify-center items-center ">
       <Autocomplete
+        size="medium"
         disablePortal
         sx={{
           width: "100%",
           "& .MuiOutlinedInput-root": {
             backgroundColor: "white",
+            minHeight: 56,
             "&.Mui-focused fieldset": {
               borderColor: "#7C3AED",
               boxShadow: "0 0 0 2px rgba(124, 58, 237, 0.2)",
@@ -69,6 +71,7 @@ export default function ComboBox(props: ComboBoxProps) {
         }}
         renderInput={(params: any) => (
           <TextField
+            size="medium"
             sx={{ backgroundColor: "white" }}
             {...params}
             label={label}

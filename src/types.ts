@@ -62,6 +62,7 @@ export interface Pet{
     Especie: enumEspecie;
     Id_Raca: number;
     Genero: enumGenero;
+    Porte?: enumPorte;
     Status: enumStatus;
     DataNascimento: string;
     Peso: number;
@@ -69,7 +70,6 @@ export interface Pet{
     DataAdocao?: string;
     Vacinado: boolean;
     DataUltimaVacina?: string;
-    TutorResponsavel?: string;
     Resgatado: boolean;
     DataResgate?: string;
     LocalResgate?: string;
@@ -80,15 +80,16 @@ export interface tbPet{
     tb_pet_nome: string;
     tb_especie: enumEspecie;
     id_raca: number;
+    tb_raca_nome?: string; // novo: nome da raça vindo do backend
     tb_pet_genero: enumGenero;
     tb_pet_status: enumStatus;
     tb_pet_data_nascimento: string;
     tb_pet_porte: enumPorte;
     tb_pet_vacinado: boolean;
-    tb_pet_tutor_responsavel?: string;
     tb_pet_resgatado: boolean;
     tb_data_resgate?: string;
     tb_pet_local_resgate?: string;
+    tb_pet_adotado?: boolean;
 }
 
 export interface Raca{

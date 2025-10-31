@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Alerta, { AlertaParams } from './components/Alerta';
 import { login as apiLogin } from '@/services/auth';
+import { useSessao } from '@/contextos/ContextoSessao';
 
 export default function Page() {
   const [email, setEmail] = useState('');
@@ -19,18 +20,17 @@ export default function Page() {
   const [alertaOpen, setAlertaOpen] = useState(false);
   const [alertaParams, setAlertaParams] = useState<AlertaParams>({ mensagem: '', severity: 'error' });
   const router = useRouter();
+  const { sessao, setSessao } = useSessao();
 
   useEffect(() => {
-    const isLogado = Boolean(localStorage.getItem('logado'));
-    const emailSalvo = localStorage.getItem('emailSalvo');
-    if (emailSalvo) {
-      setEmail(emailSalvo);
+    if (sessao.emailSalvo) {
+      setEmail(sessao.emailSalvo);
       setLembreDeMim(true);
     }
-    if (isLogado) {
+    if (sessao.logado) {
       router.push('/geral/catalogo');
     }
-  }, [router]);
+  }, [router, sessao.emailSalvo, sessao.logado]);
 
   async function handleLogin(event: React.FormEvent) {
     event.preventDefault();
@@ -40,14 +40,13 @@ export default function Page() {
         throw new Error(res?.message || 'Credenciais inválidas.');
       }
       const adminFlag = Boolean((res.data as any).tb_usuario_admin ?? (res.data as any).admin ?? false);
-      localStorage.setItem('isAdm', adminFlag ? 'true' : 'false');
-
-      if (lembreDeMim) {
-        localStorage.setItem('emailSalvo', email);
-        localStorage.setItem('logado', 'true');
-      } else {
-        localStorage.removeItem('emailSalvo');
-      }
+      const idUsuario = (res.data as any).id_usuario ?? (res.data as any).id ?? null;
+      setSessao({
+        isAdm: adminFlag,
+        logado: true,
+        emailSalvo: lembreDeMim ? email : null,
+        userId: idUsuario !== null ? Number(idUsuario) : null,
+      });
 
       router.push('/geral/catalogo');
     } catch (err: any) {
@@ -82,7 +81,7 @@ export default function Page() {
             />
 
             <label htmlFor="senha">Digite sua senha</label>
-            <FormControl variant="outlined" fullWidth>
+            <FormControl variant="outlined" fullWidth className="senha-field">
               <OutlinedInput
                 id="senha"
                 type={mostrarSenha ? 'text' : 'password'}

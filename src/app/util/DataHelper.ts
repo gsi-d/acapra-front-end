@@ -5,7 +5,6 @@ export function calcularIdade(dataNascimento: string): number {
   let idade = hoje.getFullYear() - nascimento.getFullYear();
   const mes = hoje.getMonth() - nascimento.getMonth();
 
-  // se ainda não fez aniversário no ano atual, reduz 1
   if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
     idade--;
   }

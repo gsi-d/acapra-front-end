@@ -1,18 +1,10 @@
-'use client';
+"use client";
 
 import CheckBox from "@/app/components/CheckBox";
 import ChipTexto from "@/app/components/Chip";
 import GridDados from "@/app/components/DataGrid";
-import {
-  enumEspecie,
-  enumGenero,
-  enumStatus,
-  Pet,
-} from "@/types";
-import {
-  Box,
-  IconButton,
-} from "@mui/material";
+import { enumEspecie, enumGenero, enumStatus, Pet } from "@/types";
+import { Box, IconButton } from "@mui/material";
 import {
   GridColDef,
   GridRenderCellParams,
@@ -20,15 +12,55 @@ import {
   GridRowSelectionModel,
 } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 import { useContextoMock } from "@/contextos/ContextoMock";
+import { listarPets } from "@/services/pets";
+import { tbPet } from "@/types";
 
 export default function AtualizarInfos() {
   const router = useRouter();
-  const {pets, setPets} = useContextoMock();
+  const { pets, setPets, openAlerta } = useContextoMock();
   const [selectedItems, setSelectedItems] = useState<GridRowSelectionModel>();
+
+  useEffect(() => {
+    let cancelled = false;
+    async function carregarPets() {
+      try {
+        if (pets && pets.length > 0) return;
+        const lista = await listarPets();
+        if (cancelled) return;
+        const uiPets: Pet[] = (lista || []).map((row: tbPet) => ({
+          id: row.id_pet,
+          Nome: row.tb_pet_nome,
+          Especie: row.tb_especie,
+          Id_Raca: row.id_raca,
+          Genero: row.tb_pet_genero,
+          Status: row.tb_pet_status,
+          DataNascimento: row.tb_pet_data_nascimento,
+          Peso: 0,
+          Adotado: false,
+          DataAdocao: undefined,
+          Vacinado: row.tb_pet_vacinado,
+          DataUltimaVacina: undefined,
+          Resgatado: row.tb_pet_resgatado,
+          DataResgate: row.tb_data_resgate,
+          LocalResgate: row.tb_pet_local_resgate,
+        }));
+        setPets(uiPets);
+      } catch (e: any) {
+        openAlerta({
+          mensagem: e?.message || "Falha ao carregar pets",
+          severity: "error",
+        });
+      }
+    }
+    carregarPets();
+    return () => {
+      cancelled = true;
+    };
+  }, [pets, setPets, openAlerta]);
 
   const columns: GridColDef<(typeof pets)[number]>[] = [
     {
@@ -107,27 +139,26 @@ export default function AtualizarInfos() {
   ];
 
   function handleClickEditar(id: GridRowId) {
-    router.push('/geral/cadastroPet?id=' + id);
+    router.push("/geral/cadastroPet?id=" + id);
   }
 
   function handleClickNovo() {
     router.push("/geral/cadastroPet");
   }
 
-const updateSelectedItems = (newSelectionModel: GridRowSelectionModel) => {
+  const updateSelectedItems = (newSelectionModel: GridRowSelectionModel) => {
     setSelectedItems(newSelectionModel);
   };
 
   function handleClickExcluir() {
-  if (selectedItems && selectedItems.ids.size > 0) {
-    const petsAtualizados = pets.filter(pet => {
-      if (pet.id === undefined) return true;
-      return !selectedItems.ids.has(pet.id);
-    });
-    setPets(petsAtualizados);
+    if (selectedItems && selectedItems.ids.size > 0) {
+      const petsAtualizados = pets.filter((pet) => {
+        if (pet.id === undefined) return true;
+        return !selectedItems.ids.has(pet.id);
+      });
+      setPets(petsAtualizados);
+    }
   }
-}
-
 
   return (
     <Box

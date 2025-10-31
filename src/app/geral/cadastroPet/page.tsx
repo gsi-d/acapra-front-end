@@ -3,6 +3,7 @@ import {
   enumEspecie,
   enumGenero,
   enumStatus,
+  enumPorte,
   especiesArray,
   generosArray,
   Pet,
@@ -27,15 +28,14 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
-import ComboBox from "@/app/components/ComboBox";
+import ComboBox, { OptionType } from "@/app/components/ComboBox";
 import CheckBox from "@/app/components/CheckBox";
-import Alerta, { AlertaParams } from "@/app/components/Alerta";
 import { useRouter, useSearchParams } from "next/navigation";
 import PopUpRegistrarVacinacao from "./PopUpRegistrarVacinacao";
 import PopUpRegistrarDoenca from "./PopUpRegistrarDoenca";
 import { useContextoMock } from "@/contextos/ContextoMock";
 import { listarRacas } from "@/services/entities";
-import { criarPet, atualizarPet, retornarPet } from "@/services/pets";
+import { criarPet, atualizarPet, retornarPet, criarPetComAnexo, atualizarPetComAnexo, retornarFotosPorPet } from "@/services/pets";
 import ImageUploader from "@/app/components/ImageUploader";
 
 export default function CadastroPet() {
@@ -48,9 +48,42 @@ export default function CadastroPet() {
   const { pets, setPets, racas, setRacas, openAlerta } = useContextoMock();
   const racasArray = retornaRacasOptionArray(racas);
 
+  type FormValues = {
+    id: number;
+    Nome: string;
+    Especie: enumEspecie;
+    Id_Raca: number;
+    Porte: enumPorte;
+    Genero: enumGenero;
+    Status: enumStatus;
+    DataNascimento: string;
+    Peso: number;
+    Adotado: boolean;
+    DataAdocao: string;
+    Vacinado: boolean;
+    DataUltimaVacina: string;
+    Resgatado: boolean;
+    DataResgate: string;
+    LocalResgate: string;
+  };
+
   const [petEdicao, setPetEdicao] = useState<Pet | undefined>(undefined);
   const [fotoFile, setFotoFile] = useState<File | null>(null);
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
+  const portesOptions: OptionType[] = [
+    { id: enumPorte.PEQUENO, title: 'Pequeno' },
+    { id: enumPorte.MEDIO, title: 'Médio' },
+    { id: enumPorte.GRANDE, title: 'Grande' },
+  ];
+
+  async function fileToDataUrl(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    });
+  }
 
   // Carrega dados do pet em modo edição a partir da API
   useEffect(() => {
@@ -101,7 +134,6 @@ export default function CadastroPet() {
     };
   }, [racas.length, setRacas, openAlerta]);
 
-  // Ajusta preview de foto com base nos dados carregados do pet em edição
   useEffect(() => {
     if (petEdicao) {
       const url = (petEdicao as any)?.tb_pet_foto_url
@@ -115,6 +147,22 @@ export default function CadastroPet() {
       setFotoFile(null);
     }
   }, [petEdicao]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function carregarFotos() {
+      const idNum = petEdicao?.id;
+      if (!idNum) return;
+      try {
+        const urls = await retornarFotosPorPet(idNum);
+        if (cancelled) return;
+        if (urls && urls.length > 0) setFotoPreview(urls[0]);
+      } catch {
+      }
+    }
+    carregarFotos();
+    return () => { cancelled = true; };
+  }, [petEdicao?.id]);
 
   const schema = yup.object().shape({
     id: yup.number(),
@@ -133,13 +181,14 @@ export default function CadastroPet() {
         then: schema => schema.required("Data de adoção é obrigatória"),
         otherwise: schema => schema.notRequired()
       }),
-    TutorResponsavel: yup
-      .string()
-      .when([], {
-        is: () => adotado,
-        then: schema => schema.required("Tutor responsável é obrigatório"),
-        otherwise: schema => schema.notRequired()
-      }),
+    // TutorResponsavel removido
+      
+      // removed when chain start
+        // Somente exigir em edição
+        // removed: is: () => false,
+        // removed: then required
+        // removed: otherwise not required
+      // removed end of when
     Vacinado: yup.boolean(),
     DataUltimaVacina: yup
       .string()
@@ -165,18 +214,18 @@ export default function CadastroPet() {
       }),
   });
 
-  const valoresIniciais = {
+  const valoresIniciais: FormValues = {
     id: 0,
     Nome: "",
     Especie: enumEspecie.CACHORRO,
     Id_Raca: 0,
+    Porte: enumPorte.PEQUENO,
     Genero: enumGenero.MASCULINO,
     Status: enumStatus.DISPONIVEL,
     DataNascimento: "",
     Peso: 0,
     Adotado: false,
     DataAdocao: "",
-    TutorResponsavel: "",
     Vacinado: false,
     DataUltimaVacina: "",
     Resgatado: false,
@@ -191,31 +240,31 @@ export default function CadastroPet() {
     trigger,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm({
+  } = useForm<FormValues>({
     defaultValues: valoresIniciais,
     values:
       petEdicao !== undefined
         ? {
-            id: petEdicao.id,
+            id: petEdicao.id ?? 0,
             Nome: petEdicao.Nome,
             Especie: petEdicao.Especie,
             Id_Raca: petEdicao.Id_Raca,
+            Porte: (petEdicao as any).Porte ?? (petEdicao as any).tb_pet_porte ?? enumPorte.PEQUENO,
             Genero: petEdicao.Genero,
             Status: petEdicao.Status,
             Peso: petEdicao.Peso,
             Adotado: petEdicao.Adotado,
-            DataAdocao: petEdicao.DataAdocao,
-            TutorResponsavel: petEdicao.TutorResponsavel,
+            DataAdocao: petEdicao.DataAdocao || "",
             Vacinado: petEdicao.Vacinado,
-            DataUltimaVacina: petEdicao.DataUltimaVacina,
+            DataUltimaVacina: petEdicao.DataUltimaVacina || "",
             Resgatado: petEdicao.Resgatado,
-            DataResgate: petEdicao.DataResgate,
-            LocalResgate: petEdicao.LocalResgate,
-            DataNascimento: petEdicao.DataNascimento,
+            DataResgate: petEdicao.DataResgate || "",
+            LocalResgate: petEdicao.LocalResgate || "",
+            DataNascimento: petEdicao.DataNascimento || "",
           }
         : valoresIniciais,
     mode: "onChange",
-    resolver: yupResolver(schema),
+    resolver: yupResolver(schema) as any,
   });
 
   const adotado = watch("Adotado");
@@ -230,12 +279,12 @@ export default function CadastroPet() {
       Nome: petEdicao.Nome,
       Especie: petEdicao.Especie,
       Id_Raca: petEdicao.Id_Raca,
+      Porte: (petEdicao as Pet).Porte ?? (petEdicao as any).tb_pet_porte ?? enumPorte.PEQUENO,
       Genero: petEdicao.Genero,
       Status: petEdicao.Status,
       Peso: petEdicao.Peso,
       Adotado: petEdicao.Adotado,
       DataAdocao: petEdicao.DataAdocao || "",
-      TutorResponsavel: petEdicao.TutorResponsavel || "",
       Vacinado: petEdicao.Vacinado,
       DataUltimaVacina: petEdicao.DataUltimaVacina || "",
       Resgatado: petEdicao.Resgatado,
@@ -263,19 +312,19 @@ export default function CadastroPet() {
     trigger();
   }, [trigger, adotado, vacinado, resgatado]);
 
-  async function onSubmit(data: any) {
+  async function onSubmit(data: FormValues) {
     try {
       const payload: Pet = {
         id: petEdicao?.id,
         Nome: data.Nome,
         Especie: data.Especie,
         Id_Raca: data.Id_Raca,
+        Porte: data.Porte,
         Genero: data.Genero,
         Status: data.Status,
         Peso: data.Peso,
         Adotado: data.Adotado,
         DataAdocao: data.DataAdocao,
-        TutorResponsavel: data.TutorResponsavel,
         Vacinado: data.Vacinado,
         DataUltimaVacina: data.DataUltimaVacina,
         Resgatado: data.Resgatado,
@@ -284,8 +333,20 @@ export default function CadastroPet() {
         DataNascimento: data.DataNascimento,
       };
 
+      let anexoOpts: { anexo?: string | null; tb_foto_pet_url_foto?: string | null } | undefined;
+      if (fotoFile) {
+        const dataUrl = await fileToDataUrl(fotoFile);
+        anexoOpts = { anexo: dataUrl };
+      } else if (fotoPreview && !fotoPreview.startsWith('blob:')) {
+        anexoOpts = { tb_foto_pet_url_foto: fotoPreview };
+      }
+
       if (payload.id && payload.id > 0) {
-        await atualizarPet(payload);
+        if (anexoOpts) {
+          await atualizarPetComAnexo(payload, anexoOpts);
+        } else {
+          await atualizarPet(payload);
+        }
         const idx = pets.findIndex((p) => p.id === payload.id);
         if (idx >= 0) {
           const clone = [...pets];
@@ -294,7 +355,9 @@ export default function CadastroPet() {
         }
         openAlerta({ mensagem: "Pet atualizado com sucesso.", severity: "success" });
       } else {
-        const novoId = await criarPet(payload);
+        const novoId = anexoOpts
+          ? await criarPetComAnexo(payload, anexoOpts)
+          : await criarPet(payload);
         setPets([
           ...pets,
           {
@@ -315,7 +378,7 @@ export default function CadastroPet() {
 
   return (
     <>
-      <form onSubmit={handleSubmit((data) => onSubmit(data))}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Box
           sx={{
             display: "flex",
@@ -347,7 +410,7 @@ export default function CadastroPet() {
               Cadastro de Pets
             </Typography>
             <Divider sx={{ my: 2, backgroundColor: "white", height: "2px" }} />
-            <FormControl fullWidth sx={{ mb: 3 }}>
+            <FormControl fullWidth sx={{ mb: 3, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <ImageUploader
                 label="Foto do Pet"
                 value={fotoPreview}
@@ -364,7 +427,7 @@ export default function CadastroPet() {
                     disabled={false}
                     label={"Nome"}
                     value={value}
-                    onChange={onChange}
+                    onChange={(e) => onChange(e.target.value)}
                     sx={{ backgroundColor: "white" }}
                     error={Boolean(errors.Nome)}
                   />
@@ -385,7 +448,7 @@ export default function CadastroPet() {
                   <ComboBox
                     label={"Especie"}
                     value={especiesArray.find((e) => e.id === value) || null}
-                    setValue={(option) => onChange(option?.id || "")}
+                    setValue={(option) => onChange(option?.id ?? 0)}
                     options={especiesArray}
                     error={Boolean(errors.Especie)}
                   />
@@ -406,7 +469,7 @@ export default function CadastroPet() {
                   <ComboBox
                     label="Raca"
                     value={racasArray.find((e) => e.id === value) || null}
-                    setValue={(option) => onChange(option?.id || "")}
+                    setValue={(option) => onChange(option?.id ?? 0)}
                     options={racasArray}
                     error={Boolean(errors.Id_Raca)}
                   />
@@ -427,7 +490,7 @@ export default function CadastroPet() {
                   <ComboBox
                     label={"Genero"}
                     value={generosArray.find((e) => e.id === value) || null}
-                    setValue={(option) => onChange(option?.id || "")}
+                    setValue={(option) => onChange(option?.id ?? 0)}
                     options={generosArray}
                     error={Boolean(errors.Especie)}
                   />
@@ -441,6 +504,26 @@ export default function CadastroPet() {
             </FormControl>
             <FormControl fullWidth sx={{ mb: 3 }}>
               <Controller
+                name="Porte"
+                control={control}
+                render={({ field: { value, onChange } }) => (
+                  <ComboBox
+                    label={"Porte"}
+                    value={portesOptions.find((p) => p.id === value) || null}
+                    setValue={(option) => onChange(option?.id ?? 0)}
+                    options={portesOptions}
+                    error={Boolean(errors.Porte)}
+                  />
+                )}
+              />
+              {errors.Porte && (
+                <FormHelperText sx={{ color: "red" }}>
+                  {errors.Porte.message as any}
+                </FormHelperText>
+              )}
+            </FormControl>
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <Controller
                 name="Status"
                 control={control}
                 rules={{ required: true }}
@@ -448,7 +531,7 @@ export default function CadastroPet() {
                   <ComboBox
                     label={"Status"}
                     value={statusArray.find((e) => e.id === value) || null}
-                    setValue={(option) => onChange(option?.id || "")}
+                    setValue={(option) => onChange(option?.id ?? 0)}
                     options={statusArray}
                     error={Boolean(errors.Especie)}
                   />
@@ -507,7 +590,7 @@ export default function CadastroPet() {
             </FormControl>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <FormControl fullWidth sx={{ mb: 6, width: "50%" }}>
+              <FormControl fullWidth sx={{ mb: 6, width: "24%" }}>
                 <Controller
                   name="Adotado"
                   control={control}
@@ -554,28 +637,6 @@ export default function CadastroPet() {
                 {errors.DataAdocao && (
                   <FormHelperText sx={{ color: "red" }}>
                     {errors.DataAdocao.message}
-                  </FormHelperText>
-                )}
-              </FormControl>
-
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <Controller
-                  name="TutorResponsavel"
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <TextField
-                      disabled={false}
-                      label={"Tutor Responsável"}
-                      onChange={onChange}
-                      sx={{ backgroundColor: "white" }}
-                      error={Boolean(errors.TutorResponsavel)}
-                    />
-                  )}
-                />
-                {errors.TutorResponsavel && (
-                  <FormHelperText sx={{ color: "red" }}>
-                    {errors.TutorResponsavel.message}
                   </FormHelperText>
                 )}
               </FormControl>

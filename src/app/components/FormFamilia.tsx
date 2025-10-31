@@ -1,8 +1,26 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import Input from '@/app/components/input';
+import CheckBox from '@/app/components/CheckBox';
 
-export default function FamiliaForm() {
+export interface FamiliaValues {
+  temCriancas: boolean;
+  familiaConcorda: boolean;
+  possuiAlergia: boolean;
+  possuiOutrosAnimais: boolean;
+  teveAnimaisAntes: boolean;
+  qtdPessoas: number | string;
+  idadesCriancas: string;
+}
+
+export default function FamiliaForm({
+  values,
+  onChange,
+}: {
+  values: FamiliaValues;
+  onChange: (patch: Partial<FamiliaValues>) => void;
+}) {
   return (
     <Box
       sx={{
@@ -11,17 +29,48 @@ export default function FamiliaForm() {
         borderRadius: 2,
         maxWidth: 900,
         margin: '0 auto',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2,
       }}
     >
-      <Input label="Quantas pessoas moram na sua casa?" required />
-      <Input label="Há crianças? Se sim, quais as idades?" required />
-      <Input label="Todos os membros da família concordam com a adoção?" required />
-      <Input label="Alguém da casa possui alergia a animais?" required />
-      <Input label="Já possui outros animais? Quais?" required />
-      <Input label="Já teve animais anteriormente? O que aconteceu com eles?" required />
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <FormControlLabel
+          control={<CheckBox value={values.temCriancas} onChange={() => onChange({ temCriancas: !values.temCriancas })} />}
+          label="Há crianças na casa?"
+          sx={{ color: 'black' }}
+        />
+        <Input
+          label="Se sim, quais as idades?"
+          value={values.idadesCriancas}
+          onChange={(e) => onChange({ idadesCriancas: e.target.value })}
+        />
+        <FormControlLabel
+          control={<CheckBox value={values.familiaConcorda} onChange={() => onChange({ familiaConcorda: !values.familiaConcorda })} />}
+          label="Todos os membros da família concordam com a adoção?"
+          sx={{ color: 'black' }}
+        />
+        <FormControlLabel
+          control={<CheckBox value={values.possuiAlergia} onChange={() => onChange({ possuiAlergia: !values.possuiAlergia })} />}
+          label="Alguém da casa possui alergia a animais?"
+          sx={{ color: 'black' }}
+        />
+        <FormControlLabel
+          control={<CheckBox value={values.possuiOutrosAnimais} onChange={() => onChange({ possuiOutrosAnimais: !values.possuiOutrosAnimais })} />}
+          label="Já possui outros animais?"
+          sx={{ color: 'black' }}
+        />
+        <FormControlLabel
+          control={<CheckBox value={values.teveAnimaisAntes} onChange={() => onChange({ teveAnimaisAntes: !values.teveAnimaisAntes })} />}
+          label="Já teve animais anteriormente?"
+          sx={{ color: 'black' }}
+        />
+
+        <Input
+          label="Quantas pessoas moram na sua casa?"
+          required
+          type="number"
+          value={values.qtdPessoas}
+          onChange={(e) => onChange({ qtdPessoas: e.target.value })}
+        />
+      </Box>
     </Box>
   );
 }

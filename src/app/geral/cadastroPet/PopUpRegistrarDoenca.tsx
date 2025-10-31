@@ -1,12 +1,7 @@
 "use client";
 
 import { OptionType } from "@/app/components/ComboBox";
-import {
-  Box,
-  FormControl,
-  FormHelperText,
-  TextField,
-} from "@mui/material";
+import { Box, FormControl, FormHelperText, TextField } from "@mui/material";
 
 import FormCadastroBase from "@/app/components/FormCadastroBase";
 import { criarHistoricoDoenca } from "@/services/entities";
@@ -64,20 +59,20 @@ export default function PopupAtualizarInfosPet(props: PopupAtualizarInfosPet) {
     trigger();
     listarDoencas()
       .then((res) => {
-        const opts = (res || []).map((d: any) => ({ id: d.id_doenca, title: d.tb_doenca_nome })) as OptionType[];
+        const opts = (res || []).map((d: any) => ({
+          id: d.id_doenca,
+          title: d.tb_doenca_nome,
+        })) as OptionType[];
         setDoencasOptions(opts);
       })
       .catch(() => setDoencasOptions([]));
   }, [trigger]);
 
-  function handleClickSalvar() {
-    reset();
-    setTogglePopup(false);
-  }
-
   async function onSubmitDoenca(data: any) {
     try {
-      const dataDiagnostico = data?.DataDiagnostico ? String(data.DataDiagnostico) : null;
+      const dataDiagnostico = data?.DataDiagnostico
+        ? String(data.DataDiagnostico)
+        : null;
       await criarHistoricoDoenca({
         id_pet: Number(idPet),
         id_doenca: Number(data.Doenca),
@@ -86,9 +81,15 @@ export default function PopupAtualizarInfosPet(props: PopupAtualizarInfosPet) {
       });
       reset();
       setTogglePopup(false);
-      openAlerta({ mensagem: "Doença registrada com sucesso.", severity: "success" });
+      openAlerta({
+        mensagem: "Doença registrada com sucesso.",
+        severity: "success",
+      });
     } catch (e: any) {
-      openAlerta({ mensagem: e?.message || "Erro ao registrar doença", severity: "error" });
+      openAlerta({
+        mensagem: e?.message || "Erro ao registrar doença",
+        severity: "error",
+      });
     }
   }
 
@@ -115,7 +116,9 @@ export default function PopupAtualizarInfosPet(props: PopupAtualizarInfosPet) {
               render={({ field: { value, onChange } }) => (
                 <ComboBox
                   label={"Doença"}
-                  value={doencasOptions.find((e) => e.id === Number(value)) || null}
+                  value={
+                    doencasOptions.find((e) => e.id === Number(value)) || null
+                  }
                   setValue={(option) => onChange(option?.id || "")}
                   options={doencasOptions}
                   error={Boolean(errors.Doenca)}
@@ -139,8 +142,17 @@ export default function PopupAtualizarInfosPet(props: PopupAtualizarInfosPet) {
                     <DatePicker
                       label={"Data do diagnóstico"}
                       value={value ? dayjs(value) : null}
-                      onChange={(newValue) => onChange(newValue ? dayjs(newValue).format("YYYY-MM-DD") : "")}
-                      slotProps={{ textField: { sx: { backgroundColor: "white" }, error: Boolean(errors.DataDiagnostico) } }}
+                      onChange={(newValue) =>
+                        onChange(
+                          newValue ? dayjs(newValue).format("YYYY-MM-DD") : ""
+                        )
+                      }
+                      slotProps={{
+                        textField: {
+                          sx: { backgroundColor: "white" },
+                          error: Boolean(errors.DataDiagnostico),
+                        },
+                      }}
                     />
                   </LocalizationProvider>
                 )}
@@ -179,5 +191,3 @@ export default function PopupAtualizarInfosPet(props: PopupAtualizarInfosPet) {
     </Box>
   );
 }
-
-

@@ -13,6 +13,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loading from "./Loading";
+import { useSessao } from "@/contextos/ContextoSessao";
 
 interface NavLinksProps {
   minimized?: boolean;
@@ -51,7 +52,8 @@ const links = [
 
 export default function NavLinks({ minimized = false }: NavLinksProps) {
   const pathname = usePathname();
-  const isAdm = localStorage && localStorage.getItem("isAdm") == "true";
+  const { sessao } = useSessao();
+  const isAdm = sessao.isAdm;
   const [openLoading, setOpenLoading] = useState<boolean>(false);
   const [previousPath, setPreviousPath] = useState(pathname);
   const router = useRouter();

@@ -18,7 +18,7 @@ export default function Menu({ open, toggleOpen }: MenuProps) {
         height: "100vh",
         py: 1,
         pr: open ? 2 : 0,
-        width: open ? "28.5vh" : "70px", // largura mínima para mostrar o ícone
+        width: open ? "28.5vh" : "70px",
         zIndex: 999,
         boxShadow: "3px 0px 8px rgba(0, 0, 0, 0.1)",
         position: "fixed",
